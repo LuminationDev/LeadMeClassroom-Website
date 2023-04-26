@@ -30,27 +30,29 @@ function setJustRegistered(value: boolean) {
 </script>
 
 <template>
-  <div class="p-16 bg-white rounded-xl">
-    <LoginInitial v-if="currentView === 'welcome'" @change-view="setView" />
-    <LoginTeacher v-else-if="currentView === 'login'" @change-view="setView">
-      <template #messages>
-        <div v-if="justRegistered">
-          Just registered, now signup
-        </div>
-        <div v-if="justPasswordReset">
-          Just reset, go to your email
-        </div>
-      </template>
-    </LoginTeacher>
-    <LoginStudent v-else-if="currentView === 'student'" @change-view="setView" />
-    <LoginSignup v-else-if="currentView === 'register'"
-                 @change-view="setView"
-                 @registered="setJustRegistered"
-    />
-    <LoginPasswordReset v-else-if="currentView === 'reset'"
-                        @change-view="setView"
-                        @password-reset="setPasswordReset"
-    />
-    <LoginVerifyEmail v-else-if="currentView === 'verify'" @change-view="setView" />
+  <div class="w-full bg-panel-background h-screen flex justify-center items-center">
+    <div class="p-16 bg-white rounded-xl">
+      <LoginInitial v-if="currentView === 'welcome'" @change-view="setView" />
+      <LoginTeacher v-else-if="currentView === 'login'" @change-view="setView">
+        <template #messages>
+          <div v-if="justRegistered">
+            Just registered, now signup
+          </div>
+          <div v-if="justPasswordReset">
+            Just reset, go to your email
+          </div>
+        </template>
+      </LoginTeacher>
+      <LoginStudent v-else-if="currentView === 'student'" @change-view="setView" />
+      <LoginSignup v-else-if="currentView === 'register'"
+                   @change-view="setView"
+                   @registered="setJustRegistered"
+      />
+      <LoginPasswordReset v-else-if="currentView === 'reset'"
+                          @change-view="setView"
+                          @password-reset="setPasswordReset"
+      />
+      <LoginVerifyEmail v-else-if="currentView === 'verify'" @change-view="setView" />
+    </div>
   </div>
 </template>

@@ -4,6 +4,7 @@ import Firebase from '../controller/_firebase';
 import { Follower, Leader, Tab } from '../models';
 import { useWebRTCStore } from "./webRTCStore";
 import { getAuth, sendPasswordResetEmail } from "@firebase/auth";
+import type { User } from "@firebase/auth";
 
 interface userDetails {
     name: string,
@@ -44,7 +45,9 @@ export let useDashboardStore = defineStore("dashboard", {
             followers: <Follower[]>([]),
             webLink: "",
             leader: new Leader(leaderDetails.name),
-            webRTCPinia: useWebRTCStore()
+            webRTCPinia: useWebRTCStore(),
+            user: <User|null>null,
+            tasks: <String[]>([])
         }
     },
 
@@ -77,6 +80,7 @@ export let useDashboardStore = defineStore("dashboard", {
 
             //Calling before class code can be attached?
             this.firebase.connectAsLeader(<Leader>this.leader, () => { this.attachClassListeners(false )});
+            await this.clearTasks();
             // todo - store classcode somewhere
 
             await new Promise(res => setTimeout(res, 200));
@@ -144,6 +148,7 @@ export let useDashboardStore = defineStore("dashboard", {
             this.firebase.removeClass(this.classCode);
             this.followers = [];
             // todo - store current class code
+            await this.clearTasks();
 
             await new Promise(res => setTimeout(res, 200));
             this.classCode = "";
@@ -438,6 +443,20 @@ export let useDashboardStore = defineStore("dashboard", {
         launchWebsiteIndividual(UUID: string, website: string) {
             const action = { type: REQUESTS.WEBSITE, value: website };
             void this.firebase.requestIndividualAction(this.classCode, UUID, action);
+        },
+
+        /**
+         * Update or create the task array within local storage.
+         */
+        async updateTasks(task: string) {
+            this.tasks.push(task);
+        },
+
+        /**
+         * Clear the current tasks from the local storage
+         */
+        clearTasks() {
+            this.tasks = [];
         },
 
         /**

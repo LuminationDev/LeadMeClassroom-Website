@@ -34,12 +34,12 @@ const asyncCall = () => {
 <template>
   <button
     :class="{
-      'bg-blue-500 font-semibold rounded-lg text-white text-base': true,
       'w-64 h-10 mb-3 hover:bg-blue-400': type === 'primary',
       'w-64 h-10 mb-3 hover:bg-slate-600 bg-slate-800 border-2 border-slate-800': type === 'dark',
       'w-64 h-10 mb-3 bg-white text-slate-800 hover:bg-slate-200 border-2 border-slate-800': type === 'outline-dark',
-      'w-64 h-10 hover:bg-blue-400': type === 'secondary',
-      'w-40 h-10 hover:bg-violet-700 bg-violet-500': type === 'purple'
+      'w-64 h-10 hover:bg-blue-400 text-blue-500': type === 'secondary',
+      'w-40 h-10 hover:bg-violet-700 bg-violet-500': type === 'purple',
+      'bg-blue-500 font-semibold rounded-lg text-base': true
     }"
     @click="onClick"
   >

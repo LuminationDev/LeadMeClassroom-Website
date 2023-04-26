@@ -10,6 +10,7 @@ export const WEBSITE = "website";
 //Web RTC controls
 export const MONITORPERMISSION = "videoPermission";
 export const MONITORDATA = "iceCandidates";
+export const MONITORSTARTED = "enableMonitoring";
 export const MONITORENDED = "disableMonitoring";
 
 //Tab controls
