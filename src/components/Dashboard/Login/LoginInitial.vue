@@ -26,8 +26,8 @@ const emit = defineEmits<{
     </div>
 
     <GenericButton
-        class="text-blue-500 bg-white border border-blue-500 border-2 hover:bg-white-menu-overlay"
-        :type="'primary'"
+        class="bg-panel-background border border-blue-500 border-2 hover:bg-white-menu-overlay"
+        :type="'secondary'"
         :callback="() => { $emit('changeView', 'login') }"
     >Teacher</GenericButton>
   </div>

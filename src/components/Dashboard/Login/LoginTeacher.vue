@@ -7,6 +7,12 @@ import {email as emailRule, helpers, required} from "@vuelidate/validators";
 import useVuelidate from "@vuelidate/core";
 
 import {getAuth, signInWithEmailAndPassword} from "@firebase/auth";
+import {useRouter} from "vue-router";
+import {useDashboardStore} from "@/stores/dashboardStore";
+
+const dashboardPinia = useDashboardStore();
+
+const router = useRouter()
 
 const email = ref("")
 const password = ref("")
@@ -45,7 +51,8 @@ async function validateAndSubmit() {
         if (!auth.currentUser?.emailVerified) {
           emit('changeView', 'verify')
         } else {
-          console.log('time to make the change to being in the dashboard')
+          dashboardPinia.user = auth.currentUser
+          router.push({ name: 'dashboard' })
         }
       })
       .catch((response) => {

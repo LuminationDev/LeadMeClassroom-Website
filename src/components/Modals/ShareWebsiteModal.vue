@@ -120,14 +120,14 @@ function closeModal() {
             </div>
           </div>
           <div class="mx-14 mt-8 h-20 bg-white flex items-center justify-between">
-            <p class="ml-8 text-lg font-medium">Share to</p>
-            <div class="flex">
-              <label class="mr-14 flex justify-between items-center">
+            <p class="ml-8 text-lg font-medium mr-2">Share to</p>
+            <div class="flex justify-start">
+              <label class="mr-4 lg:mr-14 flex justify-between items-center">
                 <input class="h-5 w-5 mr-4" name="shareTo" type="radio" v-model="shareTo" value="all">
                 <span class="text-base">All connected users</span>
               </label>
 
-              <label class="mr-20 flex justify-between items-center">
+              <label class="flex justify-between items-center mr-8 lg:mr-20">
                 <input class="h-5 w-5 mr-4" name="shareTo" type="radio" v-model="shareTo" value="selected">
                 <span class="text-base">Select users</span>
               </label>
@@ -139,6 +139,7 @@ function closeModal() {
                class="mt-4 flex flex-row flex-wrap ml-10 mr-14">
             <StudentGridItem
                 v-for="follower in sortedFollowers"
+                :key="follower.getUniqueId()"
                 class="pl-4 pt-4 w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/6"
                 :follower="follower"
                 :controls="false"
