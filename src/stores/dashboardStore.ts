@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 import * as REQUESTS from "../constants/_requests.js";
 import Firebase from '../controller/_firebase';
-import { Follower, Leader, Tab } from '../models';
+import { WebFollower, MobileFollower, Leader, Tab } from '../models';
 import { useWebRTCStore } from "./webRTCStore";
 import { getAuth, sendPasswordResetEmail } from "@firebase/auth";
 import type { User } from "@firebase/auth";
@@ -31,9 +31,9 @@ const toDataURL = (url: string) => fetch(url)
         reader.onloadend = () => resolve(reader.result)
         reader.onerror = reject
         reader.readAsDataURL(blob)
-    }))
+    }));
 
-export let useDashboardStore = defineStore("dashboard", {
+export const useDashboardStore = defineStore("dashboard", {
     state: () => {
         return {
             view: "dashboard",
@@ -42,7 +42,8 @@ export let useDashboardStore = defineStore("dashboard", {
             classCode: activeCode,
             leaderName: leaderDetails.name,
             marketing: <string|null>leaderDetails.marketing,
-            followers: <Follower[]>([]),
+            webFollowers: <WebFollower[]>([]),
+            mobileFollowers: <MobileFollower[]>([]),
             webLink: "",
             leader: new Leader(leaderDetails.name),
             webRTCPinia: useWebRTCStore(),
@@ -104,8 +105,10 @@ export let useDashboardStore = defineStore("dashboard", {
             this.firebase.followerListeners(
                 activeCode,
                 this.followerResponse,
+                this.updateActiveApplication,
                 this.followerDisconnected,
-                this.followerAdded,
+                this.webFollowerAdded,
+                this.mobileFollowerAdded,
                 this.readIceCandidate
             );
             this.firebase.tabListeners(
@@ -120,6 +123,132 @@ export let useDashboardStore = defineStore("dashboard", {
             this.firebase.reloadFollowers(activeCode, this.followerResponse);
         },
 
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////GENERIC FUNCTIONS////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /**
+         * Find a follower based on their unique ID and the type of follower.
+         * @param ID
+         * @param followerType
+         */
+        findFollowerObject(ID: string, followerType: string): WebFollower | MobileFollower | undefined {
+            return followerType === REQUESTS.WEB
+                ? this.webFollowers.find(element => element.getUniqueId() === ID)
+                : this.mobileFollowers.find(element => element.getUniqueId() === ID);
+        },
+
+        /**
+         * Find a follower's index within the associated array.
+         * @param ID
+         * @param followerType
+         */
+        findFollowerIndex(ID: string, followerType: string): number {
+            return followerType === REQUESTS.WEB
+                ? this.webFollowers.findIndex(element => element.getUniqueId() === ID)
+                : this.mobileFollowers.findIndex(element => element.getUniqueId() === ID);
+        },
+
+        /**
+         * Rename a selected follower
+         * @param newName
+         * @param UUID
+         * @param followerType
+         */
+        async renameFollower(newName: string, UUID: string, followerType: string) {
+            await this.firebase.updateFollower(this.classCode, UUID, {name: newName}, followerType);
+        },
+
+        /**
+         * Send an action to all connected students.
+         * @param action
+         * @param followerType
+         */
+        requestAction(action: object, followerType: string) {
+            void this.firebase.requestAction(this.classCode, action, followerType);
+        },
+
+        /**
+         * Send an action to an individual student.
+         * @param UUID
+         * @param action
+         * @param followerType
+         */
+        requestIndividualAction(UUID: string, action: object, followerType: string) {
+            void this.firebase.requestIndividualAction(this.classCode, UUID, action, followerType);
+        },
+
+        /**
+         * Notify a selected follower that they have been removed from the class.
+         * @param UUID
+         * @param followerType
+         */
+        async endIndividualSession(UUID: string, followerType: string) {
+            await this.firebase.requestIndividualAction(
+                this.classCode, UUID,
+                { type: REQUESTS.REMOVED },
+                followerType
+            );
+        },
+
+        /**
+         * Notify followers a session is ending and delete database class entry
+         */
+        async endSession() {
+            localStorage.removeItem("firebase:previous_websocket_failure")
+            await this.firebase.requestAction(this.classCode, {type: REQUESTS.ENDSESSION}, REQUESTS.WEB);
+            await this.firebase.requestAction(this.classCode, {type: REQUESTS.ENDSESSION}, REQUESTS.MOBILE);
+            this.firebase.removeClass(this.classCode);
+            this.webFollowers = [];
+            this.mobileFollowers = [];
+
+            // todo - store current class code
+            await this.clearTasks();
+
+            await new Promise(res => setTimeout(res, 200));
+            this.classCode = "";
+        },
+
+        /**
+         * Notify the leader that a web follower has disconnected
+         * @param UUID A string representing the unique ID of a student.
+         * @param followerType
+         */
+        followerDisconnected(UUID: string, followerType: string) {
+            const follower = this.findFollowerObject(UUID, followerType);
+            if (!follower) { return }
+            follower.disconnected = true;
+        },
+
+        /**
+         * Notify the leader that a follower has disconnected
+         * @param UUID A string representing the unique ID of a student.
+         * @param followerType
+         */
+        removeFollower(UUID: string, followerType: string) {
+            const index = this.findFollowerIndex(UUID, followerType);
+            if (index === -1) return;
+
+            followerType === REQUESTS.WEB ?
+                this.webFollowers.splice(index, 1) :
+                this.mobileFollowers.splice(index, 1);
+        },
+
+        /**
+         * Request that a follower makes the supplied media the active media within their associated application.
+         * @param UUID
+         * @param action
+         * @param followerType
+         */
+        requestActiveMedia(UUID: string, action: object, followerType: string) {
+            const follower = this.findFollowerObject(UUID, followerType);
+            if (follower) {
+                this.requestIndividualAction(UUID, action, followerType)
+            }
+        },
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////WEB FUNCTIONS///////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         /**
          * Send WebRTC ice candidates to the Firebase database
          * @param senderId The unique ID of the sender to differentiate between the sender and receiver.
@@ -137,37 +266,6 @@ export let useDashboardStore = defineStore("dashboard", {
          */
         readIceCandidate(snapshot: any, UUID: string) {
             this.webRTCPinia.readIceCandidate(snapshot, UUID)
-        },
-
-        /**
-         * Notify followers a session is ending and delete database class entry
-         */
-        async endSession() {
-            localStorage.removeItem("firebase:previous_websocket_failure")
-            await this.firebase.requestAction(this.classCode, {type: REQUESTS.ENDSESSION});
-            this.firebase.removeClass(this.classCode);
-            this.followers = [];
-            // todo - store current class code
-            await this.clearTasks();
-
-            await new Promise(res => setTimeout(res, 200));
-            this.classCode = "";
-        },
-
-        /**
-         * Notify a selected follower that they have been removed from the class.
-         */
-        async endIndividualSession(UUID: string) {
-            await this.firebase.requestIndividualAction(this.classCode, UUID, {type: REQUESTS.REMOVED});
-        },
-
-        /**
-         * Rename a selected follower
-         * @param newName
-         * @param UUID
-         */
-        async renameFollower(newName: string, UUID: string) {
-            await this.firebase.updateFollower(this.classCode, UUID, {name: newName});
         },
 
         /**
@@ -201,22 +299,12 @@ export let useDashboardStore = defineStore("dashboard", {
         },
 
         /**
-         * Notify the leader that a follower has disconnected
-         * @param UUID A string representing the unique ID of a student.
-         */
-        followerDisconnected(UUID: string) {
-            const follower = this.followers.find(element => element.getUniqueId() === UUID)
-            if (!follower) { return }
-            follower.disconnected = true;
-        },
-
-        /**
-         * Notify the leader that a follower has disconnected
+         * Update the dashboard store with the new web follower object that has been entered in firebase.
          * @param snapshot
          * @param id
          */
-        followerAdded(snapshot: any, id: string) {
-            const follower = new Follower(this.classCode, snapshot.name, id)
+        webFollowerAdded(snapshot: any, id: string) {
+            const follower = new WebFollower(this.classCode, snapshot.name, id)
             follower.monitoring = false
             follower.muted = false
             follower.muteAll = false
@@ -228,25 +316,14 @@ export let useDashboardStore = defineStore("dashboard", {
                     }
                 })
             }
-            const index = this.followers.findIndex(element => element.getUniqueId() === id)
+            const index = this.webFollowers.findIndex(element => element.getUniqueId() === id)
             if (index === -1) {
-                this.followers.push(follower)
+                this.webFollowers.push(follower)
             } else {
-                this.followers.splice(index, 1, follower)
+                this.webFollowers.splice(index, 1, follower)
             }
 
             this.webRTCPinia.createNewConnection(id);
-        },
-
-        /**
-         * Notify the leader that a follower has disconnected
-         * @param UUID A string representing the unique ID of a student.
-         */
-        removeFollower(UUID: string) {
-            const index = this.followers.findIndex(element => element.getUniqueId() === UUID)
-            if (index !== -1) {
-                this.followers.splice(index, 1)
-            }
         },
 
         /**
@@ -297,7 +374,7 @@ export let useDashboardStore = defineStore("dashboard", {
          * @param id
          */
         updateFollowerScreenshot(capture: string, name: string, id: string) {
-            const follower = this.followers.find(element => element.getUniqueId() === id)
+            const follower = this.webFollowers.find(element => element.getUniqueId() === id)
             if (follower) {
                 follower.imageBase64 = capture
             }
@@ -309,7 +386,7 @@ export let useDashboardStore = defineStore("dashboard", {
          * @param value
          */
         updateFollowerCaptureFailed(id: string, value: boolean) {
-            const follower = this.followers.find(element => element.getUniqueId() === id)
+            const follower = this.webFollowers.find(element => element.getUniqueId() === id)
             if (follower) {
                 follower.collectingScreenshotFailed = value
             }
@@ -321,7 +398,7 @@ export let useDashboardStore = defineStore("dashboard", {
          * @param id
          */
         updateFollowerTab(tab: Tab, id: string) {
-            const follower = this.followers.find(element => element.getUniqueId() === id)
+            const follower = this.webFollowers.find(element => element.getUniqueId() === id)
             if (follower) {
                 follower.updateIndividualTab(tab.id, tab)
             }
@@ -333,7 +410,7 @@ export let useDashboardStore = defineStore("dashboard", {
          * @param id
          */
         removeFollowerTab(followerId: string, id: string) {
-            const follower = this.followers.find(element => element.getUniqueId() === followerId)
+            const follower = this.webFollowers.find(element => element.getUniqueId() === followerId)
             if (follower) {
                 follower.removeTab(id)
             }
@@ -345,10 +422,10 @@ export let useDashboardStore = defineStore("dashboard", {
          * @param id
          */
         requestDeleteFollowerTab(followerId: string, id: string) {
-            const follower = this.followers.find(element => element.getUniqueId() === followerId)
+            const follower = this.webFollowers.find(element => element.getUniqueId() === followerId)
             if (follower) {
                 const action = { type: REQUESTS.DELETE_TAB, tabId: id };
-                void this.firebase.requestIndividualAction(this.classCode, follower.getUniqueId(), action);
+                void this.firebase.requestIndividualAction(this.classCode, follower.getUniqueId(), action, REQUESTS.WEB);
                 const index = follower.tabs.findIndex(element => id === element.id)
                 if (index !== -1) {
                     follower.tabs[index].closing = true
@@ -363,27 +440,15 @@ export let useDashboardStore = defineStore("dashboard", {
          * @param newValue
          */
         requestUpdateMutingTab(followerId: string, tabId: string, newValue: boolean) {
-            const follower = this.followers.find(element => element.getUniqueId() === followerId)
+            const follower = this.webFollowers.find(element => element.getUniqueId() === followerId)
             if (follower) {
                 const action = { type: newValue ? REQUESTS.MUTETAB : REQUESTS.UNMUTETAB, tabId };
                 console.log(action)
-                void this.firebase.requestIndividualAction(this.classCode, follower.getUniqueId(), action);
+                void this.firebase.requestIndividualAction(this.classCode, follower.getUniqueId(), action, REQUESTS.WEB);
                 const index = follower.tabs.findIndex(element => tabId === element.id)
                 if (index !== -1) {
                     follower.tabs[index].muting = true
                 }
-            }
-        },
-
-        /**
-         * Send a request to a follower that forces the selected tab to be highlighted (viewed)
-         * @param followerId
-         * @param tab
-         */
-        requestActiveTab(followerId: string, tab: object) {
-            const follower = this.followers.find(element => element.getUniqueId() === followerId)
-            if (follower) {
-                this.requestIndividualAction(followerId, {type: REQUESTS.FORCEACTIVETAB, tab: tab})
             }
         },
 
@@ -393,7 +458,7 @@ export let useDashboardStore = defineStore("dashboard", {
          * @param id
          */
         setFollowerTabs(tabs: Tab[], id: string) {
-            const follower = this.followers.find(element => element.getUniqueId() === id)
+            const follower = this.webFollowers.find(element => element.getUniqueId() === id)
             if (follower) {
                 follower.tabs = tabs
             }
@@ -405,7 +470,7 @@ export let useDashboardStore = defineStore("dashboard", {
          * @param id
          */
         async monitorRequestResponse(message: string, id: string) {
-            const follower = this.followers.find(element => element.getUniqueId() === id)
+            const follower = this.webFollowers.find(element => element.getUniqueId() === id)
             if (!follower) { return }
 
             switch(message){
@@ -437,12 +502,12 @@ export let useDashboardStore = defineStore("dashboard", {
          */
         async launchWebsite(website: string) {
             const action = { type: REQUESTS.WEBSITE, value: website };
-            await this.firebase.requestAction(this.classCode, action);
+            await this.firebase.requestAction(this.classCode, action, REQUESTS.WEB);
         },
 
         launchWebsiteIndividual(UUID: string, website: string) {
             const action = { type: REQUESTS.WEBSITE, value: website };
-            void this.firebase.requestIndividualAction(this.classCode, UUID, action);
+            void this.firebase.requestIndividualAction(this.classCode, UUID, action, REQUESTS.WEB);
         },
 
         /**
@@ -459,24 +524,41 @@ export let useDashboardStore = defineStore("dashboard", {
             this.tasks = [];
         },
 
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////MOBILE FUNCTIONS/////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         /**
-         * Send an action to all connected students.
-         * @param action
+         * Update the dashboard store with the new mobile follower object that has been entered in firebase.
+         * @param snapshot
+         * @param id
          */
-        requestAction(action: object) {
-            void this.firebase.requestAction(this.classCode, action);
+        mobileFollowerAdded(snapshot: any, id: string) {
+            const follower = new MobileFollower(this.classCode, snapshot.name, snapshot.applications, id)
+            follower.muted = false
+
+            const index = this.mobileFollowers.findIndex(element => element.getUniqueId() === id)
+            if (index === -1) {
+                this.mobileFollowers.push(follower)
+            } else {
+                this.mobileFollowers.splice(index, 1, follower)
+            }
         },
 
         /**
-         * Send an action to an individual student.
-         * @param UUID
-         * @param action
+         * Update a mobile followers current application.
+         * @param packageName A string representing the package name of the active application.
+         * @param UUID A string representing the unique ID of a student.
          */
-        requestIndividualAction(UUID: string, action: object) {
-            void this.firebase.requestIndividualAction(this.classCode, UUID, action);
+        updateActiveApplication(packageName: string, UUID: string) {
+            const index = this.findFollowerIndex(UUID, REQUESTS.MOBILE);
+            if (index !== -1) {
+                this.mobileFollowers[index].setCurrentApplication(packageName);
+            }
         },
 
-        //Account page functions
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////ACCOUNT FUNCTIONS//////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         /**
          * Send the firebase password reset email off to the supplied user.
          */
@@ -540,6 +622,6 @@ export let useDashboardStore = defineStore("dashboard", {
          */
         async changeMarketingPreference(preference: boolean) {
             this.marketing = <string|null>await this.firebase.setMarketingPreference(preference);
-        }
+        },
     }
 });

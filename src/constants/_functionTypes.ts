@@ -10,7 +10,7 @@ export type generateType = () => void;
 
 //Follower functions for dashboardStore
 export type responseType = (response: any, name: string, id: string, key: string|null) => void;
-export type disconnectedType = (UUID: string) => void;
+export type disconnectedType = (UUID: string, followerType: string) => void;
 export type addedType = (snapshot: any, id: string) => void;
 export type readIceCandidateType = (snapshot: any, UUID: string) => void;
 

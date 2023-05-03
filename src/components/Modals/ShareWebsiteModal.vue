@@ -3,9 +3,9 @@ import {computed, Ref, ref} from "vue";
 import {useDashboardStore} from "../../stores/dashboardStore";
 import useVuelidate from "@vuelidate/core";
 import {helpers, required} from "@vuelidate/validators";
-import StudentGridItem from "../Dashboard/ClassControl/GridItem/StudentGridItem.vue";
+import WebGridItem from "../Dashboard/ClassControl/GridItem/Web/WebGridItem.vue";
 import Modal from "./Modal.vue";
-import {Follower} from "../../models";
+import {WebFollower} from "../../models";
 import GenericButton from "../Buttons/GenericButton.vue";
 
 const dashboardPinia = useDashboardStore();
@@ -15,8 +15,8 @@ const shareTo = ref("all")
 const followersSelected: Ref<string[]> = ref([])
 const submissionAttempted = ref(false)
 
-const sortedFollowers = computed((): Array<Follower> => {
-  return dashboardPinia.followers.sort((a: Follower, b: Follower) => {
+const sortedFollowers = computed((): Array<WebFollower> => {
+  return dashboardPinia.webFollowers.sort((a: WebFollower, b: WebFollower) => {
     return a.name.localeCompare(b.name)
   });
 })
@@ -135,13 +135,13 @@ function closeModal() {
           </div>
         </div>
         <div class="w-modal-width max-h-64 overflow-y-auto">
-          <div v-if="shareTo === 'selected' && dashboardPinia.followers.length"
+          <div v-if="shareTo === 'selected' && dashboardPinia.webFollowers.length"
                class="mt-4 flex flex-row flex-wrap ml-10 mr-14">
-            <StudentGridItem
+            <WebGridItem
                 v-for="follower in sortedFollowers"
                 :key="follower.getUniqueId()"
                 class="pl-4 pt-4 w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/6"
-                :follower="follower"
+                :webFollower="follower"
                 :controls="false"
                 @update="(value: boolean) => { handleFollowerSelection(follower.getUniqueId(), value) }"/>
           </div>

@@ -67,7 +67,7 @@ class Leader {
 
     /**
      * Collect the necessary data to create a new room on the firebase database.
-     * @returns A JSON object reflecting the leader's information
+     * @returns A JSON object reflecting an empty value that can be filled with incoming web followers.
      */
     getDefaultFollowersObject = () => {
         return (

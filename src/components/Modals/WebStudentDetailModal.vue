@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import Modal from "./Modal.vue";
-import {computed, defineProps, PropType, ref} from "vue";
-import Follower from "../../models/_follower";
+import { computed, defineProps, PropType, ref } from "vue";
+import WebFollower from "../../models/Followers/_webFollower";
 import HoverButton from "../Buttons/HoverButton.vue";
 import Tooltip from "../Buttons/Tooltip.vue";
 import { useDashboardStore } from "../../stores/dashboardStore";
+import * as REQUESTS from "@/constants/_requests";
 let dashboardPinia = useDashboardStore();
 
 defineEmits<{
@@ -12,8 +13,8 @@ defineEmits<{
 }>()
 
 const props = defineProps({
-  follower: {
-    type: Object as PropType<Follower>,
+  webFollower: {
+    type: Object as PropType<WebFollower>,
     required: true,
   },
 });
@@ -30,24 +31,24 @@ defineExpose({
 function openModal() {
   showDetailModal.value = true
 
-  if(props.follower.tabs.length > 0) {
-    selectedTabId.value = props.follower.tabs[0].id;
+  if(props.webFollower.tabs.length > 0) {
+    selectedTabId.value = props.webFollower.tabs[0].id;
   }
 }
 
 //Track the currently selected tab
 const selectedTabId = ref("0");
 const selectedTab = computed(() => {
-  if(props.follower.tabs.length === 0) {
+  if(props.webFollower.tabs.length === 0) {
     selectedTabId.value = "-1";
     return null;
   }
 
-  let tab = props.follower.tabs.find(res => res.id === selectedTabId.value);
+  let tab = props.webFollower.tabs.find(res => res.id === selectedTabId.value);
 
   if(tab === undefined) {
-    selectedTabId.value = props.follower.tabs[0].id;
-    return props.follower.tabs[0];
+    selectedTabId.value = props.webFollower.tabs[0].id;
+    return props.webFollower.tabs[0];
   } else {
     return tab;
   }
@@ -60,16 +61,20 @@ const muteTooltip = computed(() => {
 });
 
 function deleteFollowerTab(tabId: string) {
-  dashboardPinia.requestDeleteFollowerTab(props.follower.getUniqueId(), tabId)
+  dashboardPinia.requestDeleteFollowerTab(props.webFollower.getUniqueId(), tabId)
 }
 
 function muteOrUnmuteTab(tabId: string, action: boolean) {
   console.log('heard a mute request', action)
-  dashboardPinia.requestUpdateMutingTab(props.follower.getUniqueId(), tabId, action)
+  dashboardPinia.requestUpdateMutingTab(props.webFollower.getUniqueId(), tabId, action)
 }
 
 function changeActiveTab(tab: object) {
-  dashboardPinia.requestActiveTab(props.follower.getUniqueId(), tab)
+  dashboardPinia.requestActiveMedia(
+      props.webFollower.getUniqueId(),
+      { type: REQUESTS.FORCEACTIVETAB, tab: tab},
+      REQUESTS.WEB
+  );
 }
 
 function closeModal() {
@@ -108,7 +113,7 @@ const checkWebsite = (website: string) => {
         <header class="h-20 px-8 w-modal-width-sm bg-white flex justify-between items-center rounded-t-lg">
           <div class="bg-white flex flex-col">
             <span class="text-lg font-medium text-black">Tab Control</span>
-            <p class="mt-1 text-sm text-zinc-700">{{ follower.name }}</p>
+            <p class="mt-1 text-sm text-zinc-700">{{ webFollower.name }}</p>
           </div>
         </header>
       </template>
@@ -143,7 +148,7 @@ const checkWebsite = (website: string) => {
               <Tooltip :tip="'Bring to front'" />
 
               <img v-if="selectedTabId === '-1'" class="h-5" src="/src/assets/img/studentDetails/student-icon-focus-disabled.svg"  alt="focus"/>
-              <HoverButton v-else-if="selectedTab.id !== follower.tabs[0].id" class="h-5 w-5" @click="changeActiveTab(selectedTab)">
+              <HoverButton v-else-if="selectedTab.id !== webFollower.tabs[0].id" class="h-5 w-5" @click="changeActiveTab(selectedTab)">
                 <template v-slot:original><img src="/src/assets/img/studentDetails/student-icon-focus.svg"  alt="focus"/></template>
                 <template v-slot:hover><img src="/src/assets/img/studentDetails/student-icon-focus-hover.svg"  alt="focus"/></template>
               </HoverButton>
@@ -171,7 +176,7 @@ const checkWebsite = (website: string) => {
         <!--Tab list-->
         <div class="w-modal-width-sm h-96 flex flex-col overflow-y-auto">
           <!--The assistant page is present but not counted-->
-          <div v-if="follower.tabs.length === 0" class="py-1 flex flex-row w-full px-5 items-center justify-between">
+          <div v-if="webFollower.tabs.length === 0" class="py-1 flex flex-row w-full px-5 items-center justify-between">
             <div class="w-full h-9 px-5 flex flex-row items-center overflow-ellipsis whitespace-nowrap">
               <img class="flex-shrink-0 w-5 h-5 mr-2" src="/src/assets/img/icon-128.png"  alt=""/>
               <span class="flex-shrink overflow-ellipsis whitespace-nowrap overflow-hidden pr-10 mt-0.5">No open tabs...</span>
@@ -179,7 +184,7 @@ const checkWebsite = (website: string) => {
           </div>
 
           <transition-group v-else name="list-complete" tag="div">
-            <div v-for="(tab, index) in follower.tabs" v-bind:key="tab" class="py-1" :id="tab.id">
+            <div v-for="(tab, index) in webFollower.tabs" v-bind:key="tab" class="py-1" :id="tab.id">
 
               <!--Individual tabs-->
               <div class="flex flex-row w-full px-5 items-center justify-between">
