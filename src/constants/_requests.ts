@@ -1,3 +1,8 @@
+//User types
+export const WEB = "web_user";
+export const MOBILE = "mobile_user";
+export const MOBILE_PACKAGE = "com.lumination.leadmeclassroom_companion";
+
 //General controls
 
 export const ENDSESSION = "end_session";
@@ -22,3 +27,6 @@ export const UNMUTETAB = "unmute_tab";
 export const SCREENCONTROL = "screenControl";
 export const BLOCK = "block";
 export const UNBLOCK = "unblock";
+
+//App controls
+export const FORCEACTIVEAPP = "force_active_app";

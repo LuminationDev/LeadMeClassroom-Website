@@ -5,7 +5,7 @@ import {
     getAuth,
     signOut
 } from '@firebase/auth'
-import Follower from "../models/_follower";
+import WebFollower from "../models/Followers/_webFollower";
 
 
 
@@ -16,7 +16,7 @@ export let usePopupStore = defineStore("popup", {
         return {
             view: "loading",
             username: null,
-            follower: new Follower(),
+            follower: new WebFollower(),
             classCode: "",
             error: "",
             name: "",

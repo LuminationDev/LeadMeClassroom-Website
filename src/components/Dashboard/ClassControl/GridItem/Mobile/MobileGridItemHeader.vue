@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { defineProps, PropType } from "vue";
-import { Follower } from "../../../../models";
-import Tooltip from "../../../Buttons/Tooltip.vue";
+import { MobileFollower } from "../../../../../models";
+import Tooltip from "../../../../Buttons/Tooltip.vue";
 
 defineEmits<{
   (e: 'update', value: boolean): void
@@ -10,8 +10,8 @@ defineEmits<{
 }>()
 
 defineProps({
-  follower: {
-    type: Object as PropType<Follower>,
+  mobileFollower: {
+    type: Object as PropType<MobileFollower>,
     required: true,
   },
   controls: {
@@ -37,7 +37,7 @@ defineProps({
         name="test"
         type="checkbox"
         class="h-5 w-5 mx-2 cursor-pointer"
-        :disabled="follower.disconnected"
+        :disabled="mobileFollower.disconnected"
         @input="$emit('update', $event.target.checked)"
     >
 
@@ -45,11 +45,11 @@ defineProps({
     <label for="test" class="text-sm" :class="{
           'mr-3 text-sm overflow-hidden whitespace-nowrap text-ellipsis flex place-items-center': true,
           'ml-2.5': controls,
-          'text-gray-400': follower.disconnected,
-          'text-black': !follower.disconnected
+          'text-gray-400': mobileFollower.disconnected,
+          'text-black': !mobileFollower.disconnected
         }">
 
-      <span v-if="follower.offTask" class="has-tooltip">
+      <span v-if="mobileFollower.offTask" class="has-tooltip">
         <Tooltip :tip="'Student off task'" :toolTipMargin="'-ml-1'" :arrow-margin="'ml-1'" />
         <img
             v-on:click="$emit('studentDetails')"
@@ -60,12 +60,12 @@ defineProps({
       </span>
 
       <span class="overflow-ellipsis whitespace-nowrap overflow-hidden">
-        {{ follower.name }}
+        {{ mobileFollower.name }}
       </span>
     </label>
 
 
-    <div v-if="controls && !follower.disconnected" class="mr-2">
+    <div v-if="controls && !mobileFollower.disconnected" class="mr-2">
       <Transition name="fade" mode="out-in">
         <!--Options screen & Remove screen-->
         <img

@@ -1,11 +1,9 @@
 <script setup lang="ts">
 import {defineProps, PropType, ref} from 'vue'
-import { Follower } from "../../../../models";
-import StudentGridItemFooter from "./StudentGridItemFooter.vue";
-import StudentGridItemContent from "./StudentGridItemContent.vue";
-import StudentGridItemHeader from "./StudentGridItemHeader.vue";
-import { useDashboardStore } from "../../../../stores/dashboardStore";
-const dashboardPinia = useDashboardStore();
+import { MobileFollower } from "../../../../../models";
+import MobileGridItemFooter from "./MobileGridItemFooter.vue";
+import MobileGridItemContent from "./MobileGridItemContent.vue";
+import MobileGridItemHeader from "./MobileGridItemHeader.vue";
 
 const emit = defineEmits<{
   (e: 'update', value: boolean): void
@@ -25,8 +23,8 @@ const renaming = ref(false);
 const name = ref("");
 
 defineProps({
-  follower: {
-    type: Object as PropType<Follower>,
+  mobileFollower: {
+    type: Object as PropType<MobileFollower>,
     required: true,
   },
   controls: {
@@ -37,35 +35,35 @@ defineProps({
 });
 
 /**
- * Opens the
+ * Opens the details modal which contains the listed tabs of a student.
  */
-const detailsRef = ref<InstanceType<typeof StudentGridItemFooter> | null>(null)
+const detailsRef = ref<InstanceType<typeof MobileGridItemFooter> | null>(null)
 function openDetails() {
   detailsRef.value?.openDetailsModal();
 }
 </script>
 
 <template>
-  <div class="w-48 transition-all duration-500 ease-in-out" :class="removing ? 'opacity-0' : ''" :id="follower.getUniqueId()">
+  <div class="w-48 transition-all duration-500 ease-in-out" :class="removing ? 'opacity-0' : ''" :id="mobileFollower.getUniqueId()">
     <div class="h-[120px] flex flex-col bg-gray-active-student border-2 border-navy-side-menu rounded-t-sm">
-      <StudentGridItemHeader
+      <MobileGridItemHeader
           @update="checked"
-          :follower="follower"
+          :mobileFollower="mobileFollower"
           :controls="controls"
           v-model:screenType="screenType"
           @studentDetails="openDetails" />
 
-      <StudentGridItemContent
-          :follower="follower"
+      <MobileGridItemContent
+          :mobileFollower="mobileFollower"
           :controls="controls"
           v-model:name="name"
           v-model:renaming="renaming"
           v-model:screenType="screenType" />
     </div>
 
-    <StudentGridItemFooter
+    <MobileGridItemFooter
         ref="detailsRef"
-        :follower="follower"
+        :mobileFollower="mobileFollower"
         :controls="controls"
         :name="name"
         :renaming="renaming"

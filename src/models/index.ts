@@ -1,5 +1,7 @@
 import Leader from "./_leader";
-import Follower from "./_follower";
+import WebFollower from "./Followers/_webFollower";
+import MobileFollower from "./Followers/_mobileFollower";
 import Tab from "./_tab";
+import Application from "./_application";
 
-export { Leader, Follower, Tab };
+export { Leader, WebFollower, MobileFollower, Tab, Application };
