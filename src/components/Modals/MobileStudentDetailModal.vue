@@ -7,7 +7,7 @@ import HoverButton from "../Buttons/HoverButton.vue";
 import Tooltip from "../Buttons/Tooltip.vue";
 import {Application} from "@/models";
 import { useDashboardStore } from "@/stores/dashboardStore";
-let dashboardPinia = useDashboardStore();
+const dashboardPinia = useDashboardStore();
 
 defineEmits<{
   (e: 'screenMonitor'): void
@@ -41,6 +41,8 @@ function openModal() {
 //Track the currently selected application
 const selectedApplicationId = ref(props.mobileFollower.currentApplication);
 const selectedApplication = computed(() => {
+  console.log("CHANGING");
+
   if(props.mobileFollower.applications.length === 0) {
     selectedApplicationId.value = "-1";
     return null;
@@ -59,6 +61,7 @@ const selectedApplication = computed(() => {
 const applicationList = ref(props.mobileFollower.applications);
 
 watch(() => props.mobileFollower.applications, (newValue, oldValue) => {
+  console.log("CHANGING");
   applicationList.value = newValue;
 });
 
@@ -79,9 +82,10 @@ function returnFollowerApplication() {
   );
 }
 
+//TODO change for mobile usage
 function muteOrUnmuteApplication(ApplicationId: string, action: boolean) {
   console.log('heard a mute request', action)
-  //dashboardPinia.requestUpdateMutingTab(props.mobileFollower.getUniqueId(), ApplicationId, action)
+  dashboardPinia.requestUpdateMutingTab(props.mobileFollower.getUniqueId(), ApplicationId, action)
 }
 
 function changeActiveApplication(application: Application) {
@@ -199,7 +203,7 @@ const checkMedia = (website: string) => {
           </div>
 
           <transition-group v-else name="list-complete" tag="div">
-            <div v-for="(application, index) in applicationList" v-bind:key="application" class="py-1" :id="application.id">
+            <div v-for="(application) in applicationList" v-bind:key="application" class="py-1" :id="application.id">
 
               <!--Individual applications-->
               <div class="flex flex-row w-full px-5 items-center justify-between">

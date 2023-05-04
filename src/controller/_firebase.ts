@@ -174,26 +174,26 @@ class Firebase {
         //Listener for Web Followers
         const followerRef = ref(this.db, `/${this.webFollowerRef}/${classCode}`);
         onChildAdded(followerRef, (snapshot) => {
-            webFollowerAdded(snapshot.val(), snapshot.key!)
+            webFollowerAdded(snapshot.key!, snapshot.val())
             const name = snapshot.val().name;
-            const id = snapshot.key;
+            const UUID = snapshot.key;
 
-            const individualRef = ref(this.db, `/${this.webFollowerRef}/${classCode}/${id}`);
+            const individualRef = ref(this.db, `/${this.webFollowerRef}/${classCode}/${UUID}`);
             onChildChanged(individualRef, (snapshot) => {
                 if (snapshot.key === 'screenshot') {
-                    const screenshotRef = storageRef(this.storage, `${this.webFollowerRef}/${classCode}/${id}`);
+                    const screenshotRef = storageRef(this.storage, `${this.webFollowerRef}/${classCode}/${UUID}`);
                     getDownloadURL(screenshotRef).then(url => {
-                        followerResponse(url, name, id!, snapshot.key!);
+                        followerResponse(UUID!, url, name, snapshot.key!);
                     })
                 } else {
-                    followerResponse(snapshot.val(), name, id!, snapshot.key!);
+                    followerResponse(UUID!, snapshot.val(), name, snapshot.key!);
                 }
             });
 
             //Add ice listeners
-            const iceRef = ref(this.db, `ice/${classCode}/${id}`);
+            const iceRef = ref(this.db, `ice/${classCode}/${UUID}`);
             onChildAdded(iceRef, (snapshot) => {
-                readIceCandidate(snapshot, id!)
+                readIceCandidate(UUID!, snapshot)
             });
         });
 
@@ -205,13 +205,13 @@ class Firebase {
         const mobileFollowerRef = ref(this.db, `/${this.mobileFollowerRef}/${classCode}`);
         onChildAdded(mobileFollowerRef, (snapshot) => {
 
-            mobileFollowerAdded(snapshot.val(), snapshot.key!)
-            const id = snapshot.key
+            mobileFollowerAdded(snapshot.key!, snapshot.val())
+            const UUID = snapshot.key
 
-            const individualRef = ref(this.db, `/${this.mobileFollowerRef}/${classCode}/${id}`);
+            const individualRef = ref(this.db, `/${this.mobileFollowerRef}/${classCode}/${UUID}`);
             onChildChanged(individualRef, (snapshot) => {
                 //Listen for currentPackage changes?
-                updateActiveApplication(snapshot.val(), id!);
+                updateActiveApplication(UUID!, snapshot.val());
             });
         });
 
@@ -231,16 +231,16 @@ class Firebase {
         const tabRef = ref(this.db, `/tabs/${classCode}`);
 
         onChildAdded(tabRef, (snapshot) => {
-            followerTabsAdded(snapshot.val(), snapshot.key!);
-            const followerId = snapshot.key;
+            followerTabsAdded(snapshot.key!, snapshot.val());
+            const UUID = snapshot.key;
 
-            const individualTabRef = ref(this.db, `/tabs/${classCode}/${followerId}`);
+            const individualTabRef = ref(this.db, `/tabs/${classCode}/${UUID}`);
             onChildChanged(individualTabRef, (snapshot) => {
-                followerTabChanged(snapshot.val(), followerId!, snapshot.key!);
+                followerTabChanged(UUID!, snapshot.val(), snapshot.key!);
             });
 
             onChildRemoved(individualTabRef, (snapshot) => {
-                followerTabRemoved(followerId!, snapshot.key!);
+                followerTabRemoved(UUID!, snapshot.key!);
             });
         });
     }
@@ -256,7 +256,7 @@ class Firebase {
         const followerRef = ref(this.db, `/${this.webFollowerRef}/${classCode}`);
         get(followerRef).then((snapshot) => {
             snapshot.forEach(entry => {
-                followerResponse(entry.val().screenshot, entry.val().name, entry.key!, null);
+                followerResponse(entry.key!, entry.val().screenshot, entry.val().name, null);
             });
         });
     }
@@ -264,13 +264,13 @@ class Firebase {
     /**
      * Update a follower's data entry in firebase. Only the fields present in the details object will be updated.
      * @param classCode A string representing the class a user is registered to.
-     * @param uuid A string representing the unique ID of a follower.
+     * @param UUID A string representing the unique ID of a follower.
      * @param details An object holding the fields to update on the follower.
      * @param followerType
      */
-    updateFollower = (classCode: string, uuid: string, details: object, followerType: string) => {
+    updateFollower = (classCode: string, UUID: string, details: object, followerType: string) => {
         const followerTypeRef = followerType === REQUESTS.WEB ? this.webFollowerRef : this.mobileFollowerRef;
-        const followerRef = ref(this.db, `/${followerTypeRef}/${classCode}/${uuid}`);
+        const followerRef = ref(this.db, `/${followerTypeRef}/${classCode}/${UUID}`);
         update(followerRef, details).then(() => console.log("Follower updated"));
     }
 
@@ -289,13 +289,13 @@ class Firebase {
     /**
      * Sent from a leader, push an action request to a particular follower. This could be a video_permission, muteTab etc.
      * @param classCode A string representing the class a user is registered to.
-     * @param uuid A string representing the unique ID of a follower.
+     * @param UUID A string representing the unique ID of a follower.
      * @param followerType A string representing what type of follower to message, Web or Mobile.
      * @param {*} type
      */
-    requestIndividualAction = async (classCode: string, uuid: string, type: object, followerType: string) => {
+    requestIndividualAction = async (classCode: string, UUID: string, type: object, followerType: string) => {
         const followerRef = followerType === REQUESTS.WEB ? this.webFollowerRef : this.mobileFollowerRef;
-        const msg = push(ref(this.db, `${followerRef}/${classCode}/${uuid}/request`), type);
+        const msg = push(ref(this.db, `${followerRef}/${classCode}/${UUID}/request`), type);
         await remove(msg);
     }
 

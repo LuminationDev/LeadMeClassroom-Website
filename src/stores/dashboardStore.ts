@@ -100,7 +100,7 @@ export const useDashboardStore = defineStore("dashboard", {
             this.leader.setClassCode(activeCode);
 
             //Set up the streaming connection
-            this.webRTCPinia.setConnectionDetails(this.sendIceCandidates, activeCode, "leader");
+            this.webRTCPinia.setConnectionDetails(this.sendIceCandidates, activeCode);
 
             this.firebase.followerListeners(
                 activeCode,
@@ -201,7 +201,7 @@ export const useDashboardStore = defineStore("dashboard", {
             this.webFollowers = [];
             this.mobileFollowers = [];
 
-            // todo - store current class code
+            // todo - remove the stored current class code
             await this.clearTasks();
 
             await new Promise(res => setTimeout(res, 200));
@@ -261,36 +261,36 @@ export const useDashboardStore = defineStore("dashboard", {
 
         /**
          * Read the latest ice candidates and send them through to the WebRTC store for further action.
-         * @param snapshot A firebase snapshot containing the ice information.
          * @param UUID The unique ID (key) of the student connection in the WebRTC connection objects
+         * @param snapshot A firebase snapshot containing the ice information.
          */
-        readIceCandidate(snapshot: any, UUID: string) {
-            this.webRTCPinia.readIceCandidate(snapshot, UUID)
+        readIceCandidate(UUID: string, snapshot: any) {
+            this.webRTCPinia.readIceCandidate(UUID, snapshot)
         },
 
         /**
          * Notify the leader a follower has responded to a request
+         * @param UUID
          * @param response
          * @param name
-         * @param id
          * @param key
          */
-        followerResponse(response: any, name: string, id: string, key: string|null) {
+        followerResponse(UUID: string, response: any, name: string, key: string|null) {
             if (key === "screenshot") {
                 toDataURL(response).then((result) => {
                     if (typeof result === "string") {
-                        this.updateFollowerScreenshot(result, name, id)
-                        void this.updateFollowerCaptureFailed(id, false)
+                        this.updateFollowerScreenshot(UUID, result)
+                        void this.updateFollowerCaptureFailed(UUID, false)
                     }
                 })
                 return
             }
             switch (response.type) {
                 case REQUESTS.MONITORPERMISSION:
-                    void this.monitorRequestResponse(response.message, id);
+                    void this.monitorRequestResponse(UUID, response.message);
                     break;
                 case REQUESTS.CAPTURE_FAILED:
-                    void this.updateFollowerCaptureFailed(id, true)
+                    void this.updateFollowerCaptureFailed(UUID, true)
                     break;
                 default:
                     console.log(response);
@@ -300,11 +300,11 @@ export const useDashboardStore = defineStore("dashboard", {
 
         /**
          * Update the dashboard store with the new web follower object that has been entered in firebase.
+         * @param UUID
          * @param snapshot
-         * @param id
          */
-        webFollowerAdded(snapshot: any, id: string) {
-            const follower = new WebFollower(this.classCode, snapshot.name, id)
+        webFollowerAdded(UUID: string, snapshot: any) {
+            const follower = new WebFollower(this.classCode, snapshot.name, UUID)
             follower.monitoring = false
             follower.muted = false
             follower.muteAll = false
@@ -312,48 +312,48 @@ export const useDashboardStore = defineStore("dashboard", {
             if (snapshot.screenshot) {
                 toDataURL(snapshot.screenshot).then((result) => {
                     if (typeof result === "string") {
-                        this.updateFollowerScreenshot(result, snapshot.name, id)
+                        this.updateFollowerScreenshot(UUID, result)
                     }
                 })
             }
-            const index = this.webFollowers.findIndex(element => element.getUniqueId() === id)
+            const index = this.webFollowers.findIndex(element => element.getUniqueId() === UUID)
             if (index === -1) {
                 this.webFollowers.push(follower)
             } else {
                 this.webFollowers.splice(index, 1, follower)
             }
 
-            this.webRTCPinia.createNewConnection(id);
+            this.webRTCPinia.createNewConnection(UUID);
         },
 
         /**
          * Notify the leader a follower has responded to a request
+         * @param UUID
          * @param response
-         * @param followerId
          * @param key
          */
-        followerTabChanged(response: any, followerId: string, key: string) {
+        followerTabChanged(UUID: string, response: any, key: string) {
             const newTab = new Tab(key, response.index, response.windowId, response.name, response.favicon, response.url, response.lastActivated)
             newTab.audible = response.audible ?? false
             newTab.muted = response.muted ?? false
-            this.updateFollowerTab(newTab, followerId)
+            this.updateFollowerTab(UUID, newTab)
         },
 
         /**
          * Notify the leader a follower has responded to a request
-         * @param followerId
+         * @param UUID
          * @param key
          */
-        followerTabRemoved(followerId: string, key: string) {
-            this.removeFollowerTab(followerId, key)
+        followerTabRemoved(UUID: string, key: string) {
+            this.removeFollowerTab(UUID, key)
         },
 
         /**
          * Notify the leader a follower has responded to a request
+         * @param UUID
          * @param response
-         * @param followerId
          */
-        followerTabsAdded(response: any, followerId: string) {
+        followerTabsAdded(UUID: string, response: any) {
             const tabs: Array<Tab> = []
             Object.values(response).forEach((tab: any) => {
                 if(tab.name === undefined && tab.id === undefined) { return; }
@@ -364,17 +364,16 @@ export const useDashboardStore = defineStore("dashboard", {
                 newTab.muted = tab.muted ?? false
                 tabs.push(newTab)
             })
-            this.setFollowerTabs(tabs, followerId)
+            this.setFollowerTabs(UUID, tabs)
         },
 
         /**
          * Add new follower or update an existing one
+         * @param UUID
          * @param capture
-         * @param name
-         * @param id
          */
-        updateFollowerScreenshot(capture: string, name: string, id: string) {
-            const follower = this.webFollowers.find(element => element.getUniqueId() === id)
+        updateFollowerScreenshot(UUID: string, capture: string) {
+            const follower = this.findFollowerObject(UUID, REQUESTS.WEB) as WebFollower;
             if (follower) {
                 follower.imageBase64 = capture
             }
@@ -382,11 +381,11 @@ export const useDashboardStore = defineStore("dashboard", {
 
         /**
          * Add new follower or update an existing one
-         * @param id
+         * @param UUID
          * @param value
          */
-        updateFollowerCaptureFailed(id: string, value: boolean) {
-            const follower = this.webFollowers.find(element => element.getUniqueId() === id)
+        updateFollowerCaptureFailed(UUID: string, value: boolean) {
+            const follower = this.findFollowerObject(UUID, REQUESTS.WEB) as WebFollower;
             if (follower) {
                 follower.collectingScreenshotFailed = value
             }
@@ -394,11 +393,11 @@ export const useDashboardStore = defineStore("dashboard", {
 
         /**
          * Add new follower or update an existing one
+         * @param UUID
          * @param tab
-         * @param id
          */
-        updateFollowerTab(tab: Tab, id: string) {
-            const follower = this.webFollowers.find(element => element.getUniqueId() === id)
+        updateFollowerTab(UUID: string, tab: Tab) {
+            const follower = this.webFollowers.find(element => element.getUniqueId() === UUID)
             if (follower) {
                 follower.updateIndividualTab(tab.id, tab)
             }
@@ -406,11 +405,11 @@ export const useDashboardStore = defineStore("dashboard", {
 
         /**
          * Add new follower or update an existing one
-         * @param followerId
+         * @param UUID
          * @param id
          */
-        removeFollowerTab(followerId: string, id: string) {
-            const follower = this.webFollowers.find(element => element.getUniqueId() === followerId)
+        removeFollowerTab(UUID: string, id: string) {
+            const follower = this.webFollowers.find(element => element.getUniqueId() === UUID)
             if (follower) {
                 follower.removeTab(id)
             }
@@ -418,11 +417,12 @@ export const useDashboardStore = defineStore("dashboard", {
 
         /**
          * Add new follower or update an existing one
-         * @param followerId
+         * @param UUID
          * @param id
          */
-        requestDeleteFollowerTab(followerId: string, id: string) {
-            const follower = this.webFollowers.find(element => element.getUniqueId() === followerId)
+        requestDeleteFollowerTab(UUID: string, id: string) {
+            const follower = this.webFollowers.find(element => element.getUniqueId() === UUID)
+
             if (follower) {
                 const action = { type: REQUESTS.DELETE_TAB, tabId: id };
                 void this.firebase.requestIndividualAction(this.classCode, follower.getUniqueId(), action, REQUESTS.WEB);
@@ -435,12 +435,13 @@ export const useDashboardStore = defineStore("dashboard", {
 
         /**
          * Add new follower or update an existing one
-         * @param followerId
+         * @param UUID
          * @param tabId
          * @param newValue
          */
-        requestUpdateMutingTab(followerId: string, tabId: string, newValue: boolean) {
-            const follower = this.webFollowers.find(element => element.getUniqueId() === followerId)
+        requestUpdateMutingTab(UUID: string, tabId: string, newValue: boolean) {
+            const follower = this.webFollowers.find(element => element.getUniqueId() === UUID)
+
             if (follower) {
                 const action = { type: newValue ? REQUESTS.MUTETAB : REQUESTS.UNMUTETAB, tabId };
                 console.log(action)
@@ -454,11 +455,11 @@ export const useDashboardStore = defineStore("dashboard", {
 
         /**
          * Add new follower or update an existing one
+         * @param UUID
          * @param tabs
-         * @param id
          */
-        setFollowerTabs(tabs: Tab[], id: string) {
-            const follower = this.webFollowers.find(element => element.getUniqueId() === id)
+        setFollowerTabs(UUID: string, tabs: Tab[]) {
+            const follower = this.webFollowers.find(element => element.getUniqueId() === UUID)
             if (follower) {
                 follower.tabs = tabs
             }
@@ -466,17 +467,17 @@ export const useDashboardStore = defineStore("dashboard", {
 
         /**
          * Notify the leader a follower has responded to the monitor request
+         * @param UUID
          * @param message
-         * @param id
          */
-        async monitorRequestResponse(message: string, id: string) {
-            const follower = this.webFollowers.find(element => element.getUniqueId() === id)
+        async monitorRequestResponse(UUID: string, message: string) {
+            const follower = this.webFollowers.find(element => element.getUniqueId() === UUID)
             if (!follower) { return }
 
             switch(message){
                 case "granted":
                     follower.permission = "connecting";
-                    await this.webRTCPinia.startFollowerStream(id);
+                    await this.webRTCPinia.startFollowerStream(UUID);
 
                     //Wait while the webRTC connections are established in the background
                     setTimeout(() => {
@@ -529,14 +530,14 @@ export const useDashboardStore = defineStore("dashboard", {
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         /**
          * Update the dashboard store with the new mobile follower object that has been entered in firebase.
+         * @param UUID
          * @param snapshot
-         * @param id
          */
-        mobileFollowerAdded(snapshot: any, id: string) {
-            const follower = new MobileFollower(this.classCode, snapshot.name, snapshot.applications, id)
+        mobileFollowerAdded(UUID: string, snapshot: any) {
+            const follower = new MobileFollower(this.classCode, snapshot.name, snapshot.applications, UUID)
             follower.muted = false
 
-            const index = this.mobileFollowers.findIndex(element => element.getUniqueId() === id)
+            const index = this.mobileFollowers.findIndex(element => element.getUniqueId() === UUID)
             if (index === -1) {
                 this.mobileFollowers.push(follower)
             } else {
@@ -546,10 +547,10 @@ export const useDashboardStore = defineStore("dashboard", {
 
         /**
          * Update a mobile followers current application.
-         * @param packageName A string representing the package name of the active application.
          * @param UUID A string representing the unique ID of a student.
+         * @param packageName A string representing the package name of the active application.
          */
-        updateActiveApplication(packageName: string, UUID: string) {
+        updateActiveApplication(UUID: string, packageName: string) {
             const index = this.findFollowerIndex(UUID, REQUESTS.MOBILE);
             if (index !== -1) {
                 this.mobileFollowers[index].setCurrentApplication(packageName);

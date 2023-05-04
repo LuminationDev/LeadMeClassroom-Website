@@ -10,12 +10,12 @@ const configuration = {
     ]
 }
 
-interface IConnectionDetails {
+export interface IConnectionDetails {
     classCode: string,
     uniqueId: string
 }
 
-interface IRTCConnection {
+export interface IRTCConnection {
     peerConnection: RTCPeerConnection;
     stream: MediaStream;
 }
@@ -25,7 +25,7 @@ interface IRTCConnection {
 type callbackType = (senderId: string, UUID: string, data: string) => void;
 let callbackFunction: callbackType;
 
-export let useWebRTCStore = defineStore("webRTC", {
+export const useWebRTCStore = defineStore("webRTC", {
     state: () => {
         return {
             servers: [{'urls': 'stun:stun.services.mozilla.com'}, {'urls': 'stun:stun.l.google.com:19302'}],
@@ -41,9 +41,8 @@ export let useWebRTCStore = defineStore("webRTC", {
          * Add a new connection to the connections object
          * @param callback
          * @param classCode
-         * @param UUID
          */
-        setConnectionDetails(callback: callbackType, classCode: string, UUID: string) {
+        setConnectionDetails(callback: callbackType, classCode: string) {
             callbackFunction = callback;
 
             this.connectionDetails = {
@@ -54,18 +53,18 @@ export let useWebRTCStore = defineStore("webRTC", {
 
         /**
          * Read the ice specific part of a followers database entry.
-         * @param {*} data An Ice Candidate object
          * @param UUID
+         * @param {*} data An Ice Candidate object
          * @returns Null if there is no new data.
          */
-        readIceCandidate(data: any, UUID: string) {
+        readIceCandidate(UUID: string, data: any) {
             const connection = this.connections.get(UUID);
             if(connection == null) { return; }
             if(data.val() == null) { return; }
             if(data.val().message === "awaiting connection") { return; }
 
-            let msg = JSON.parse(data.val().message);
-            let sender = data.val().sender;
+            const msg = JSON.parse(data.val().message);
+            const sender = data.val().sender;
             if (sender !== this.connectionDetails.uniqueId) {
                 if (msg.ice !== undefined) {
                     void connection.peerConnection.addIceCandidate(new RTCIceCandidate(msg.ice));
@@ -99,7 +98,7 @@ export let useWebRTCStore = defineStore("webRTC", {
          * Create a new peer connection and await ice candidates
          */
         createNewPeerConnection(UUID: string) {
-            let peerConnection = new RTCPeerConnection(configuration);
+            const peerConnection = new RTCPeerConnection(configuration);
             peerConnection.onicecandidate = (event => event.candidate ? callbackFunction(this.connectionDetails.uniqueId, UUID, JSON.stringify({ 'ice': event.candidate })) : console.log("Sent All Ice"));
             return peerConnection;
         },

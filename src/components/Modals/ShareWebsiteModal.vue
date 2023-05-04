@@ -41,11 +41,11 @@ async function validateAndSubmit() {
   submit();
 }
 
-function handleFollowerSelection(followerId: string, value: boolean) {
-  let index = followersSelected.value.findIndex(element => element === followerId)
+function handleFollowerSelection(UUID: string, value: boolean) {
+  let index = followersSelected.value.findIndex(element => element === UUID)
   if (value) {
     if (index === -1) {
-      followersSelected.value.splice(0, 0, followerId)
+      followersSelected.value.splice(0, 0, UUID)
     }
   } else {
     if (index !== -1) {

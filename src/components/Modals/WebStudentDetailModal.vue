@@ -4,9 +4,9 @@ import { computed, defineProps, PropType, ref } from "vue";
 import WebFollower from "../../models/Followers/_webFollower";
 import HoverButton from "../Buttons/HoverButton.vue";
 import Tooltip from "../Buttons/Tooltip.vue";
-import { useDashboardStore } from "../../stores/dashboardStore";
 import * as REQUESTS from "@/constants/_requests";
-let dashboardPinia = useDashboardStore();
+import { useDashboardStore } from "@/stores/dashboardStore";
+const dashboardPinia = useDashboardStore();
 
 defineEmits<{
   (e: 'screenMonitor'): void
@@ -184,7 +184,7 @@ const checkWebsite = (website: string) => {
           </div>
 
           <transition-group v-else name="list-complete" tag="div">
-            <div v-for="(tab, index) in webFollower.tabs" v-bind:key="tab" class="py-1" :id="tab.id">
+            <div v-for="(tab) in webFollower.tabs" v-bind:key="tab" class="py-1" :id="tab.id">
 
               <!--Individual tabs-->
               <div class="flex flex-row w-full px-5 items-center justify-between">
