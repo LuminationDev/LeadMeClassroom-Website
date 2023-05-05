@@ -1,10 +1,11 @@
-import { defineStore } from "pinia";
+import {defineStore} from "pinia";
 import * as REQUESTS from "../constants/_requests.js";
 import Firebase from '../controller/_firebase';
-import { WebFollower, MobileFollower, Leader, Tab } from '../models';
-import { useWebRTCStore } from "./webRTCStore";
-import { getAuth, sendPasswordResetEmail } from "@firebase/auth";
-import type { User } from "@firebase/auth";
+import {Leader, MobileFollower, Tab, WebFollower} from '../models';
+import {useWebRTCStore} from "./webRTCStore";
+import type {User} from "@firebase/auth";
+import {getAuth, sendPasswordResetEmail} from "@firebase/auth";
+import type {Application} from "@/models";
 
 interface userDetails {
     name: string,
@@ -43,12 +44,13 @@ export const useDashboardStore = defineStore("dashboard", {
             leaderName: leaderDetails.name,
             marketing: <string|null>leaderDetails.marketing,
             webFollowers: <WebFollower[]>([]),
+            webTasks: <String[]>([]),
             mobileFollowers: <MobileFollower[]>([]),
+            mobileTasks: <String[]>([]),
             webLink: "",
             leader: new Leader(leaderDetails.name),
             webRTCPinia: useWebRTCStore(),
-            user: <User|null>null,
-            tasks: <String[]>([])
+            user: <User|null>null
         }
     },
 
@@ -132,9 +134,12 @@ export const useDashboardStore = defineStore("dashboard", {
          * @param followerType
          */
         findFollowerObject(ID: string, followerType: string): WebFollower | MobileFollower | undefined {
-            return followerType === REQUESTS.WEB
-                ? this.webFollowers.find(element => element.getUniqueId() === ID)
-                : this.mobileFollowers.find(element => element.getUniqueId() === ID);
+            if (followerType === REQUESTS.WEB) {
+                return this.webFollowers.find(element => element.getUniqueId() === ID) as WebFollower;
+            } else {
+                // @ts-ignore
+                return this.mobileFollowers.find(element => element.getUniqueId() === ID) as MobileFollower;
+            }
         },
 
         /**
@@ -397,7 +402,7 @@ export const useDashboardStore = defineStore("dashboard", {
          * @param tab
          */
         updateFollowerTab(UUID: string, tab: Tab) {
-            const follower = this.webFollowers.find(element => element.getUniqueId() === UUID)
+            const follower = this.findFollowerObject(UUID, REQUESTS.WEB) as WebFollower;
             if (follower) {
                 follower.updateIndividualTab(tab.id, tab)
             }
@@ -409,7 +414,7 @@ export const useDashboardStore = defineStore("dashboard", {
          * @param id
          */
         removeFollowerTab(UUID: string, id: string) {
-            const follower = this.webFollowers.find(element => element.getUniqueId() === UUID)
+            const follower = this.findFollowerObject(UUID, REQUESTS.WEB) as WebFollower;
             if (follower) {
                 follower.removeTab(id)
             }
@@ -421,7 +426,7 @@ export const useDashboardStore = defineStore("dashboard", {
          * @param id
          */
         requestDeleteFollowerTab(UUID: string, id: string) {
-            const follower = this.webFollowers.find(element => element.getUniqueId() === UUID)
+            const follower = this.findFollowerObject(UUID, REQUESTS.WEB) as WebFollower;
 
             if (follower) {
                 const action = { type: REQUESTS.DELETE_TAB, tabId: id };
@@ -440,7 +445,7 @@ export const useDashboardStore = defineStore("dashboard", {
          * @param newValue
          */
         requestUpdateMutingTab(UUID: string, tabId: string, newValue: boolean) {
-            const follower = this.webFollowers.find(element => element.getUniqueId() === UUID)
+            const follower = this.findFollowerObject(UUID, REQUESTS.WEB) as WebFollower;
 
             if (follower) {
                 const action = { type: newValue ? REQUESTS.MUTETAB : REQUESTS.UNMUTETAB, tabId };
@@ -459,7 +464,7 @@ export const useDashboardStore = defineStore("dashboard", {
          * @param tabs
          */
         setFollowerTabs(UUID: string, tabs: Tab[]) {
-            const follower = this.webFollowers.find(element => element.getUniqueId() === UUID)
+            const follower = this.findFollowerObject(UUID, REQUESTS.WEB) as WebFollower;
             if (follower) {
                 follower.tabs = tabs
             }
@@ -471,7 +476,7 @@ export const useDashboardStore = defineStore("dashboard", {
          * @param message
          */
         async monitorRequestResponse(UUID: string, message: string) {
-            const follower = this.webFollowers.find(element => element.getUniqueId() === UUID)
+            const follower = this.findFollowerObject(UUID, REQUESTS.WEB) as WebFollower;
             if (!follower) { return }
 
             switch(message){
@@ -514,15 +519,16 @@ export const useDashboardStore = defineStore("dashboard", {
         /**
          * Update or create the task array within local storage.
          */
-        async updateTasks(task: string) {
-            this.tasks.push(task);
+        async updateTasks(task: string, taskType: string) {
+            taskType === "web" ? this.webTasks.push(task) : this.mobileTasks.push(task);
         },
 
         /**
          * Clear the current tasks from the local storage
          */
         clearTasks() {
-            this.tasks = [];
+            this.webTasks = [];
+            this.mobileTasks = [];
         },
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -537,10 +543,12 @@ export const useDashboardStore = defineStore("dashboard", {
             const follower = new MobileFollower(this.classCode, snapshot.name, snapshot.applications, UUID)
             follower.muted = false
 
-            const index = this.mobileFollowers.findIndex(element => element.getUniqueId() === UUID)
+            const index = this.findFollowerIndex(UUID, REQUESTS.MOBILE);
             if (index === -1) {
+                // @ts-ignore
                 this.mobileFollowers.push(follower)
             } else {
+                // @ts-ignore
                 this.mobileFollowers.splice(index, 1, follower)
             }
         },
@@ -555,6 +563,17 @@ export const useDashboardStore = defineStore("dashboard", {
             if (index !== -1) {
                 this.mobileFollowers[index].setCurrentApplication(packageName);
             }
+        },
+
+        /**
+         * Return an array of all the unique applications stored on mobile followers devices.
+         */
+        collectUniqueApplications(): Application[] | undefined {
+            const uniqueApplications = new Set<Application>(
+                this.mobileFollowers.flatMap(follower => follower.applications)
+            );
+
+            return Array.from(uniqueApplications);
         },
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////

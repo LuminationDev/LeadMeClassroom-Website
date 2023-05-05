@@ -4,7 +4,7 @@ import ScreenMonitorModal from "../../../../Modals/ScreenMonitorModal.vue";
 import * as REQUESTS from "../../../../../constants/_requests";
 import { defineProps, PropType, ref } from "vue";
 import {WebFollower} from "../../../../../models";
-import { useDashboardStore } from "../../../../../stores/dashboardStore";
+import { useDashboardStore } from "@/stores/dashboardStore";
 const dashboardPinia = useDashboardStore();
 
 const emit = defineEmits<{

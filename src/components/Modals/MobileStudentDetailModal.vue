@@ -1,17 +1,13 @@
 <script setup lang="ts">
 import Modal from "./Modal.vue";
 import * as REQUESTS from "../../constants/_requests";
-import {computed, defineProps, PropType, ref, watch} from "vue";
+import {computed, defineProps, PropType, ref } from "vue";
 import MobileFollower from "../../models/Followers/_mobileFollower";
 import HoverButton from "../Buttons/HoverButton.vue";
 import Tooltip from "../Buttons/Tooltip.vue";
 import {Application} from "@/models";
 import { useDashboardStore } from "@/stores/dashboardStore";
 const dashboardPinia = useDashboardStore();
-
-defineEmits<{
-  (e: 'screenMonitor'): void
-}>()
 
 const props = defineProps({
   mobileFollower: {
@@ -33,40 +29,34 @@ function openModal() {
   showDetailModal.value = true
 
   if(props.mobileFollower.applications.length > 0) {
-    selectedApplicationId.value = props.mobileFollower.currentApplication;
+    selectedApplicationId.value = props.mobileFollower.currentApplication.value;
   }
 }
 
-//TODO SOMETHING BELOW IS NOT CHANGING THE UI PROPERLY
 //Track the currently selected application
-const selectedApplicationId = ref(props.mobileFollower.currentApplication);
+const selectedApplicationId = ref(REQUESTS.MOBILE_PACKAGE);
 const selectedApplication = computed(() => {
-  console.log("CHANGING");
+  //TODO fix this so mobileFollower.currentApplication is not a ref
+  const packageName = Object.assign(props.mobileFollower.currentApplication);
+  console.log(packageName);
 
-  if(props.mobileFollower.applications.length === 0) {
+  if (props.mobileFollower.applications.length === 0) {
     selectedApplicationId.value = "-1";
     return null;
   }
 
   let application = props.mobileFollower.applications.find(res => res.id === selectedApplicationId.value);
 
-  if(application === undefined) {
+  if (application === undefined) {
     selectedApplicationId.value = props.mobileFollower.applications[0].id;
     return props.mobileFollower.applications[0];
   } else {
     return application;
   }
-})
-
-const applicationList = ref(props.mobileFollower.applications);
-
-watch(() => props.mobileFollower.applications, (newValue, oldValue) => {
-  console.log("CHANGING");
-  applicationList.value = newValue;
 });
 
 const muteTooltip = computed(() => {
-  if(selectedApplication.value === null) { return "Mute"; }
+  if(selectedApplication.value === null || selectedApplication.value === undefined) { return "Mute"; }
 
   return selectedApplication.value.muted ? 'Unmute' : 'Mute'
 });
@@ -82,10 +72,12 @@ function returnFollowerApplication() {
   );
 }
 
-//TODO change for mobile usage
-function muteOrUnmuteApplication(ApplicationId: string, action: boolean) {
-  console.log('heard a mute request', action)
-  dashboardPinia.requestUpdateMutingTab(props.mobileFollower.getUniqueId(), ApplicationId, action)
+function muteOrUnmuteFollower(mute: boolean) {
+  console.log('heard a mute/unmute request', mute)
+  props.mobileFollower.muted = mute;
+
+  const action = { type: REQUESTS.DEVICEAUDIO, action: mute ? REQUESTS.MUTE : REQUESTS.UNMUTE }
+  dashboardPinia.requestIndividualAction(props.mobileFollower.getUniqueId(), action, REQUESTS.MOBILE)
 }
 
 function changeActiveApplication(application: Application) {
@@ -103,16 +95,13 @@ function closeModal() {
 /**
  * Check if the lastActivated website is within the tasks array. The task array is populated when a teacher pushes
  * out a website.
- * @param website A string representing the URL of the currently active website for a follower.
+ * @param packageName A string representing the package name of the currently active application for a follower.
  */
-const checkMedia = (website: string) => {
-  // let tasks = dashboardPinia.tasks;
-  // if(tasks.length === 0) { return; }
-  //
-  // let strict = true; //determine if website needs to be exact or just same hostname
-  //
-  // const { hostname } = new URL(website); //Extract the hostname for non-strict monitoring
-  // return !tasks.some((res) => (strict ? website.includes(res.toString()) : res.includes(hostname)));
+const checkMedia = (packageName: string) => {
+  let tasks = dashboardPinia.mobileTasks;
+  if(tasks.length === 0) { return; }
+
+  return !tasks.some((res) => (packageName.includes(res.toString())));
 }
 </script>
 
@@ -147,19 +136,20 @@ const checkMedia = (website: string) => {
             <div class="has-tooltip">
               <Tooltip :tip="muteTooltip" />
 
-              <img v-if="selectedApplication === null" class="h-5 w-5 mr-2" src="/src/assets/img/studentDetails/student-icon-audible-disabled.svg" alt=""/>
-              <div v-else-if="selectedApplication.muting" class="lds-dual-ring h-5 w-7 mr-2" />
-              <HoverButton class="h-5 w-7" v-else-if="selectedApplication.audible" @click="muteOrUnmuteApplication(selectedApplication.id, !selectedApplication.muted)">
+              <!--TODO this is not fully setup for mobile yet-->
+<!--              <img v-if="selectedApplication === null" class="h-5 w-5 mr-2" src="/src/assets/img/studentDetails/student-icon-audible-disabled.svg" alt=""/>-->
+<!--              <div v-else-if="selectedApplication.muting" class="lds-dual-ring h-5 w-7 mr-2" />-->
+              <HoverButton class="h-5 w-7" @click="muteOrUnmuteFollower(!mobileFollower.muted)">
                 <template v-slot:original>
-                  <img v-if="selectedApplication.muted" src="/src/assets/img/studentDetails/student-icon-muted.svg" alt=""/>
+                  <img v-if="mobileFollower.muted" src="/src/assets/img/studentDetails/student-icon-muted.svg" alt=""/>
                   <img v-else class="h-5 w-5" src="/src/assets/img/studentDetails/student-icon-audible.svg"  alt=""/>
                 </template>
                 <template v-slot:hover>
-                  <img v-if="selectedApplication.muted" src="/src/assets/img/studentDetails/student-icon-muted-hover.svg" alt=""/>
+                  <img v-if="mobileFollower.muted" src="/src/assets/img/studentDetails/student-icon-muted-hover.svg" alt=""/>
                   <img v-else class="h-5 w-5" src="/src/assets/img/studentDetails/student-icon-audible-hover.svg"  alt=""/>
                 </template>
               </HoverButton>
-              <img v-else class="h-5 w-5 mr-2" src="/src/assets/img/studentDetails/student-icon-audible-disabled.svg" alt=""/>
+<!--              <img v-else class="h-5 w-5 mr-2" src="/src/assets/img/studentDetails/student-icon-audible-disabled.svg" alt=""/>-->
             </div>
 
             <!--Application focus control-->
@@ -203,7 +193,7 @@ const checkMedia = (website: string) => {
           </div>
 
           <transition-group v-else name="list-complete" tag="div">
-            <div v-for="(application) in applicationList" v-bind:key="application" class="py-1" :id="application.id">
+            <div v-for="(application) in mobileFollower.applications" v-bind:key="application" class="py-1" :id="application.id">
 
               <!--Individual applications-->
               <div class="flex flex-row w-full px-5 items-center justify-between">
@@ -233,7 +223,7 @@ const checkMedia = (website: string) => {
 
                   <!--Alert for off task-->
                   <Transition name="icon">
-                    <div v-if="checkMedia(application)" class="has-tooltip">
+                    <div v-if="checkMedia(application.id)" class="has-tooltip">
                       <Tooltip :tip="'Not in task list'" :toolTipMargin="'-ml-1'" :arrow-margin="'ml-1'" />
                       <img
                           class="w-6 h-6 mr-2 cursor-pointer"

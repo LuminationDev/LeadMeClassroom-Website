@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import ShareWebsiteModal from "../../../components/Modals/ShareWebsiteModal.vue";
-import * as REQUESTS from "../../../constants/_requests";
-import { ref } from "vue";
-
-import { useDashboardStore } from "../../../stores/dashboardStore";
+import ShareApplicationModal from "@/components/Modals/ShareApplicationModal.vue";
+import ShareMediaModal from "@/components/Modals/ShareMediaModal.vue";
 import ClassControlSessionArea from "./ClassControlSessionArea.vue";
-const dashboardPinia = useDashboardStore();
+import * as REQUESTS from "../../../constants/_requests";
+import { ref, watch } from "vue";
+import { useDashboardStore } from "@/stores/dashboardStore";
 
+const dashboardPinia = useDashboardStore();
 const loading = ref(false);
 const locked = ref(false);
 
@@ -15,7 +16,42 @@ async function screenControl() {
   await new Promise(res => setTimeout(res, 500));
   locked.value = !locked.value;
   loading.value = false;
-  dashboardPinia.requestAction({ type: REQUESTS.SCREENCONTROL, action: locked.value ? REQUESTS.BLOCK : REQUESTS.UNBLOCK });
+  dashboardPinia.requestAction({ type: REQUESTS.SCREENCONTROL, action: locked.value ? REQUESTS.BLOCK : REQUESTS.UNBLOCK }, REQUESTS.WEB);
+  dashboardPinia.requestAction({ type: REQUESTS.SCREENCONTROL, action: locked.value ? REQUESTS.BLOCK : REQUESTS.UNBLOCK }, REQUESTS.MOBILE);
+}
+
+//Reference to the separate media modals to open them externally
+const websiteRef = ref<InstanceType<typeof ShareWebsiteModal> | null>(null)
+function openWebsiteModal() {
+  websiteRef.value?.openModal();
+}
+
+const applicationRef = ref<InstanceType<typeof ShareApplicationModal> | null>(null)
+function openApplicationModal() {
+  applicationRef.value?.openModal();
+}
+
+//Determine which modal should be displayed based on the follower numbers
+const showMediaModal = ref(true)
+const showWebsiteModal = ref(false)
+const showMobileModal = ref(false)
+
+watch([dashboardPinia.webFollowers, dashboardPinia.mobileFollowers], ([newWebFollowers, newMobileFollowers]) => {
+  if (newWebFollowers.length > 0 && newMobileFollowers.length > 0) {
+    setModals(true, false, false);
+  } else if (newWebFollowers.length > 0 && newMobileFollowers.length === 0) {
+    setModals( false, true, false);
+  } else if (newWebFollowers.length === 0 && newMobileFollowers.length > 0) {
+    setModals( false, false, true);
+  } else {
+    setModals(true, false, false);
+  }
+})
+
+function setModals(media: boolean, website: boolean, mobile: boolean) {
+  showMediaModal.value = media
+  showWebsiteModal.value = website
+  showMobileModal.value = mobile
 }
 </script>
 
@@ -28,7 +64,17 @@ async function screenControl() {
 
     <!--Action Area-->
     <div class="mt-8 flex child:mr-4">
-      <ShareWebsiteModal />
+
+      <!--Determine modal type from follower numbers-->
+      <div :class="{'hidden': false}">
+        <ShareMediaModal @webModal="openWebsiteModal" @appModal="openApplicationModal" />
+      </div>
+      <div :class="{'hidden': true}">
+        <ShareWebsiteModal ref="websiteRef" />
+      </div>
+      <div :class="{'hidden': true}">
+        <ShareApplicationModal ref="applicationRef" />
+      </div>
 
       <button :class="{
           'w-56 h-9 flex justify-center font-medium items-center text-white': true,

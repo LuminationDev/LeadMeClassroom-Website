@@ -60,7 +60,7 @@ const firstThreeTabs = computed((): Array<Tab> => {
  * @param website A string representing the URL of the currently active website for a follower.
  */
 const checkActiveTask = async (website: string) => {
-  let tasks = dashboardPinia.tasks;
+  let tasks = dashboardPinia.webTasks;
   if(tasks.length === 0) { return; }
 
   let strict = true; //determine if website needs to be exact or just same hostname

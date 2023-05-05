@@ -30,3 +30,7 @@ export const UNBLOCK = "unblock";
 
 //App controls
 export const FORCEACTIVEAPP = "force_active_app";
+export const FORCEACTIVEWEB = "force_active_website";
+export const DEVICEAUDIO = "change_audio";
+export const MUTE = "mute";
+export const UNMUTE = "unmute";
