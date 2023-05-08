@@ -67,12 +67,6 @@ const removeFollower = () => {
   }, 500)
 }
 
-//Reference to the screen monitor modal to open it externally
-const monitorRef = ref<InstanceType<typeof ScreenMonitorModal> | null>(null)
-function openMonitorModal() {
-  monitorRef.value?.initiateMonitoring();
-}
-
 const detailsRef = ref<InstanceType<typeof MobileStudentDetailModal> | null>(null)
 function openDetailsModal() {
   detailsRef.value?.openModal();
@@ -115,7 +109,7 @@ function openDetailsModal() {
           <div class="h-10 mt-1 w-px bg-white"></div>
 
           <!--Expanded student details modal-->
-          <MobileStudentDetailModal ref="detailsRef" @screenMonitor="openMonitorModal" :mobileFollower="mobileFollower" />
+          <MobileStudentDetailModal ref="detailsRef" :mobileFollower="mobileFollower" />
         </div>
 
       </Transition>

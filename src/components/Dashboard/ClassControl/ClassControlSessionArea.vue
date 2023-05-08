@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { useDashboardStore } from "../../../stores/dashboardStore";
 import GenericButton from "../../Buttons/GenericButton.vue";
-let dashboardPinia = useDashboardStore();
+import { useDashboardStore } from "@/stores/dashboardStore";
+const dashboardPinia = useDashboardStore();
 
 async function endSession() {
   await dashboardPinia.endSession();

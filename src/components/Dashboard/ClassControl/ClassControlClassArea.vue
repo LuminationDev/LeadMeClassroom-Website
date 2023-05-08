@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import ShareWebsiteModal from "../../../components/Modals/ShareWebsiteModal.vue";
+import ShareApplicationModal from "@/components/Modals/ShareApplicationModal.vue";
+import ShareMediaModal from "@/components/Modals/ShareMediaModal.vue";
+import ClassControlSessionArea from "./ClassControlSessionArea.vue";
 import * as REQUESTS from "../../../constants/_requests";
 import { ref } from "vue";
+import { useDashboardStore } from "@/stores/dashboardStore";
 
-import { useDashboardStore } from "../../../stores/dashboardStore";
-import ClassControlSessionArea from "./ClassControlSessionArea.vue";
 const dashboardPinia = useDashboardStore();
-
 const loading = ref(false);
 const locked = ref(false);
 
@@ -15,7 +16,19 @@ async function screenControl() {
   await new Promise(res => setTimeout(res, 500));
   locked.value = !locked.value;
   loading.value = false;
-  dashboardPinia.requestAction({ type: REQUESTS.SCREENCONTROL, action: locked.value ? REQUESTS.BLOCK : REQUESTS.UNBLOCK });
+  dashboardPinia.requestAction({ type: REQUESTS.SCREENCONTROL, action: locked.value ? REQUESTS.BLOCK : REQUESTS.UNBLOCK }, REQUESTS.WEB);
+  dashboardPinia.requestAction({ type: REQUESTS.SCREENCONTROL, action: locked.value ? REQUESTS.BLOCK : REQUESTS.UNBLOCK }, REQUESTS.MOBILE);
+}
+
+//Reference to the separate media modals to open them externally
+const websiteRef = ref<InstanceType<typeof ShareWebsiteModal> | null>(null)
+function openWebsiteModal() {
+  websiteRef.value?.openModal();
+}
+
+const applicationRef = ref<InstanceType<typeof ShareApplicationModal> | null>(null)
+function openApplicationModal() {
+  applicationRef.value?.openModal();
 }
 </script>
 
@@ -28,7 +41,13 @@ async function screenControl() {
 
     <!--Action Area-->
     <div class="mt-8 flex child:mr-4">
-      <ShareWebsiteModal />
+
+      <!--Media is the default however the others are needed as hidden references-->
+      <ShareMediaModal @webModal="openWebsiteModal" @appModal="openApplicationModal" />
+      <div :class="{'hidden': true}">
+        <ShareWebsiteModal ref="websiteRef" />
+        <ShareApplicationModal ref="applicationRef" />
+      </div>
 
       <button :class="{
           'w-56 h-9 flex justify-center font-medium items-center text-white': true,

@@ -2,6 +2,8 @@
 import { computed, defineProps, PropType, ref } from "vue";
 import { MobileFollower } from "../../../../../models";
 import { Application } from "@/models";
+import { useDashboardStore } from "@/stores/dashboardStore";
+const dashboardPinia = useDashboardStore();
 
 const emit = defineEmits<{
   (e: 'update:renaming', value: boolean): void
@@ -48,8 +50,16 @@ const currentlyActiveApplication = computed((): Application | null | undefined =
   }
 
   //TODO finish this later when tasks are completed
-  //checkActiveTask(props.mobileFollower.applications[0].name);
-  const app = props.mobileFollower.applications.find(res => res.id === props.mobileFollower.currentApplication);
+  checkActiveTask(props.mobileFollower.currentApplication.value);
+
+  //TODO fix this so mobileFollower.currentApplication is not a ref
+  const packageName = Object.assign(props.mobileFollower.currentApplication);
+  console.log(packageName);
+
+
+  const app = props.mobileFollower.applications.find(res => res.id === packageName.toString());
+
+  console.log(app);
 
   if(app === undefined) {
     return null;
@@ -61,16 +71,13 @@ const currentlyActiveApplication = computed((): Application | null | undefined =
 /**
  * Check if the active application is within the tasks array. The task array is populated when a teacher pushes
  * out an application.
- * @param applicationName A string representing the display name of the currently active application for a mobile follower.
+ * @param packageName A string representing the display name of the currently active application for a mobile follower.
  */
-const checkActiveTask = async (applicationName: string) => {
-  // let tasks = dashboardPinia.tasks;
-  // if(tasks.length === 0) { return; }
-  //
-  // let strict = true; //determine if website needs to be exact or just same hostname
-  //
-  // const { hostname } = new URL(website); //Extract the hostname for non-strict monitoring
-  // props.follower.offTask = !tasks.some((res) => (strict ? website.includes(res.toString()) : res.includes(hostname)));
+const checkActiveTask = async (packageName: string) => {
+  let tasks = dashboardPinia.mobileTasks;
+  if(tasks.length === 0) { return; }
+
+  props.mobileFollower.offTask = !tasks.some((res) => (packageName.includes(res.toString())));
 }
 
 /**

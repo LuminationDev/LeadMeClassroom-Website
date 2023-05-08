@@ -9,12 +9,12 @@ export type assistantCallbackFunction = (data: any) => void;
 export type generateType = () => void;
 
 //Follower functions for dashboardStore
-export type responseType = (response: any, name: string, id: string, key: string|null) => void;
+export type responseType = (UUID: string, response: any, name: string, key: string|null) => void;
 export type disconnectedType = (UUID: string, followerType: string) => void;
-export type addedType = (snapshot: any, id: string) => void;
-export type readIceCandidateType = (snapshot: any, UUID: string) => void;
+export type addedType = (UUID: string, snapshot: any) => void;
+export type readIceCandidateType = (UUID: string, snapshot: any) => void;
 
 //Follower tab functions for dashboardStore
-export type tabChangedType = (response: any, followerId: string, key: string) => void;
-export type tabRemovedType = (followerId: string, key: string) => void;
-export type tabsAddedType = (response: any, followerId: string) => void;
+export type tabChangedType = (UUID: string, response: any, key: string) => void;
+export type tabRemovedType = (UUID: string, key: string) => void;
+export type tabsAddedType = (UUID: string, response: any) => void;
