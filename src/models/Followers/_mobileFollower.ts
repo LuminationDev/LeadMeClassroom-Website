@@ -13,6 +13,7 @@ class MobileFollower implements Follower {
     classCode: string;
     name: string;
     uniqueId: string;
+    action: string = "None";
     currentApplication: Ref<UnwrapRef<string>> = ref(REQUESTS.MOBILE_PACKAGE);
     applications: Application[];
     webRTC: any;

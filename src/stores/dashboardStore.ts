@@ -107,7 +107,7 @@ export const useDashboardStore = defineStore("dashboard", {
             this.firebase.followerListeners(
                 activeCode,
                 this.followerResponse,
-                this.updateActiveApplication,
+                this.updateActiveFollower,
                 this.followerDisconnected,
                 this.webFollowerAdded,
                 this.mobileFollowerAdded,
@@ -556,12 +556,20 @@ export const useDashboardStore = defineStore("dashboard", {
         /**
          * Update a mobile followers current application.
          * @param UUID A string representing the unique ID of a student.
-         * @param packageName A string representing the package name of the active application.
+         * @param key
+         * @param value A string representing the package name of the active application.
          */
-        updateActiveApplication(UUID: string, packageName: string) {
+        updateActiveFollower(UUID: string, key: string, value: string) {
             const index = this.findFollowerIndex(UUID, REQUESTS.MOBILE);
-            if (index !== -1) {
-                this.mobileFollowers[index].setCurrentApplication(packageName);
+            if (index === -1) return;
+
+            switch (key){
+                case "currentPackage":
+                    this.mobileFollowers[index].setCurrentApplication(value);
+                    break;
+                case "action":
+                    this.mobileFollowers[index].action = value;
+                    break;
             }
         },
 
