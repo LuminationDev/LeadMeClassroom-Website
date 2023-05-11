@@ -18,3 +18,5 @@ export type readIceCandidateType = (UUID: string, snapshot: any) => void;
 export type tabChangedType = (UUID: string, response: any, key: string) => void;
 export type tabRemovedType = (UUID: string, key: string) => void;
 export type tabsAddedType = (UUID: string, response: any) => void;
+
+export type mobileFollowerUpdate = (UUID: string, key: string, snapshot: any) => void;
