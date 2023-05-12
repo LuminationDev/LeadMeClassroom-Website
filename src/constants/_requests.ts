@@ -4,10 +4,8 @@ export const MOBILE = "mobile_user";
 export const MOBILE_PACKAGE = "com.lumination.leadmeclassroom_companion";
 
 //General controls
-
 export const ENDSESSION = "end_session";
 export const REMOVED = "removedByLeader";
-
 export const CAPTURE_FAILED = "captureFailed";
 export const DELETE_TAB = "deleteTab";
 export const WEBSITE = "website";
@@ -29,8 +27,8 @@ export const BLOCK = "block";
 export const UNBLOCK = "unblock";
 
 //App controls
-export const FORCEACTIVEAPP = "force_active_app";
-export const FORCEACTIVEWEB = "force_active_website";
+export const FORCEACTIVEAPP = "application";
+export const FORCEACTIVEVIDEO = "video";
 export const DEVICEAUDIO = "change_audio";
 export const MUTE = "mute";
 export const UNMUTE = "unmute";

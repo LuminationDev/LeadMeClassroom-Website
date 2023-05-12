@@ -36,7 +36,6 @@ function openModal() {
 //Track the currently selected application
 const selectedApplicationId = ref(REQUESTS.MOBILE_PACKAGE);
 const selectedApplication = computed(() => {
-  //TODO fix this so mobileFollower.currentApplication is not a ref
   const packageName = Object.assign(props.mobileFollower.currentApplication);
   console.log(packageName);
 
@@ -203,7 +202,7 @@ const checkMedia = (packageName: string) => {
                     'hover:bg-opacity-50 hover:bg-gray-300': selectedApplication.id !== application.id,
                     'bg-white': selectedApplication.id === application.id,
                     }"
-                    @click="selectedApplicationId = application.id"
+                    @click="selectedTaskName = application.id"
                 >
                   <img class="flex-shrink-0 w-5 h-5 mr-2 cursor-pointer" :src="application.getIcon()" alt=""/>
                   <span class="flex-shrink overflow-ellipsis whitespace-nowrap overflow-hidden pr-10 mt-0.5">{{ application.getName() }}</span>
@@ -251,7 +250,7 @@ const checkMedia = (packageName: string) => {
 
             <button class="w-full py-1 flex justify-center">
               <span class="w-1/2 h-full rounded-sm flex justify-center items-center hover:bg-white-menu-overlay"
-                   v-on:click="showDetailModal = false">
+                   v-on:click="showModal = false">
                 <img class="w-5 h-3" src="/src/assets/img/minimize.svg" alt="Icon"/>
               </span>
             </button>

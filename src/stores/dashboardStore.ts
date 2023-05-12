@@ -1,11 +1,11 @@
-import {defineStore} from "pinia";
+import { defineStore } from "pinia";
 import * as REQUESTS from "../constants/_requests.js";
 import Firebase from '../controller/_firebase';
-import {Leader, MobileFollower, Tab, WebFollower} from '../models';
-import {useWebRTCStore} from "./webRTCStore";
-import type {User} from "@firebase/auth";
-import {getAuth, sendPasswordResetEmail} from "@firebase/auth";
-import type {Application} from "@/models";
+import { Leader, MobileFollower, Tab, WebFollower } from '../models';
+import { useWebRTCStore } from "./webRTCStore";
+import type { User } from "@firebase/auth";
+import { getAuth, sendPasswordResetEmail } from "@firebase/auth";
+import type { Application } from "@/models";
 
 interface userDetails {
     name: string,
@@ -582,6 +582,16 @@ export const useDashboardStore = defineStore("dashboard", {
             );
 
             return Array.from(uniqueApplications);
+        },
+
+        /**
+         * Rename a selected follower
+         * @param UUID
+         * @param tasks
+         * @param followerType
+         */
+        async updateFollowerTasks(UUID: string, tasks: string[], followerType: string) {
+            await this.firebase.updateFollower(this.classCode, UUID, {tasks: tasks}, followerType);
         },
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////

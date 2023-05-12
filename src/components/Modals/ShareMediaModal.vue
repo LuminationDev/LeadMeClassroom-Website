@@ -6,6 +6,7 @@ import { useDashboardStore } from "@/stores/dashboardStore";
 defineEmits<{
   (e: 'webModal'): void
   (e: 'appModal'): void
+  (e: 'videoModal'): void
 }>()
 
 const dashboardPinia = useDashboardStore();
@@ -33,7 +34,7 @@ function closeModal() {
   <Teleport to="body">
     <Modal :show="showMediaModal" @close="closeModal">
       <template v-slot:header>
-        <header class="h-20 px-8 w-modal-width-xxsm bg-white flex justify-between items-center rounded-t-lg">
+        <header class="h-20 px-8 w-modal-width-xsm bg-white flex justify-between items-center rounded-t-lg">
           <p class="text-2xl font-medium">Please select what media type to share</p>
 
           <img
@@ -46,19 +47,41 @@ function closeModal() {
       </template>
 
       <template v-slot:content>
-        <div class="w-modal-width-xxsm max-h-64">
+        <div class="w-modal-width-xsm max-h-64">
           <div v-if="dashboardPinia.webFollowers.length !== 0 || dashboardPinia.mobileFollowers.length !== 0"
                class="mt-8 flex flex-row flex-wrap justify-evenly">
 
-            <button class="w-44 h-28 mx-4 text-white text-lg rounded-lg bg-blue-500 hover:bg-blue-300 font-medium"
-                 v-on:click="$emit('webModal'); showMediaModal = false">
-             Share website
+            <button
+                class="w-56 h-9 flex justify-center items-center
+                text-white text-base font-medium bg-navy-side-menu
+                hover:bg-blue-400 cursor-pointer"
+                v-on:click="$emit('webModal'); showMediaModal = false">
+              <img class="w-6 h-6 mr-3" src="/src/assets/img/media-website.svg" alt="Icon"/>
+              Share website
             </button>
 
-            <button v-if="dashboardPinia.mobileFollowers.length !== 0"
-                    class="w-44 h-28 mx-4 text-white text-lg rounded-lg bg-blue-500 hover:bg-blue-300 font-medium"
+            <button
+                class="w-56 h-9 flex justify-center items-center text-white text-base font-medium"
+                :class="{
+                  'bg-navy-side-menu hover:bg-blue-400 cursor-pointer': dashboardPinia.mobileFollowers.length !== 0,
+                  'bg-gray-400 cursor-default': dashboardPinia.mobileFollowers.length === 0
+                }"
+                :disabled="dashboardPinia.mobileFollowers.length === 0"
                  v-on:click="$emit('appModal'); showMediaModal = false">
-              Share application
+                <img class="w-6 h-6 mr-3" src="/src/assets/img/media-application.svg" alt="Icon"/>
+                Share application
+            </button>
+
+            <button
+                class="w-56 h-9 flex justify-center items-center text-white text-base font-medium"
+                :class="{
+                  'bg-navy-side-menu hover:bg-blue-400 cursor-pointer': dashboardPinia.mobileFollowers.length !== 0,
+                  'bg-gray-400 cursor-default': dashboardPinia.mobileFollowers.length === 0
+                }"
+                :disabled="dashboardPinia.mobileFollowers.length === 0"
+                v-on:click="$emit('videoModal'); showMediaModal = false">
+              <img class="w-6 h-6 mr-3" src="/src/assets/img/media-video.svg" alt="Icon"/>
+              Share video
             </button>
           </div>
 
