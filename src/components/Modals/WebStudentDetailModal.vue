@@ -109,7 +109,7 @@ const checkWebsite = (website: string) => {
 
   <!--Modal body using the Modal template, teleports the html to the bottom of the body tag-->
   <Teleport to="body">
-    <Modal :show="showDetailModal" @close="closeModal">
+    <Modal :show="showModal" @close="closeModal">
       <template v-slot:header>
         <header class="h-20 px-8 w-modal-width-sm bg-white flex justify-between items-center rounded-t-lg">
           <div class="bg-white flex flex-col">
