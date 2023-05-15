@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import "../../styles.css";
 import Modal from "./Modal.vue";
 import * as REQUESTS from "../../constants/_requests";
 import {computed, defineProps, PropType, ref } from "vue";
@@ -16,7 +17,7 @@ const props = defineProps({
   },
 });
 
-const showDetailModal = ref(false);
+const showModal = ref(false);
 
 defineExpose({
   openModal
@@ -26,7 +27,7 @@ defineExpose({
  * A generic function that can be exposed to the another component.
  */
 function openModal() {
-  showDetailModal.value = true
+  showModal.value = true
 
   if(props.mobileFollower.applications.length > 0) {
     selectedApplicationId.value = props.mobileFollower.currentApplication.value;
@@ -88,7 +89,7 @@ function changeActiveApplication(application: Application) {
 }
 
 function closeModal() {
-  showDetailModal.value = false;
+  showModal.value = false;
 }
 
 /**
@@ -115,7 +116,7 @@ const checkMedia = (packageName: string) => {
 
   <!--Modal body using the Modal template, teleports the html to the bottom of the body tag-->
   <Teleport to="body">
-    <Modal :show="showDetailModal" @close="closeModal">
+    <Modal :show="showModal" @close="closeModal">
       <template v-slot:header>
         <header class="h-20 px-8 w-modal-width-sm bg-white flex justify-between items-center rounded-t-lg">
           <div class="bg-white flex flex-col">
@@ -202,7 +203,7 @@ const checkMedia = (packageName: string) => {
                     'hover:bg-opacity-50 hover:bg-gray-300': selectedApplication.id !== application.id,
                     'bg-white': selectedApplication.id === application.id,
                     }"
-                    @click="selectedTaskName = application.id"
+                    @click="selectedApplicationId = application.id"
                 >
                   <img class="flex-shrink-0 w-5 h-5 mr-2 cursor-pointer" :src="application.getIcon()" alt=""/>
                   <span class="flex-shrink overflow-ellipsis whitespace-nowrap overflow-hidden pr-10 mt-0.5">{{ application.getName() }}</span>
@@ -260,79 +261,3 @@ const checkMedia = (packageName: string) => {
     </Modal>
   </Teleport>
 </template>
-
-<style>
-.lds-dual-ring {
-  display: inline-block;
-  width: 20px;
-  height: 20px;
-}
-.lds-dual-ring:after {
-  content: " ";
-  display: block;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  border: 2px solid #182B50;
-  border-color: #182B50 transparent #182B50 transparent;
-  animation: lds-dual-ring 1.2s linear infinite;
-}
-@keyframes lds-dual-ring {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
-}
-
-.list-complete-move, /* apply transition to moving elements */
-.list-complete-enter-active,
-.list-complete-leave-active {
-  transition: all 0.7s ease;
-}
-
-.list-complete-enter-from,
-.list-complete-leave-to {
-  opacity: 0;
-}
-
-/* ensure leaving items are taken out of layout flow so that moving
-   animations can be calculated correctly. */
-.list-complete-leave-active {
-  position: absolute;
-}
-
-.pulse-icon {
-  animation: pulse 1.2s linear infinite;
-}
-@keyframes pulse {
-  0% {
-    scale: 1.0;
-  }
-  50% {
-    scale: 1.2;
-  }
-  100% {
-    scale: 1.0;
-  }
-}
-
-.icon-enter-from,
-.icon-leave-to {
-  opacity: 0;
-}
-.icon-enter-to,
-.icon-leave-from {
-  opacity: 100;
-}
-
-.icon-enter-active{
-  transition-duration: 300ms;
-}
-
-.icon-leave-active{
-  transition-duration: 200ms;
-}
-
-</style>

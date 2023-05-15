@@ -3,12 +3,12 @@ import {defineProps, PropType, ref} from "vue";
 import Modal from "./Modal.vue";
 import WebFollower from "../../models/Followers/_webFollower";
 import * as REQUESTS from "../../constants/_requests";
-
-import {useDashboardStore} from "../../stores/dashboardStore";
-import { useWebRTCStore } from "../../stores/webRTCStore";
+import {useDashboardStore} from "@/stores/dashboardStore";
+import { useWebRTCStore } from "@/stores/webRTCStore";
 import Tooltip from "../Buttons/Tooltip.vue";
-let dashboardPinia = useDashboardStore();
-let webRTCPinia = useWebRTCStore();
+
+const dashboardPinia = useDashboardStore();
+const webRTCPinia = useWebRTCStore();
 
 const props = defineProps({
   webFollower: {
@@ -17,7 +17,7 @@ const props = defineProps({
   }
 });
 
-const showMonitorModal = ref(false);
+const showModal = ref(false);
 
 defineExpose({
   initiateMonitoring
@@ -27,7 +27,7 @@ defineExpose({
  * Open the modal, sending a message to the follower to start sending screen captures.
  */
 function initiateMonitoring() {
-  showMonitorModal.value = true
+  showModal.value = true
   dashboardPinia.requestIndividualAction(props.webFollower.getUniqueId(), { type: REQUESTS.MONITORSTARTED }, REQUESTS.WEB);
 }
 
@@ -62,7 +62,7 @@ function cancelMonitor() {
  */
 function closeModal() {
   cancelMonitor();
-  showMonitorModal.value = false
+  showModal.value = false
   props.webFollower.collectingScreenshotFailed = false
   props.webFollower.imageBase64 = null
 }
@@ -79,7 +79,7 @@ function closeModal() {
 
   <!--Modal body using the Modal template, teleports the html to the bottom of the body tag-->
   <Teleport to="body">
-    <Modal :show="showMonitorModal" @close="closeModal">
+    <Modal :show="showModal" @close="closeModal">
       <template v-slot:header>
         <header class="h-20 px-8 bg-white flex justify-between items-center rounded-t-lg">
           <div class="bg-white flex flex-col">
