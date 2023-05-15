@@ -1,38 +1,41 @@
 <script setup lang="ts">
-import {computed, Ref, ref} from "vue";
-import useVuelidate from "@vuelidate/core";
-import {helpers, required} from "@vuelidate/validators";
+import { computed, Ref, ref } from "vue";
 import MobileGridItem from "../Dashboard/ClassControl/GridItem/Mobile/MobileGridItem.vue";
 import Modal from "./Modal.vue";
 import * as REQUESTS from "../../constants/_requests";
-import {MobileFollower} from "../../models";
+import { MobileFollower, Task, Application } from "../../models";
 import GenericButton from "../Buttons/GenericButton.vue";
-import {useDashboardStore} from "@/stores/dashboardStore";
+import { useDashboardStore } from "@/stores/dashboardStore";
 
 const dashboardPinia = useDashboardStore();
-const showApplicationModal = ref(false);
-const shareTo = ref("all")
-const followersSelected: Ref<string[]> = ref([])
-const submissionAttempted = ref(false)
+const showModal = ref(false);
+const shareType = ref("single");
+const shareTo = ref("all");
+const followersSelected: Ref<string[]> = ref([]);
+const submissionAttempted = ref(false);
 
 defineExpose({
   openModal
 });
 
-//TODO sort out the mobileFollower model before moving on
 const sortedFollowers = computed((): Array<MobileFollower> => {
   return dashboardPinia.mobileFollowers.sort((a: MobileFollower, b: MobileFollower) => {
     return a.name.localeCompare(b.name)
   });
 });
 
-const rules = {
-  applicationName: {
-    required: helpers.withMessage("A selected application is required", required)
+//Track the currently selected application
+const selectedApplications: Ref<Task[]> = ref([])
+const addOrRemoveApplication = (application: Application) => {
+  const index = selectedApplications.value.findIndex(app => app.getPackageName() === application.packageName);
+
+  if (index > -1) {
+    selectedApplications.value.splice(index, 1);
+  } else {
+    selectedApplications.value.push(new Task(application.name, application.packageName, "Application"));
   }
 }
 
-//Track the currently selected application
 const selectedApplicationId = ref("");
 const selectedApplication = computed(() => {
   let apps = dashboardPinia.collectUniqueApplications();
@@ -48,16 +51,11 @@ const selectedApplication = computed(() => {
   return apps?.find(res => res.id === selectedApplicationId.value);
 });
 
-const v$ = useVuelidate(rules, { applicationName: selectedApplicationId.value })
-
 async function validateAndSubmit() {
   submissionAttempted.value = true
   if (shareTo.value === "selected" && followersSelected.value.length === 0) {
     return;
   }
-
-  // const result = await v$.value.$validate();
-  // if (!result) { return; }
 
   submit();
 }
@@ -76,25 +74,43 @@ function handleFollowerSelection(UUID: string, value: boolean) {
 }
 
 function submit() {
+  shareType.value === 'single' ? singleApp() : multiApp();
+  closeModal();
+}
+
+/**
+ * Launch a single application to either the selected followers or to all connected users.
+ */
+function singleApp() {
   if (shareTo.value === 'all') {
     dashboardPinia.requestAction({type: REQUESTS.FORCEACTIVEAPP, action: selectedApplicationId.value}, REQUESTS.MOBILE);
   }
-  if (shareTo.value === 'selected') {
+  else if (shareTo.value === 'selected') {
     followersSelected.value.forEach(id => {
       dashboardPinia.requestIndividualAction(id, {type: REQUESTS.FORCEACTIVEAPP, action: selectedApplicationId.value}, REQUESTS.MOBILE)
     });
   }
+}
 
-  closeModal();
+/**
+ * Send multiple applications to either the selected followers or to all connected users. This will update the
+ * tasks array in firebase for each of the associated followers.
+ */
+function multiApp() {
+  sortedFollowers.value.forEach(follower => {
+    if (shareTo.value === 'all' || followersSelected.value.includes(follower.getUniqueId())) {
+      follower.tasks = Array.from(new Set(follower.tasks.concat(selectedApplications.value)));
+      dashboardPinia.updateFollowerTasks(follower.getUniqueId(), follower.tasks.map(app => app.toStringEntry()), REQUESTS.MOBILE);
+    }
+  });
 }
 
 function openModal() {
-  showApplicationModal.value = true;
+  showModal.value = true;
 }
 
 function closeModal() {
-  v$.value.$reset();
-  showApplicationModal.value = false
+  showModal.value = false
   submissionAttempted.value = false
 }
 </script>
@@ -105,7 +121,7 @@ function closeModal() {
     w-56 h-9 flex justify-center items-center
     bg-blue-500 hover:bg-blue-400
     text-white text-base font-medium"
-    v-on:click="showApplicationModal = true"
+    v-on:click="showModal = true"
     id="share_button"
   >
     <img class="w-4 h-4 mr-3" src="/src/assets/img/session-icon-share.svg" alt="Icon"/>
@@ -114,7 +130,7 @@ function closeModal() {
 
   <!--Modal body using the Modal template, teleports the html to the bottom of the body tag-->
   <Teleport to="body">
-    <Modal :show="showApplicationModal" @close="closeModal">
+    <Modal :show="showModal" @close="closeModal">
       <template v-slot:header>
         <header class="h-20 px-8 w-modal-width bg-white flex justify-between items-center rounded-t-lg">
           <p class="text-2xl font-medium">Share an application with your class</p>
@@ -134,7 +150,7 @@ function closeModal() {
             <div v-for="(application) in dashboardPinia.collectUniqueApplications()" v-bind:key="application" class="py-1" :id="application.id">
 
               <!--Individual applications-->
-              <div class="flex flex-row w-full px-5 items-center justify-between">
+              <div v-if="shareType === 'single'" class="flex flex-row w-full px-5 items-center justify-between">
                 <div :class="{
                       'w-full h-9 px-5 flex flex-row items-center overflow-ellipsis whitespace-nowrap': true,
                       'overflow-hidden rounded-lg cursor-pointer': true,
@@ -147,11 +163,39 @@ function closeModal() {
                   <span class="flex-shrink overflow-ellipsis whitespace-nowrap overflow-hidden pr-10 mt-0.5">{{ application.getName() }}</span>
                 </div>
               </div>
+
+              <!--Multiple applications-->
+              <div v-else-if="shareType === 'multi'" class="flex flex-row w-full px-5 items-center justify-between">
+                <div :class="{
+                      'w-full h-9 px-5 flex flex-row items-center overflow-ellipsis whitespace-nowrap': true,
+                      'overflow-hidden rounded-lg cursor-pointer': true,
+                      'hover:bg-opacity-50 hover:bg-gray-300': selectedApplications.findIndex(app => app.getPackageName() === application.id) === -1,
+                      'bg-white': selectedApplications.findIndex(app => app.getPackageName() === application.id) !== -1,
+                      }"
+                     @click="addOrRemoveApplication(application)"
+                >
+                  <img class="flex-shrink-0 w-5 h-5 mr-2 cursor-pointer" :src="application.getIcon()" alt=""/>
+                  <span class="flex-shrink overflow-ellipsis whitespace-nowrap overflow-hidden pr-10 mt-0.5">{{ application.getName() }}</span>
+                </div>
+              </div>
+
             </div>
           </div>
 
           <div class="mx-14 mt-8 h-20 bg-white flex items-center justify-between">
             <p class="ml-8 text-lg font-medium mr-2">Share to</p>
+            <div class="flex justify-start">
+              <label class="mr-4 lg:mr-14 flex justify-between items-center">
+                <input class="h-5 w-5 mr-4" name="shareType" type="radio" v-model="shareType" value="single">
+                <span class="text-base">Single application</span>
+              </label>
+
+              <label class="flex justify-between items-center mr-8 lg:mr-20">
+                <input class="h-5 w-5 mr-4" name="shareType" type="radio" v-model="shareType" value="multi">
+                <span class="text-base">Multiple applications</span>
+              </label>
+            </div>
+
             <div class="flex justify-start">
               <label class="mr-4 lg:mr-14 flex justify-between items-center">
                 <input class="h-5 w-5 mr-4" name="shareTo" type="radio" v-model="shareTo" value="all">
@@ -185,7 +229,7 @@ function closeModal() {
       <template v-slot:footer>
         <footer class="mt-11 mb-8 mr-14 text-right flex flex-row justify-end">
           <button class="w-36 h-11 mr-4 text-blue-500 text-base rounded-lg hover:bg-gray-default font-medium"
-                  v-on:click="showApplicationModal = false"
+                  v-on:click="showModal = false"
           >Cancel</button>
           <div class="relative">
             <div

@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import MobileStudentDetailModal from "../../../../Modals/MobileStudentDetailModal.vue";
-import ScreenMonitorModal from "../../../../Modals/ScreenMonitorModal.vue";
+import MobileStudentTaskModal from "../../../../Modals/MobileStudentTaskModal.vue";
 import * as REQUESTS from "../../../../../constants/_requests";
 import { defineProps, PropType, ref } from "vue";
 import { MobileFollower } from "../../../../../models";
-import { useDashboardStore } from "../../../../../stores/dashboardStore";
+import { useDashboardStore } from "@/stores/dashboardStore";
 const dashboardPinia = useDashboardStore();
 
 const emit = defineEmits<{
@@ -100,11 +100,8 @@ function openDetailsModal() {
 
         <!--Tab screen-->
         <div v-else-if="controls" class="flex w-full">
-          <!--Screenshot and WebRTC modal-->
-          <div class="w-full p-1">
-            <span class="w-full h-full rounded-sm flex justify-center items-center">
-            </span>
-          </div>
+          <!--Task management-->
+          <MobileStudentTaskModal :mobileFollower="mobileFollower" />
 
           <div class="h-10 mt-1 w-px bg-white"></div>
 
