@@ -137,7 +137,7 @@ const revertInput = () => {
       </div>
 
       <div v-else class="flex flex-row px-2 items-center">
-        <img class="flex-shrink-0 w-4 h-4 mr-2" :src="currentlyActiveApplication.getIcon()"  alt="Icon"/>
+        <img class="flex-shrink-0 w-4 h-4 mr-2" :src="dashboardPinia.firebase.getAppIcon(currentlyActiveApplication.packageName)"  alt="Icon"/>
         <span class="overflow-ellipsis whitespace-nowrap overflow-hidden">{{ currentlyActiveApplication.getName() }}</span>
       </div>
     </div>

@@ -14,10 +14,6 @@ class Application {
         this.lastActivated = lastActivated
     }
 
-    getIcon = () => {
-        return "";
-    }
-
     getName = () => {
         return this.name;
     }

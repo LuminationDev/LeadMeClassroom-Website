@@ -12,6 +12,8 @@ export const CAPTURE_FAILED = "captureFailed";
 export const DELETE_TAB = "deleteTab";
 export const WEBSITE = "website";
 
+export const UPLOADICONS = "uploadIcons";
+
 //Web RTC controls
 export const MONITORPERMISSION = "videoPermission";
 export const MONITORDATA = "iceCandidates";
