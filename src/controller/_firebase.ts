@@ -22,7 +22,7 @@ import type { Leader } from "../models";
 import type {
     addedType,
     assistantCallbackFunction,
-    disconnectedType, generateType,
+    disconnectedType, generateType, mobileFollowerUpdate,
     readIceCandidateType,
     responseType, tabChangedType, tabRemovedType, tabsAddedType
 } from "@/constants/_functionTypes";
@@ -195,7 +195,7 @@ class Firebase {
      * Add listeners for followers being added and removed to the database
      * @param classCode A string representing the class a teacher is currently controlling.
      * @param followerResponse
-     * @param updateActiveApplication
+     * @param updateActiveFollower
      * @param followerDisconnected
      * @param webFollowerAdded
      * @param mobileFollowerAdded
@@ -204,7 +204,7 @@ class Firebase {
     followerListeners = (
         classCode: string,
         followerResponse: responseType,
-        updateActiveApplication: addedType,
+        updateActiveFollower: mobileFollowerUpdate,
         followerDisconnected: disconnectedType,
         webFollowerAdded: addedType,
         mobileFollowerAdded: addedType,
@@ -250,7 +250,9 @@ class Firebase {
             const individualRef = ref(this.db, `/${this.mobileFollowerRef}/${classCode}/${UUID}`);
             onChildChanged(individualRef, (snapshot) => {
                 //Listen for currentPackage changes?
-                updateActiveApplication(UUID!, snapshot.val());
+                console.log(snapshot.key);
+
+                updateActiveFollower(UUID!, snapshot.key!, snapshot.val());
             });
         });
 

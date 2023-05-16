@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import WebPlaceholder from "./GridItem/Web/WebPlaceholder.vue";
+import WebPlaceholder from "./GridItem/StudentPlaceholder.vue";
 import WebGridItem from "./GridItem/Web/WebGridItem.vue";
-import MobilePlaceholder from "./GridItem/Mobile/MobilePlaceholder.vue";
 import MobileGridItem from "./GridItem/Mobile/MobileGridItem.vue";
 import { WebFollower, MobileFollower } from "../../../models";
 import { computed } from "vue";
@@ -40,42 +39,54 @@ const activeMobileFollowers = computed((): number => {
 
 <template>
   <div class="mt-14 ml-10">
-    <p class="text-base text-black">
-      Active Web Students
-      <span v-if="activeWebFollowers !== 0">
-        ({{ activeWebFollowers }})
-      </span>
-    </p>
+    <!--No active students-->
+    <div v-if="dashboardPinia.webFollowers.length === 0 && dashboardPinia.mobileFollowers.length === 0">
+      <p class="text-base text-black">
+        Active Students
+        <span v-if="activeWebFollowers !== 0">
+          ({{ activeWebFollowers }})
+        </span>
+      </p>
 
-    <div id="studentGrid" class="flex flex-row flex-wrap">
-      <!--Student Web Grid Item (No active students)-->
-      <WebPlaceholder class="mr-4 mt-4" v-if="dashboardPinia.webFollowers.length === 0" />
-
-      <!--Student Web Grid Item (Active student)-->
-      <WebGridItem
-          class="mr-4 mt-4"
-          v-for="follower in sortedWebFollowers"
-          :key="follower.getUniqueId()"
-          :webFollower="follower"/>
+      <WebPlaceholder class="mr-4 mt-4" />
     </div>
 
-    <p class="text-base text-black mt-5">
-      Active Mobile Students
-      <span v-if="activeMobileFollowers !== 0">
-        ({{ activeMobileFollowers }})
-      </span>
-    </p>
+    <!--Active web students-->
+    <div v-if="dashboardPinia.webFollowers.length !== 0">
+      <p class="text-base text-black">
+        Active Web Students
+        <span v-if="activeWebFollowers !== 0">
+          ({{ activeWebFollowers }})
+        </span>
+      </p>
 
-    <div id="studentGrid" class="flex flex-row flex-wrap">
-      <!--Student Mobile Grid Item (No active students)-->
-      <MobilePlaceholder class="mr-4 mt-4" v-if="dashboardPinia.mobileFollowers.length === 0" />
+      <div id="studentGrid" class="flex flex-row flex-wrap">
+        <!--Student Web Grid Item (Active student)-->
+        <WebGridItem
+            class="mr-4 mt-4"
+            v-for="follower in sortedWebFollowers"
+            :key="follower.getUniqueId()"
+            :webFollower="follower"/>
+      </div>
+    </div>
 
-      <!--Student Mobile Grid Item (Active student)-->
-      <MobileGridItem
-          class="mr-4 mt-4"
-          v-for="follower in sortedMobileFollowers"
-          :key="follower.getUniqueId()"
-          :mobileFollower="follower"/>
+    <!--Active mobile students-->
+    <div v-if="dashboardPinia.mobileFollowers.length !== 0">
+      <p class="text-base text-black mt-5">
+        Active Mobile Students
+        <span v-if="activeMobileFollowers !== 0">
+          ({{ activeMobileFollowers }})
+        </span>
+      </p>
+
+      <div id="studentGrid" class="flex flex-row flex-wrap">
+        <!--Student Mobile Grid Item (Active student)-->
+        <MobileGridItem
+            class="mr-4 mt-4"
+            v-for="follower in sortedMobileFollowers"
+            :key="follower.getUniqueId()"
+            :mobileFollower="follower"/>
+      </div>
     </div>
   </div>
 </template>

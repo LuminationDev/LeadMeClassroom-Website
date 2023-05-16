@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import ShareWebsiteModal from "../../../components/Modals/ShareWebsiteModal.vue";
 import ShareApplicationModal from "@/components/Modals/ShareApplicationModal.vue";
+import ShareVideoModal from "@/components/Modals/ShareVideoModal.vue";
 import ShareMediaModal from "@/components/Modals/ShareMediaModal.vue";
 import ClassControlSessionArea from "./ClassControlSessionArea.vue";
 import * as REQUESTS from "../../../constants/_requests";
@@ -30,6 +31,11 @@ const applicationRef = ref<InstanceType<typeof ShareApplicationModal> | null>(nu
 function openApplicationModal() {
   applicationRef.value?.openModal();
 }
+
+const videoRef = ref<InstanceType<typeof ShareVideoModal> | null>(null)
+function openVideoModal() {
+  videoRef.value?.openModal();
+}
 </script>
 
 <template>
@@ -43,10 +49,11 @@ function openApplicationModal() {
     <div class="mt-8 flex child:mr-4">
 
       <!--Media is the default however the others are needed as hidden references-->
-      <ShareMediaModal @webModal="openWebsiteModal" @appModal="openApplicationModal" />
+      <ShareMediaModal @webModal="openWebsiteModal" @appModal="openApplicationModal" @videoModal="openVideoModal" />
       <div :class="{'hidden': true}">
         <ShareWebsiteModal ref="websiteRef" />
         <ShareApplicationModal ref="applicationRef" />
+        <ShareVideoModal ref="videoRef" />
       </div>
 
       <button :class="{

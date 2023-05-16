@@ -1,5 +1,6 @@
 import type Follower from "./_follower";
 import Application from "../_application";
+import type Task from "../_task";
 import { v4 as uuidv4 } from 'uuid';
 import * as REQUESTS from "../../constants/_requests";
 import { ref } from "vue";
@@ -13,10 +14,12 @@ class MobileFollower implements Follower {
     classCode: string;
     name: string;
     uniqueId: string;
+    action: string = "None";
     currentApplication: Ref<UnwrapRef<string>> = ref(REQUESTS.MOBILE_PACKAGE);
     applications: Application[];
     webRTC: any;
     UUID: any;
+    tasks: Task[];
     permission: string|null|undefined;
     muted: boolean|null|undefined;
     audible: boolean|null|undefined;
@@ -29,6 +32,7 @@ class MobileFollower implements Follower {
         this.name = name;
         this.applications = this.followerApplicationsAdded(apps);
         this.permission = null;
+        this.tasks = [];
     }
 
     followerApplicationsAdded(response: any) {
@@ -60,6 +64,10 @@ class MobileFollower implements Follower {
 
     getUniqueId = () => {
         return this.uniqueId;
+    }
+
+    clearTasks = () => {
+        this.tasks = [];
     }
 }
 

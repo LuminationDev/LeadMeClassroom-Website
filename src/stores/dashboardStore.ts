@@ -1,11 +1,11 @@
-import {defineStore} from "pinia";
+import { defineStore } from "pinia";
 import * as REQUESTS from "../constants/_requests.js";
 import Firebase from '../controller/_firebase';
-import {Leader, MobileFollower, Tab, WebFollower} from '../models';
-import {useWebRTCStore} from "./webRTCStore";
-import type {User} from "@firebase/auth";
-import {getAuth, sendPasswordResetEmail} from "@firebase/auth";
-import type {Application} from "@/models";
+import { Leader, MobileFollower, Tab, WebFollower } from '../models';
+import { useWebRTCStore } from "./webRTCStore";
+import type { User } from "@firebase/auth";
+import { getAuth, sendPasswordResetEmail } from "@firebase/auth";
+import type { Application } from "@/models";
 
 interface userDetails {
     name: string,
@@ -107,7 +107,7 @@ export const useDashboardStore = defineStore("dashboard", {
             this.firebase.followerListeners(
                 activeCode,
                 this.followerResponse,
-                this.updateActiveApplication,
+                this.updateActiveFollower,
                 this.followerDisconnected,
                 this.webFollowerAdded,
                 this.mobileFollowerAdded,
@@ -566,12 +566,20 @@ export const useDashboardStore = defineStore("dashboard", {
         /**
          * Update a mobile followers current application.
          * @param UUID A string representing the unique ID of a student.
-         * @param packageName A string representing the package name of the active application.
+         * @param key
+         * @param value A string representing the package name of the active application.
          */
-        updateActiveApplication(UUID: string, packageName: string) {
+        updateActiveFollower(UUID: string, key: string, value: string) {
             const index = this.findFollowerIndex(UUID, REQUESTS.MOBILE);
-            if (index !== -1) {
-                this.mobileFollowers[index].setCurrentApplication(packageName);
+            if (index === -1) return;
+
+            switch (key){
+                case "currentPackage":
+                    this.mobileFollowers[index].setCurrentApplication(value);
+                    break;
+                case "action":
+                    this.mobileFollowers[index].action = value;
+                    break;
             }
         },
 
@@ -584,6 +592,16 @@ export const useDashboardStore = defineStore("dashboard", {
             );
 
             return Array.from(uniqueApplications);
+        },
+
+        /**
+         * Rename a selected follower
+         * @param UUID
+         * @param tasks
+         * @param followerType
+         */
+        async updateFollowerTasks(UUID: string, tasks: string[], followerType: string) {
+            await this.firebase.updateFollower(this.classCode, UUID, {tasks: tasks}, followerType);
         },
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
