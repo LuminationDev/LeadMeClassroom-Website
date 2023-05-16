@@ -504,19 +504,6 @@ export const useDashboardStore = defineStore("dashboard", {
         },
 
         /**
-         * Set the website link in the firebase real-time database that the active students will navigate to.
-         */
-        async launchWebsite(website: string) {
-            const action = { type: REQUESTS.WEBSITE, value: website };
-            await this.firebase.requestAction(this.classCode, action, REQUESTS.WEB);
-        },
-
-        launchWebsiteIndividual(UUID: string, website: string) {
-            const action = { type: REQUESTS.WEBSITE, value: website };
-            void this.firebase.requestIndividualAction(this.classCode, UUID, action, REQUESTS.WEB);
-        },
-
-        /**
          * Update or create the task array within local storage.
          */
         async updateTasks(task: string, taskType: string) {
@@ -540,7 +527,7 @@ export const useDashboardStore = defineStore("dashboard", {
          * @param snapshot
          */
         mobileFollowerAdded(UUID: string, snapshot: any) {
-            const follower = new MobileFollower(this.classCode, snapshot.name, snapshot.applications, UUID)
+            const follower = new MobileFollower(this.classCode, snapshot.name, snapshot.applications, snapshot.videos, UUID)
             follower.muted = false
 
             const index = this.findFollowerIndex(UUID, REQUESTS.MOBILE);
@@ -569,6 +556,9 @@ export const useDashboardStore = defineStore("dashboard", {
                     break;
                 case "action":
                     this.mobileFollowers[index].action = value;
+                    break;
+                case "source":
+                    this.mobileFollowers[index].source = value;
                     break;
             }
         },

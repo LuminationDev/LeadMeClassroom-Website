@@ -71,6 +71,11 @@ const detailsRef = ref<InstanceType<typeof MobileStudentDetailModal> | null>(nul
 function openDetailsModal() {
   detailsRef.value?.openModal();
 }
+
+const taskRef = ref<InstanceType<typeof MobileStudentTaskModal> | null>(null)
+function openTaskModal() {
+  taskRef.value?.openModal();
+}
 </script>
 
 <template>
@@ -101,12 +106,12 @@ function openDetailsModal() {
         <!--Tab screen-->
         <div v-else-if="controls" class="flex w-full">
           <!--Task management-->
-          <MobileStudentTaskModal :mobileFollower="mobileFollower" />
+          <MobileStudentTaskModal ref="taskRef" :mobileFollower="mobileFollower" />
 
           <div class="h-10 mt-1 w-px bg-white"></div>
 
           <!--Expanded student details modal-->
-          <MobileStudentDetailModal ref="detailsRef" :mobileFollower="mobileFollower" />
+          <MobileStudentDetailModal ref="detailsRef" @taskManager="openTaskModal" :mobileFollower="mobileFollower" />
         </div>
 
       </Transition>

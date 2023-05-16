@@ -9,6 +9,7 @@ import GenericButton from "../Buttons/GenericButton.vue";
 import { useDashboardStore } from "@/stores/dashboardStore";
 import * as REQUESTS from "@/constants/_requests";
 import {Task} from "@/models";
+import {FORCEACTIVEVIDEOLINK} from "@/constants/_requests";
 
 const dashboardPinia = useDashboardStore();
 const showModal = ref(false);
@@ -62,7 +63,7 @@ async function submit() {
     return;
   }
 
-  const request = { type: REQUESTS.FORCEACTIVEVIDEO, action: videoLink.value };
+  const request = { type: REQUESTS.FORCEACTIVEVIDEOLINK, action: videoLink.value };
 
   if (shareTo.value === 'all') {
     dashboardPinia.requestAction(request, REQUESTS.MOBILE);

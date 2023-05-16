@@ -211,8 +211,6 @@ class Firebase {
             const individualRef = ref(this.db, `/${this.mobileFollowerRef}/${classCode}/${UUID}`);
             onChildChanged(individualRef, (snapshot) => {
                 //Listen for currentPackage changes?
-                console.log(snapshot.key);
-
                 updateActiveFollower(UUID!, snapshot.key!, snapshot.val());
             });
         });

@@ -1,5 +1,4 @@
-import type Follower from "./_follower";
-import type Tab from "../_tab";
+import type { Follower, Tab } from "../index";
 import { v4 as uuidv4 } from 'uuid';
 
 /**

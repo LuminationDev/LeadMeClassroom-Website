@@ -18,6 +18,7 @@ const props = defineProps({
 });
 
 const showModal = ref(false);
+const showMedia = ref(false);
 
 defineExpose({
   openModal
@@ -32,7 +33,14 @@ function openModal() {
   if(props.mobileFollower.tasks.length > 0) {
     selectedTaskName.value = props.mobileFollower.tasks[0].getName();
   }
+
+  if(props.mobileFollower.videos.length > 0) {
+    selectedVideoName.value = props.mobileFollower.videos[0].getName();
+  }
 }
+
+//Track the currently selected video
+const selectedVideoName = ref("");
 
 //Track the currently selected application
 const selectedTaskName = ref(REQUESTS.MOBILE_PACKAGE);
@@ -76,6 +84,14 @@ function changeActiveApplication(task: Task) {
   }
 }
 
+function pushSelectedVideo(video: String) {
+  dashboardPinia.requestActiveMedia(
+      props.mobileFollower.getUniqueId(),
+      {type: REQUESTS.FORCEACTIVEVIDEOLOCAL, action: video},
+      REQUESTS.MOBILE
+  );
+}
+
 function closeModal() {
   showModal.value = false;
 }
@@ -96,7 +112,7 @@ function closeModal() {
       <template v-slot:header>
         <header class="h-20 px-8 w-modal-width-sm bg-white flex justify-between items-center rounded-t-lg">
           <div class="bg-white flex flex-col">
-            <span class="text-lg font-medium text-black">Task Management</span>
+            <span class="text-lg font-medium text-black">{{showMedia ? 'Video' : 'Task'}} Management</span>
             <p class="mt-1 text-sm text-zinc-700">{{ mobileFollower.name }}</p>
           </div>
         </header>
@@ -106,7 +122,7 @@ function closeModal() {
 
         <!--Application control bar-->
         <div class="inline-block h-14 mt-3.5 mb-5 mx-5 flex flex-row justify-center items-center bg-white rounded-3xl shadow-md">
-          <div class="flex flex-row h-5">
+          <div v-if="!showMedia" class="flex flex-row h-5">
 
             <!--Application focus control-->
             <div class="has-tooltip mr-14">
@@ -133,12 +149,55 @@ function closeModal() {
                 <template v-slot:hover><img class="h-4" src="/src/assets/img/studentDetails/student-icon-close-tab-hover.svg"  alt="close"/></template>
               </HoverButton>
             </div>
+          </div>
 
+          <div v-else class="flex flex-row h-5">
+            <!--Push video file button-->
+            <div class="has-tooltip mr-14">
+              <Tooltip :tip="'Push video file'" />
+
+              <img v-if="selectedVideoName === '-1' || mobileFollower.videos.length === 0" class="h-5" src="/src/assets/img/studentDetails/student-icon-focus-disabled.svg" alt="focus"/>
+              <HoverButton v-else-if="selectedVideoName !== ''" class="h-5 w-5" @click="pushSelectedVideo(selectedVideoName)">
+                <template v-slot:original><img src="/src/assets/img/studentDetails/student-icon-focus.svg"  alt="focus"/></template>
+                <template v-slot:hover><img src="/src/assets/img/studentDetails/student-icon-focus-hover.svg"  alt="focus"/></template>
+              </HoverButton>
+              <img v-else class="h-5" src="/src/assets/img/studentDetails/student-icon-focus-disabled.svg"  alt="focus"/>
+            </div>
+          </div>
+        </div>
+
+        <!--Video list-->
+        <div v-if="showMedia" class="w-modal-width-sm h-96 flex flex-col overflow-y-auto">
+          <!--The assistant page is present but not counted-->
+          <div v-if="mobileFollower.videos.length === 0" class="py-1 flex flex-row w-full px-5 items-center justify-between">
+            <div class="w-full h-9 px-5 flex flex-row items-center overflow-ellipsis whitespace-nowrap">
+              <img class="flex-shrink-0 w-5 h-5 mr-2" src="/src/assets/img/icon-128.png"  alt=""/>
+              <span class="flex-shrink overflow-ellipsis whitespace-nowrap overflow-hidden pr-10 mt-0.5">No videos found...</span>
+            </div>
+          </div>
+
+          <div v-for="(video) in mobileFollower.videos" v-bind:key="video" class="py-1" :id="video.getName()">
+
+            <!--Individual applications-->
+            <div class="flex flex-row w-full px-5 items-center justify-between">
+              <div :class="{
+                  'w-full h-9 px-5 flex flex-row items-center overflow-ellipsis whitespace-nowrap': true,
+                  'overflow-hidden rounded-lg cursor-pointer': true,
+                  'hover:bg-opacity-50 hover:bg-gray-300': selectedVideoName !== video.getName(),
+                  'bg-white': selectedVideoName === video.getName(),
+                  }"
+                   @click="selectedVideoName = video.getName()"
+              >
+
+                <img class="flex-shrink-0 w-5 h-5 mr-2 cursor-pointer" src="" alt=""/>
+                <span class="flex-shrink overflow-ellipsis whitespace-nowrap overflow-hidden pr-10 mt-0.5">{{ video.getName() }}</span>
+              </div>
+            </div>
           </div>
         </div>
 
         <!--Application list-->
-        <div class="w-modal-width-sm h-96 flex flex-col overflow-y-auto">
+        <div v-else class="w-modal-width-sm h-96 flex flex-col overflow-y-auto">
           <!--The assistant page is present but not counted-->
           <div v-if="mobileFollower.tasks.length === 0" class="py-1 flex flex-row w-full px-5 items-center justify-between">
             <div class="w-full h-9 px-5 flex flex-row items-center overflow-ellipsis whitespace-nowrap">
@@ -167,7 +226,6 @@ function closeModal() {
               </div>
             </div>
           </transition-group>
-
         </div>
       </template>
 
@@ -175,7 +233,11 @@ function closeModal() {
         <footer class="w-modal-width-sm">
           <div class="h-12 bg-navy-side-menu rounded-b-sm flex">
             <button class="w-full p-1 flex justify-center">
-              <span class="w-1/2 h-full rounded-sm flex justify-center items-center hover:bg-white-menu-overlay"/>
+              <span class="w-1/2 h-full rounded-sm flex justify-center items-center hover:bg-white-menu-overlay"
+                  v-on:click="showMedia = !showMedia">
+                <img v-if="showMedia" class="w-7 h-7" src="/src/assets/img/student-icon-tasks.svg" alt="Icon"/>
+                <img v-else class="w-8 h-8" src="/src/assets/img/media-video.svg" alt="Icon"/>
+              </span>
             </button>
 
             <div class="h-10 mt-1 w-px bg-white"></div>
