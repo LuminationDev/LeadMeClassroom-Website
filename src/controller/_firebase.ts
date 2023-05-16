@@ -30,6 +30,20 @@ import type {
 const config = prodConfig;
 console.log(config)
 
+const toDataURL = (url: string) => fetch(url)
+    .then(response =>  response.blob())
+    .then(blob => new Promise((resolve, reject) => {
+        const reader = new FileReader()
+        reader.onloadend = () => resolve(reader.result)
+        reader.onerror = reject
+        reader.readAsDataURL(blob)
+    }));
+
+interface AppIcon {
+    imageName: string
+    imageData: string
+}
+
 class Firebase {
     private readonly callback: assistantCallbackFunction|null;
     private readonly firebase: FirebaseApp|undefined;
@@ -39,6 +53,7 @@ class Firebase {
     private readonly webFollowerRef = "webFollowers";
     private readonly mobileMessageRef = "mobileMessages";
     private readonly mobileFollowerRef = "mobileFollowers";
+    private appIconsList: Array<AppIcon> = [];
 
     constructor(callback: any = null) {
         this.callback = callback;
@@ -54,6 +69,30 @@ class Firebase {
         //Real-time database reference
         this.db = getDatabase(this.firebase);
         this.storage = getStorage(this.firebase);
+        getAuth()
+        const listRef = storageRef(this.storage, 'app_icons/')
+        listAll(listRef).then((res) => {
+            res.items.forEach((element) => {
+                getDownloadURL(element).then((result) => {
+                    toDataURL(result).then((imageData) => {
+                        if (typeof imageData === "string") {
+                            this.appIconsList.push({
+                                imageName: element.name,
+                                imageData: imageData
+                            })
+                        }
+                    })
+                })
+            })
+        })
+    }
+
+    getAppIcon(appPackageName: string) {
+        const index = this.appIconsList.findIndex(element => element.imageName === (appPackageName + ".JPG"))
+        if (index !== -1) {
+            return this.appIconsList[index].imageData
+        }
+        return null
     }
 
     /**

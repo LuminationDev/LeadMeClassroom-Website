@@ -205,7 +205,7 @@ const checkMedia = (packageName: string) => {
                     }"
                     @click="selectedApplicationId = application.id"
                 >
-                  <img class="flex-shrink-0 w-5 h-5 mr-2 cursor-pointer" :src="application.getIcon()" alt=""/>
+                  <img class="flex-shrink-0 w-5 h-5 mr-2 cursor-pointer" :src="dashboardPinia.firebase.getAppIcon(application.packageName)" alt=""/>
                   <span class="flex-shrink overflow-ellipsis whitespace-nowrap overflow-hidden pr-10 mt-0.5">{{ application.getName() }}</span>
 
                   <!--Audible icons-->

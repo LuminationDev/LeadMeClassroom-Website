@@ -540,7 +540,17 @@ export const useDashboardStore = defineStore("dashboard", {
          * @param snapshot
          */
         mobileFollowerAdded(UUID: string, snapshot: any) {
-            const follower = new MobileFollower(this.classCode, snapshot.name, snapshot.applications, UUID)
+            const appsWithoutImageData: Array<string> = []
+            const follower = new MobileFollower(this.classCode, snapshot.name, snapshot.applications.map((element: Application) => {
+                if (!this.firebase.getAppIcon(element.packageName)) {
+                    appsWithoutImageData.push(element.packageName)
+                }
+                return element
+            }), UUID)
+            if (appsWithoutImageData.length > 0) {
+                this.requestIndividualAction(follower.uniqueId, { type: REQUESTS.UPLOADICONS, action: appsWithoutImageData.join(":") }, REQUESTS.MOBILE)
+            }
+
             follower.muted = false
 
             const index = this.findFollowerIndex(UUID, REQUESTS.MOBILE);
