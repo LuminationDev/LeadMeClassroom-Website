@@ -30,7 +30,14 @@ export const UNBLOCK = "unblock";
 
 //App controls
 export const FORCEACTIVEAPP = "application";
-export const FORCEACTIVEVIDEO = "video";
+export const FORCEACTIVEVIDEOLINK = "video_link";
+export const FORCEACTIVEVIDEOLOCAL = "video_local";
 export const DEVICEAUDIO = "change_audio";
 export const MUTE = "mute";
 export const UNMUTE = "unmute";
+
+//Video controls
+export const VIDEOACTION = "video_action";
+export const VIDEOACTIONSTOP = "stop";
+export const VIDEOACTIONPLAY = "play";
+export const VIDEOACTIONPAUSE = "pause";

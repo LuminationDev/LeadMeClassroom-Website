@@ -1,6 +1,5 @@
-import type Follower from "./_follower";
-import Application from "../_application";
-import type Task from "../_task";
+import type { Follower, Task } from "../index";
+import { Application, Video } from "../index";
 import { v4 as uuidv4 } from 'uuid';
 import * as REQUESTS from "../../constants/_requests";
 import { ref } from "vue";
@@ -14,9 +13,11 @@ class MobileFollower implements Follower {
     classCode: string;
     name: string;
     uniqueId: string;
-    action: string = "None";
+    action: string = "none";
+    source: string = "none";
     currentApplication: Ref<UnwrapRef<string>> = ref(REQUESTS.MOBILE_PACKAGE);
     applications: Application[];
+    videos: Video[];
     webRTC: any;
     UUID: any;
     tasks: Task[];
@@ -26,11 +27,12 @@ class MobileFollower implements Follower {
     disconnected: boolean = false;
     offTask: boolean|null|undefined;
 
-    constructor(classCode = "", name = "", apps: any, uniqueId = uuidv4()) {
+    constructor(classCode = "", name = "", apps: any, videos: any, uniqueId = uuidv4()) {
         this.classCode = classCode;
         this.uniqueId = uniqueId;
         this.name = name;
         this.applications = this.followerApplicationsAdded(apps);
+        this.videos = this.followerVideosAdded(videos);
         this.permission = null;
         this.tasks = [];
     }
@@ -48,6 +50,21 @@ class MobileFollower implements Follower {
         })
 
         return applications;
+    }
+
+    followerVideosAdded(response: any) {
+        const videos: Array<Video> = []
+
+        //Bail out early if nothing has been recorded
+        if(response === null || response === undefined) return videos;
+
+        Object.values(response).forEach((video: any) => {
+            if(video.name === undefined && video.duration === undefined) { return; }
+            const newApp = new Video(video.name, video.name, video.duration)
+            videos.push(newApp)
+        })
+
+        return videos;
     }
 
     setCurrentApplication = (currentApplication: string) => {

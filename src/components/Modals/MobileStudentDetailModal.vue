@@ -10,6 +10,10 @@ import {Application} from "@/models";
 import { useDashboardStore } from "@/stores/dashboardStore";
 const dashboardPinia = useDashboardStore();
 
+defineEmits<{
+  (e: 'taskManager'): void
+}>()
+
 const props = defineProps({
   mobileFollower: {
     type: Object as PropType<MobileFollower>,
@@ -244,7 +248,10 @@ const checkMedia = (packageName: string) => {
         <footer class="w-modal-width-sm">
           <div class="h-12 bg-navy-side-menu rounded-b-sm flex">
             <button class="w-full p-1 flex justify-center">
-              <span class="w-1/2 h-full rounded-sm flex justify-center items-center hover:bg-white-menu-overlay"/>
+              <span class="w-1/2 h-full rounded-sm flex justify-center items-center hover:bg-white-menu-overlay"
+                    v-on:click="$emit('taskManager'); showModal = false">
+                <img class="w-9 h-5" src="/src/assets/img/student-icon-tasks.svg" alt="Icon"/>
+              </span>
             </button>
 
             <div class="h-10 mt-1 w-px bg-white"></div>

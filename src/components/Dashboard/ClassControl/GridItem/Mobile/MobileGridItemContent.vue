@@ -1,8 +1,10 @@
 <script setup lang="ts">
+import "../../../../../styles.css";
 import { computed, defineProps, PropType, ref } from "vue";
 import { MobileFollower } from "../../../../../models";
 import { Application } from "@/models";
 import { useDashboardStore } from "@/stores/dashboardStore";
+import MobileGridItemMediaPlayer from "./MobileGridItemMediaPlayer.vue";
 const dashboardPinia = useDashboardStore();
 
 const emit = defineEmits<{
@@ -52,7 +54,6 @@ const currentlyActiveApplication = computed((): Application | null | undefined =
   //TODO finish this later when tasks are completed
   checkActiveTask(props.mobileFollower.currentApplication.value);
 
-  //TODO fix this so mobileFollower.currentApplication is not a ref
   const packageName = Object.assign(props.mobileFollower.currentApplication);
   console.log(packageName);
 
@@ -66,7 +67,7 @@ const currentlyActiveApplication = computed((): Application | null | undefined =
   }
 
   return app;
-})
+});
 
 /**
  * Check if the active application is within the tasks array. The task array is populated when a teacher pushes
@@ -141,29 +142,10 @@ const revertInput = () => {
           <img class="flex-shrink-0 w-4 h-4 mr-2" :src="dashboardPinia.firebase.getAppIcon(currentlyActiveApplication.packageName)"  alt="Icon"/>
           <span class="overflow-ellipsis whitespace-nowrap overflow-hidden">{{ currentlyActiveApplication.getName() }}</span>
         </div>
-        <span v-if="currentlyActiveApplication.getName() === 'LeadMe VR'" class="overflow-ellipsis whitespace-nowrap overflow-hidden">{{ mobileFollower.action }}</span>
+
+        <!--Media player that controls the VR player-->
+        <MobileGridItemMediaPlayer v-if="currentlyActiveApplication.getName() === 'LeadMe VR'" :mobile-follower="mobileFollower" />
       </div>
     </div>
-
   </Transition>
 </template>
-
-<style>
-/* apply transition to moving elements */
-.list-move,
-.list-enter-active,
-.list-leave-active {
-  transition: all 0.5s ease;
-}
-
-.list-enter-from,
-.list-leave-to {
-  opacity: 0;
-}
-
-/* ensure leaving items are taken out of layout flow so that moving
-   animations can be calculated correctly. */
-.list-leave-active {
-  position: absolute;
-}
-</style>

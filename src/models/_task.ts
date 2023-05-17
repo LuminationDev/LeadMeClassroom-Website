@@ -1,4 +1,5 @@
 import * as REQUESTS from "../constants/_requests";
+import {FORCEACTIVEVIDEOLINK} from "../constants/_requests";
 
 class Task {
     private readonly name: string;
@@ -38,7 +39,7 @@ class Task {
             case "Website":
                 return { type: REQUESTS.WEBSITE, action: this.packageName };
             case "Video":
-                return { type: REQUESTS.FORCEACTIVEVIDEO, action: this.packageName };
+                return { type: REQUESTS.FORCEACTIVEVIDEOLINK, action: this.packageName };
             default:
                 console.log("Task is of unknown type");
                 return null;
