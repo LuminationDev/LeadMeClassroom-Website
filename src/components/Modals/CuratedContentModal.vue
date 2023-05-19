@@ -17,7 +17,7 @@ const shareTo = ref("all");
 const viewDescription = ref("");
 const followersSelected: Ref<string[]> = ref([]);
 const submissionAttempted = ref(false);
-const yearQuery = ref('1-12');
+const yearQuery = ref('R-12');
 const searchQuery = ref('');
 const subjectQuery = ref();
 const topicQuery = ref();
@@ -64,14 +64,28 @@ const sortedCuratedContent = computed((): Array<CuratedContentItem> => {
 });
 
 const containsYearLevel = (years: string) => {
-  const [start, end] = yearQuery.value.split('-').map(Number);
-  if (start && end && start <= end) {
-    const numbers = Array.from({ length: end - start + 1 }, (_, index) => start + index);
-    const numberArray = years.split(',').map(Number);
-    return numbers.some((num) => numberArray.includes(num));
+  if (yearQuery.value === 'R-12') {
+    return true;
   }
 
-  return true;
+  let [start, end] = yearQuery.value.split('-').map(String);
+  const reception = start === 'R' && end !== 'R';
+
+  if (reception) {
+    start = '1';
+  }
+
+  if (start && end && parseInt(start) <= parseInt(end)) {
+    const yearLevels = Array.from({ length: parseInt(end) - parseInt(start) + 1 }, (_, index) => String(parseInt(start) + index));
+    if (reception) {
+      yearLevels.push('R');
+    }
+
+    const itemYearArray = years.split(',');
+    return yearLevels.some(level => itemYearArray.includes(level));
+  }
+
+  return false;
 }
 
 const subjectList = computed(() => {
@@ -260,7 +274,7 @@ const updateTopic = (data: string) => {
 
 const resetModal = () => {
   selectedItems.value = [];
-  yearQuery.value = '1-12';
+  yearQuery.value = 'R-12';
   searchQuery.value = '';
   subjectQuery.value = undefined;
   topicQuery.value = undefined;

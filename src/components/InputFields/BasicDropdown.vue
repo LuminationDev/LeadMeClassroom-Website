@@ -6,12 +6,16 @@ const emit = defineEmits<{
 }>()
 
 const props = defineProps({
+  noOptions: {
+    type: String,
+    required: true
+  },
   previousOption: {
     type: String
   },
   options: {
     type: Array,
-    default: () => ['Option 1', 'Option 2', 'Option 3'],
+    default: () => [],
     validator: (value: any) => {
       return value.every((item: any) => typeof item === 'string');
     }
@@ -32,11 +36,13 @@ const selectOption = (option: string) => {
 };
 
 const displayOption = computed(() => {
-    if (!props.previousOption) {
-      return selectedOption?.value === undefined ? "Select an option" : selectedOption.value;
-    } else {
-      return props.previousOption;
-    }
+  if(props.options.length === 0) {
+    return props.noOptions;
+  } else if (!props.previousOption) {
+    return selectedOption?.value === undefined ? "Select an option" : selectedOption.value;
+  } else {
+    return props.previousOption;
+  }
 });
 </script>
 
@@ -47,7 +53,7 @@ const displayOption = computed(() => {
       {{displayOption}}
     </button>
 
-    <ul v-if="isOpen" class="w-52 max-h-96 overflow-y-auto absolute z-10 mt-2 py-2 bg-white border border-gray-300 rounded-md shadow-sm">
+    <ul v-if="isOpen && options.length > 0" class="w-52 max-h-96 overflow-y-auto absolute z-10 mt-2 py-2 bg-white border border-gray-300 rounded-md shadow-sm">
       <li
           @click="selectOption(undefined)"
           class="px-4 py-2 cursor-pointer hover:bg-gray-100">

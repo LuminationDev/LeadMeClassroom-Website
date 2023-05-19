@@ -6,8 +6,6 @@ import { onBeforeMount, onMounted, ref } from "vue";
 import { getAuth } from "@firebase/auth";
 import { useDashboardStore } from "@/stores/dashboardStore";
 import { useRouter } from "vue-router";
-import axios from "axios";
-import { CuratedContentItem } from "@/models";
 
 const dashboardPinia = useDashboardStore();
 const router = useRouter()
@@ -35,9 +33,6 @@ onMounted(async () => {
   //   // if (result && result === true) { return; }
   //   startOnboarding()
   // });
-
-  //TODO not sure if this is the best place for this.
-  dashboardPinia.curatedContent = await getData(request);
 });
 
 onBeforeMount(() => {
@@ -45,34 +40,6 @@ onBeforeMount(() => {
     name: 'dashboard'
   });
 });
-
-
-
-
-
-//TODO not sure if this is the best place for this.
-const convertValuesToModel = (values: any[][]): CuratedContentItem[] => {
-  //Remove the description row
-  const valuesToConvert = values.slice(1);
-
-  return valuesToConvert.map(([title, description, type, link, years, subjects, topics, live]) =>
-      new CuratedContentItem(title, description, type, link, years, subjects, topics, live)
-  );
-}
-
-//Load in the Google sheets data for the curated content
-const apiKey = "AIzaSyDn2DQ-ifbiMDJr610CBjbbQDh9nm1UG38";
-const spreadsheetId = '1qAmBZyXIHGaRIR1ZdV4r0JC7lRhYOXuAxS23mVvzqgg';
-const range = 'Sheet1!A1:H100'; // Replace with your desired sheet name and range
-const request = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values:batchGet?ranges=${range}&key=${apiKey}`;
-const getData = async (apiUrl: string): Promise<CuratedContentItem[]> => {
-  return await axios.get(apiUrl).then((res) => {
-    return convertValuesToModel(res.data.valueRanges[0].values);
-  }).catch(error => {
-    console.log(error);
-    return [];
-  });
-}
 </script>
 
 <template>

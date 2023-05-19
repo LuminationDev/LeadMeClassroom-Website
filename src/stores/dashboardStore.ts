@@ -1,11 +1,12 @@
 import { defineStore } from "pinia";
 import * as REQUESTS from "../constants/_requests.js";
 import Firebase from '../controller/_firebase';
-import { Leader, MobileFollower, Tab, WebFollower } from '../models';
+import { Leader, MobileFollower, Tab, WebFollower, CuratedContentItem } from '../models';
 import { useWebRTCStore } from "./webRTCStore";
 import type { User } from "@firebase/auth";
 import { getAuth, sendPasswordResetEmail } from "@firebase/auth";
-import type { Application, CuratedContentItem } from "@/models";
+import type { Application } from "@/models";
+import axios from "axios";
 
 interface userDetails {
     name: string,
@@ -34,6 +35,30 @@ const toDataURL = (url: string) => fetch(url)
         reader.readAsDataURL(blob)
     }));
 
+const convertValuesToModel = (values: any[][]): CuratedContentItem[] => {
+    //Remove the description row
+    const valuesToConvert = values.slice(1);
+
+    return valuesToConvert.map(([title, description, type, link, years, subjects, topics, live]) =>
+        new CuratedContentItem(title, description, type, link, years, subjects, topics, live)
+    );
+}
+
+//Load in the Google sheets data for the curated content
+const apiKey = "AIzaSyDn2DQ-ifbiMDJr610CBjbbQDh9nm1UG38";
+const spreadsheetId = '1qAmBZyXIHGaRIR1ZdV4r0JC7lRhYOXuAxS23mVvzqgg';
+const range = 'Sheet1!A1:H100'; // Replace with your desired sheet name and range
+const request = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values:batchGet?ranges=${range}&key=${apiKey}`;
+const getData = async (apiUrl: string): Promise<CuratedContentItem[]> => {
+    return await axios.get(apiUrl).then((res) => {
+        return convertValuesToModel(res.data.valueRanges[0].values);
+    }).catch(error => {
+        console.log(error);
+        return [];
+    });
+}
+const curatedContent = await getData(request);
+
 export const useDashboardStore = defineStore("dashboard", {
     state: () => {
         return {
@@ -51,7 +76,7 @@ export const useDashboardStore = defineStore("dashboard", {
             leader: new Leader(leaderDetails.name),
             webRTCPinia: useWebRTCStore(),
             user: <User|null>null,
-            curatedContent: <CuratedContentItem[]>([])
+            curatedContent
         }
     },
 
