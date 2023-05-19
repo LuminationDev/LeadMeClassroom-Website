@@ -1,12 +1,12 @@
 import { createApp } from 'vue'
 import { createPinia } from "pinia";
-import * as VueRouter from 'vue-router'
-import ClassControl from './components/Dashboard/ClassControl/ClassControlMain.vue'
-import Dashboard from './pages/dashboard/Dashboard.vue'
-import Account from './components/Dashboard/Account/AccountMain.vue'
-import LoginBase from './components/Dashboard/Login/LoginBase.vue'
-import './assets/main.css'
-import {getAuth} from "@firebase/auth";
+import * as VueRouter from 'vue-router';
+import ClassControl from './components/Dashboard/ClassControl/ClassControlMain.vue';
+import Dashboard from './pages/dashboard/Dashboard.vue';
+import Account from './components/Dashboard/Account/AccountMain.vue';
+import LoginBase from './components/Dashboard/Login/LoginBase.vue';
+import './assets/main.css';
+import { getAuth } from "@firebase/auth";
 
 const app = createApp(Dashboard);
 app.use(createPinia());

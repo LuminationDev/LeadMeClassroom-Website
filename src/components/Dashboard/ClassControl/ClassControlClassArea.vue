@@ -3,6 +3,7 @@ import ShareWebsiteModal from "../../../components/Modals/ShareWebsiteModal.vue"
 import ShareApplicationModal from "@/components/Modals/ShareApplicationModal.vue";
 import ShareVideoModal from "@/components/Modals/ShareVideoModal.vue";
 import ShareMediaModal from "@/components/Modals/ShareMediaModal.vue";
+import CuratedContentModal from "@/components/Modals/CuratedContentModal.vue";
 import ClassControlSessionArea from "./ClassControlSessionArea.vue";
 import * as REQUESTS from "../../../constants/_requests";
 import { ref } from "vue";
@@ -56,6 +57,10 @@ function openVideoModal() {
         <ShareVideoModal ref="videoRef" />
       </div>
 
+      <!--Curated content-->
+      <CuratedContentModal />
+
+      <!--Screen lock/unlock-->
       <button :class="{
           'w-56 h-9 flex justify-center font-medium items-center text-white': true,
           'bg-navy-side-menu hover:bg-navy-hover-session-button': locked,

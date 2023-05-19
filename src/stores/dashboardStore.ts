@@ -5,7 +5,7 @@ import { Leader, MobileFollower, Tab, WebFollower } from '../models';
 import { useWebRTCStore } from "./webRTCStore";
 import type { User } from "@firebase/auth";
 import { getAuth, sendPasswordResetEmail } from "@firebase/auth";
-import type { Application } from "@/models";
+import type { Application, CuratedContentItem } from "@/models";
 
 interface userDetails {
     name: string,
@@ -50,7 +50,8 @@ export const useDashboardStore = defineStore("dashboard", {
             webLink: "",
             leader: new Leader(leaderDetails.name),
             webRTCPinia: useWebRTCStore(),
-            user: <User|null>null
+            user: <User|null>null,
+            curatedContent: <CuratedContentItem[]>([])
         }
     },
 

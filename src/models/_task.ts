@@ -1,5 +1,4 @@
 import * as REQUESTS from "../constants/_requests";
-import {FORCEACTIVEVIDEOLINK} from "../constants/_requests";
 
 class Task {
     private readonly name: string;
@@ -36,8 +35,10 @@ class Task {
         switch (this.type) {
             case "Application":
                 return { type: REQUESTS.FORCEACTIVEAPP, action: this.packageName };
+            case "LINK":
             case "Website":
                 return { type: REQUESTS.WEBSITE, action: this.packageName };
+            case "YOUTUBE":
             case "Video":
                 return { type: REQUESTS.FORCEACTIVEVIDEOLINK, action: this.packageName };
             default:
