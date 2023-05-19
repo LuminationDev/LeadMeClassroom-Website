@@ -45,8 +45,8 @@ const convertValuesToModel = (values: any[][]): CuratedContentItem[] => {
 }
 
 //Load in the Google sheets data for the curated content
-const apiKey = "AIzaSyDn2DQ-ifbiMDJr610CBjbbQDh9nm1UG38";
-const spreadsheetId = '1qAmBZyXIHGaRIR1ZdV4r0JC7lRhYOXuAxS23mVvzqgg';
+const apiKey = import.meta.env.VITE_SHEETS_API_KEY;
+const spreadsheetId = import.meta.env.VITE_SHEETS_ID;
 const range = 'Sheet1!A1:H100'; // Replace with your desired sheet name and range
 const request = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values:batchGet?ranges=${range}&key=${apiKey}`;
 const getData = async (apiUrl: string): Promise<CuratedContentItem[]> => {
