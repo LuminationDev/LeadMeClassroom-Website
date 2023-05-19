@@ -9,7 +9,6 @@ import { useDashboardStore } from "@/stores/dashboardStore";
 
 const dashboardPinia = useDashboardStore();
 const showModal = ref(false);
-const shareType = ref("single");
 const shareTo = ref("all");
 const followersSelected: Ref<string[]> = ref([]);
 const submissionAttempted = ref(false);
@@ -36,21 +35,6 @@ const addOrRemoveApplication = (application: Application) => {
   }
 }
 
-const selectedApplicationId = ref("");
-const selectedApplication = computed(() => {
-  let apps = dashboardPinia.collectUniqueApplications();
-  if(apps === undefined) {
-    return null;
-  }
-
-  if (apps?.length === 0) {
-    selectedApplicationId.value = "-1";
-    return null;
-  }
-
-  return apps?.find(res => res.id === selectedApplicationId.value);
-});
-
 async function validateAndSubmit() {
   submissionAttempted.value = true
   if (shareTo.value === "selected" && followersSelected.value.length === 0) {
@@ -74,7 +58,7 @@ function handleFollowerSelection(UUID: string, value: boolean) {
 }
 
 function submit() {
-  shareType.value === 'single' ? singleApp() : multiApp();
+  selectedApplications.value.length > 1 ? singleApp() : multiApp();
   closeModal();
 }
 
@@ -83,11 +67,11 @@ function submit() {
  */
 function singleApp() {
   if (shareTo.value === 'all') {
-    dashboardPinia.requestAction({type: REQUESTS.FORCEACTIVEAPP, action: selectedApplicationId.value}, REQUESTS.MOBILE);
+    dashboardPinia.requestAction({type: REQUESTS.FORCEACTIVEAPP, action: selectedApplications.value[0]}, REQUESTS.MOBILE);
   }
   else if (shareTo.value === 'selected') {
     followersSelected.value.forEach(id => {
-      dashboardPinia.requestIndividualAction(id, {type: REQUESTS.FORCEACTIVEAPP, action: selectedApplicationId.value}, REQUESTS.MOBILE)
+      dashboardPinia.requestIndividualAction(id, {type: REQUESTS.FORCEACTIVEAPP, action: selectedApplications.value[0]}, REQUESTS.MOBILE)
     });
   }
 }
@@ -149,23 +133,8 @@ function closeModal() {
           <div class="h-96 flex flex-col overflow-y-auto">
             <div v-for="(application) in dashboardPinia.collectUniqueApplications()" v-bind:key="application" class="py-1" :id="application.id">
 
-              <!--Individual applications-->
-              <div v-if="shareType === 'single'" class="flex flex-row w-full px-5 items-center justify-between">
-                <div :class="{
-                      'w-full h-9 px-5 flex flex-row items-center overflow-ellipsis whitespace-nowrap': true,
-                      'overflow-hidden rounded-lg cursor-pointer': true,
-                      'hover:bg-opacity-50 hover:bg-gray-300': selectedApplication?.id !== application.id,
-                      'bg-white': selectedApplication?.id === application.id,
-                      }"
-                     @click="selectedApplicationId = application.id"
-                >
-                  <img class="flex-shrink-0 w-5 h-5 mr-2 cursor-pointer" :src="dashboardPinia.firebase.getAppIcon(application.packageName)" alt=""/>
-                  <span class="flex-shrink overflow-ellipsis whitespace-nowrap overflow-hidden pr-10 mt-0.5">{{ application.getName() }}</span>
-                </div>
-              </div>
-
-              <!--Multiple applications-->
-              <div v-else-if="shareType === 'multi'" class="flex flex-row w-full px-5 items-center justify-between">
+              <!--Select applications-->
+              <div class="flex flex-row w-full px-5 items-center justify-between">
                 <div :class="{
                       'w-full h-9 px-5 flex flex-row items-center overflow-ellipsis whitespace-nowrap': true,
                       'overflow-hidden rounded-lg cursor-pointer': true,
@@ -174,7 +143,7 @@ function closeModal() {
                       }"
                      @click="addOrRemoveApplication(application)"
                 >
-                  <img class="flex-shrink-0 w-5 h-5 mr-2 cursor-pointer" :src="application.getIcon()" alt=""/>
+                  <img class="flex-shrink-0 w-5 h-5 mr-2 cursor-pointer" :src="dashboardPinia.firebase.getAppIcon(application.packageName)" alt=""/>
                   <span class="flex-shrink overflow-ellipsis whitespace-nowrap overflow-hidden pr-10 mt-0.5">{{ application.getName() }}</span>
                 </div>
               </div>
@@ -182,20 +151,7 @@ function closeModal() {
             </div>
           </div>
 
-          <div class="mx-14 mt-8 h-20 bg-white flex items-center justify-between">
-            <p class="ml-8 text-lg font-medium mr-2">Share to</p>
-            <div class="flex justify-start">
-              <label class="mr-4 lg:mr-14 flex justify-between items-center">
-                <input class="h-5 w-5 mr-4" name="shareType" type="radio" v-model="shareType" value="single">
-                <span class="text-base">Single application</span>
-              </label>
-
-              <label class="flex justify-between items-center mr-8 lg:mr-20">
-                <input class="h-5 w-5 mr-4" name="shareType" type="radio" v-model="shareType" value="multi">
-                <span class="text-base">Multiple applications</span>
-              </label>
-            </div>
-
+          <div class="mx-14 mt-8 h-20 bg-white flex items-center justify-end">
             <div class="flex justify-start">
               <label class="mr-4 lg:mr-14 flex justify-between items-center">
                 <input class="h-5 w-5 mr-4" name="shareTo" type="radio" v-model="shareTo" value="all">
@@ -242,14 +198,14 @@ function closeModal() {
                   src="/src/assets/img/student-icon-alert.svg"
                   alt="alert icon"
               />
-              <span>Please select a user to share this link to</span>
+              <span>Please select a user to share {{ selectedApplications.length > 1 ? 'these applications to' : 'this application to' }}.</span>
               <div class="absolute bottom-0 right-0 border-b-white h-0 w-0 rotate-180 border-x-8 border-x-transparent border-b-[1rem] -mb-2 mr-10"></div>
             </div>
 
             <GenericButton
                 class="w-52 h-12 text-white bg-blue-500 rounded-lg text-base hover:bg-blue-400 font-medium"
                 :callback="validateAndSubmit"
-            >Share application</GenericButton>
+            >{{ selectedApplications.length > 1 ? 'Add to tasks' : 'Share link' }}</GenericButton>
           </div>
         </footer>
       </template>

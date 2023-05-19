@@ -2,11 +2,11 @@
 import DashboardOnboarding from "./DashboardOnboarding.vue";
 import DashboardSideMenu from "./DashboardSideMenu.vue";
 import DashboardTitleBar from "./DashboardTitleBar.vue";
-import { onMounted, ref, onBeforeMount } from "vue";
-import { getAuth, User } from "@firebase/auth";
+import { onBeforeMount, onMounted, ref } from "vue";
+import { getAuth } from "@firebase/auth";
+import { useDashboardStore } from "@/stores/dashboardStore";
+import { useRouter } from "vue-router";
 
-import { useDashboardStore } from "../../stores/dashboardStore";
-import {useRouter} from "vue-router";
 const dashboardPinia = useDashboardStore();
 const router = useRouter()
 
@@ -19,13 +19,13 @@ function startOnboarding() {
 }
 
 //Check for any active class on load
-onMounted(() => {
+onMounted(async () => {
   const auth = getAuth()
   dashboardPinia.user = auth.currentUser
   if (dashboardPinia.user) {
     emailVerified.value = dashboardPinia.user.emailVerified
   }
-  dashboardPinia.attachClassListeners(true)
+  await dashboardPinia.attachClassListeners(true)
 
   // todo
   // startOnboarding()
@@ -39,8 +39,7 @@ onBeforeMount(() => {
   router.push({
     name: 'dashboard'
   });
-})
-
+});
 </script>
 
 <template>
