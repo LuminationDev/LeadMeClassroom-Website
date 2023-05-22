@@ -1,4 +1,5 @@
 import { defineStore } from "pinia";
+import { useStorage } from "@/hooks/useStorage";
 import * as REQUESTS from "../constants/_requests.js";
 import Firebase from '../controller/_firebase';
 import { Leader, MobileFollower, Tab, WebFollower, CuratedContentItem } from '../models';
@@ -15,13 +16,15 @@ interface userDetails {
 
 const firebase = new Firebase();
 const leaderDetails = <userDetails>await firebase.getDisplayDetails();
+const { getLocalStorage, setLocalStorage, removeLocalStorage } = useStorage();
 
 /**
  * When the dashboard is first loaded or if the page is refreshed check to see if there was
  * an active class set the necessary details.
  */
 async function onLoad() {
-    return "";
+    const currentClass = await getLocalStorage("CurrentClass") as string;
+    return currentClass ? currentClass : "";
 }
 
 let activeCode = await onLoad();
@@ -110,7 +113,7 @@ export const useDashboardStore = defineStore("dashboard", {
             //Calling before class code can be attached?
             this.firebase.connectAsLeader(<Leader>this.leader, () => { this.attachClassListeners(false )});
             await this.clearTasks();
-            // todo - store classcode somewhere
+            await setLocalStorage("CurrentClass", this.leader.getClassCode());
 
             await new Promise(res => setTimeout(res, 200));
             this.classCode = this.leader.getClassCode();
@@ -232,7 +235,7 @@ export const useDashboardStore = defineStore("dashboard", {
             this.webFollowers = [];
             this.mobileFollowers = [];
 
-            // todo - remove the stored current class code
+            await removeLocalStorage("CurrentClass");
             await this.clearTasks();
 
             await new Promise(res => setTimeout(res, 200));

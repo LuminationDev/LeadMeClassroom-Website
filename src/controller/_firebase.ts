@@ -284,7 +284,6 @@ class Firebase {
         });
     }
 
-    //TODO include the mobile followers
     /**
      * Run through all the student entries within the existing class entry and reattach the listeners that may have
      * been severed when a page reload occurred, loading the students again to the dashboard as well.
@@ -292,8 +291,8 @@ class Firebase {
      * @param followerResponse
      */
     reloadFollowers = (classCode: string, followerResponse: responseType) => {
-        const followerRef = ref(this.db, `/${this.webFollowerRef}/${classCode}`);
-        get(followerRef).then((snapshot) => {
+        const webFollowerRef = ref(this.db, `/${this.webFollowerRef}/${classCode}`);
+        get(webFollowerRef).then((snapshot) => {
             snapshot.forEach(entry => {
                 followerResponse(entry.key!, entry.val().screenshot, entry.val().name, null);
             });
@@ -380,8 +379,12 @@ class Firebase {
         listAll(screenshotsRef).then((res) => {
             res.items.forEach(screenshotRef => {
                 deleteObject(screenshotRef)
-                    .then(function () { console.log("Removed screenshots succeeded.") })
-                    .catch(function (error) { console.log("Remove failed: " + error.message) });
+                    .then(function () {
+                        console.log("Removed screenshots succeeded.")
+                    })
+                    .catch(function (error) {
+                        console.log("Remove failed: " + error.message)
+                    });
             })
         });
     }
