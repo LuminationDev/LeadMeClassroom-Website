@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import { VOnboardingWrapper, VOnboardingStep, useVOnboarding } from 'v-onboarding'
+import { useStorage } from "@/hooks/useStorage";
+import { VOnboardingWrapper, VOnboardingStep, useVOnboarding } from 'v-onboarding';
+
 const steps = ref([
   {
     attachTo: {
@@ -150,24 +152,24 @@ const steps = ref([
 ]);
 
 const wrapper = ref(null)
-let start: () => void, goToStep: (newStepNumber: (number | ((currentStepNumber: number) => number))) => void,
-    finish: () => void;
-({start, goToStep, finish} = useVOnboarding(wrapper));
+const { start, goToStep, finish } = useVOnboarding(wrapper);
 
-function closeOnboarding() {
-// todo - track if we've done onboarding before
-  finish()
+const { setLocalStorage } = useStorage();
+
+async function closeOnboarding() {
+  await setLocalStorage("onboarding_completed", true);
+  finish();
 }
 
 defineExpose({
   start,
-})
+});
 </script>
 
 <template>
   <VOnboardingWrapper ref="wrapper" :steps="steps">
-    <template #default="{ previous, next, step, exit, isFirst, isLast, index }">
-      <VOnboardingStep :options="step.options">
+    <template #default="{ previous, next, step, isFirst, isLast, index }">
+      <VOnboardingStep>
         <div class="bg-white shadow sm:rounded-lg m-2 h-96 w-onboarding-width">
           <div class="flex flex-col justify-between h-full">
             <div class="flex justify-end px-6 pt-6">
@@ -175,6 +177,7 @@ defineExpose({
                 <img src="/src/assets/img/onboarding/close.svg" alt="close"/>
               </button>
             </div>
+
             <div class="px-6 py-6">
               <div v-if="step.content" class="flex flex-row items-center">
                 <div class="pr-16" style="width: 55%">
@@ -188,21 +191,22 @@ defineExpose({
             </div>
 
             <div>
-            <div class="border-t-gray-200 border-t-2 px-6 py-6 flex flex-row justify-between items-center">
-              <div class="flex flex-row align-middle h-full">
-                <button
-                    @click="() => {goToStep(indexCounter)}"
-                    v-for="(stepCounter, indexCounter) in steps"
-                    :key="indexCounter"
-                    class="h-2.5 w-2.5 rounded-2xl first:ml-0 ml-2"
-                    :class="index === indexCounter ? 'bg-blue-500' : 'bg-gray-300'"/>
+              <div class="border-t-gray-200 border-t-2 px-6 py-6 flex flex-row justify-between items-center">
+                <div class="flex flex-row align-middle h-full">
+                  <button
+                      @click="() => {goToStep(indexCounter)}"
+                      v-for="(stepCounter, indexCounter) in steps"
+                      :key="indexCounter"
+                      class="h-2.5 w-2.5 rounded-2xl first:ml-0 ml-2"
+                      :class="index === indexCounter ? 'bg-blue-500' : 'bg-gray-300'"/>
+                </div>
+                <div>
+                  <button v-if="!isLast" @click="closeOnboarding" class="text-md text-lg">Skip</button>
+                  <button v-if="!isFirst" @click="previous" class="text-blue-500 font-semibold text-lg ml-4">Previous</button>
+                  <button v-if="!isLast" @click="next" class="text-blue-500 font-semibold text-lg ml-4">Next</button>
+                  <button v-else @click="closeOnboarding" class="text-blue-500 text-lg ml-4">Finish</button>
+                </div>
               </div>
-              <div>
-                <button @click="closeOnboarding" class="text-md text-lg">Skip</button>
-                <button v-if="!isLast" @click="next" class="text-blue-500 font-semibold text-lg ml-4">Next</button>
-                <button v-else @click="closeOnboarding" class="text-blue-500 text-lg ml-4">Finish</button>
-              </div>
-            </div>
             </div>
           </div>
         </div>

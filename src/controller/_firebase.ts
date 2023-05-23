@@ -26,18 +26,10 @@ import type {
     readIceCandidateType,
     responseType, tabChangedType, tabRemovedType, tabsAddedType
 } from "@/constants/_functionTypes";
+import { toDataURL } from "@/controller/_dataRequests";
 
 const config = prodConfig;
 console.log(config)
-
-const toDataURL = (url: string) => fetch(url)
-    .then(response =>  response.blob())
-    .then(blob => new Promise((resolve, reject) => {
-        const reader = new FileReader()
-        reader.onloadend = () => resolve(reader.result)
-        reader.onerror = reject
-        reader.readAsDataURL(blob)
-    }));
 
 interface AppIcon {
     imageName: string
@@ -87,6 +79,10 @@ class Firebase {
         })
     }
 
+    /**
+     * Get an application icon from the preloaded list.
+     * @param appPackageName A string of the application name to load.
+     */
     getAppIcon(appPackageName: string) {
         const index = this.appIconsList.findIndex(element => element.imageName === (appPackageName + ".JPG"))
         if (index !== -1) {
@@ -284,7 +280,6 @@ class Firebase {
         });
     }
 
-    //TODO include the mobile followers
     /**
      * Run through all the student entries within the existing class entry and reattach the listeners that may have
      * been severed when a page reload occurred, loading the students again to the dashboard as well.
@@ -292,8 +287,8 @@ class Firebase {
      * @param followerResponse
      */
     reloadFollowers = (classCode: string, followerResponse: responseType) => {
-        const followerRef = ref(this.db, `/${this.webFollowerRef}/${classCode}`);
-        get(followerRef).then((snapshot) => {
+        const webFollowerRef = ref(this.db, `/${this.webFollowerRef}/${classCode}`);
+        get(webFollowerRef).then((snapshot) => {
             snapshot.forEach(entry => {
                 followerResponse(entry.key!, entry.val().screenshot, entry.val().name, null);
             });
@@ -380,8 +375,12 @@ class Firebase {
         listAll(screenshotsRef).then((res) => {
             res.items.forEach(screenshotRef => {
                 deleteObject(screenshotRef)
-                    .then(function () { console.log("Removed screenshots succeeded.") })
-                    .catch(function (error) { console.log("Remove failed: " + error.message) });
+                    .then(function () {
+                        console.log("Removed screenshots succeeded.")
+                    })
+                    .catch(function (error) {
+                        console.log("Remove failed: " + error.message)
+                    });
             })
         });
     }
