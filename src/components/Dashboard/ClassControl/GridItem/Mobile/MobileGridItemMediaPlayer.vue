@@ -18,6 +18,14 @@ const requestedAction = ref("none");
 const loading = computed(() => {
   //If the mobileFollower action and selected action are not the same then show the loading symbol for x seconds or
   //until the actions are aligned
+
+  // eslint-disable-next-line vue/no-async-in-computed-properties
+  setTimeout(() => {
+    if(requestedAction.value !== props.mobileFollower.action) {
+      requestedAction.value = props.mobileFollower.action;
+    }
+  }, 3000);
+
   return requestedAction.value !== props.mobileFollower.action;
 });
 
