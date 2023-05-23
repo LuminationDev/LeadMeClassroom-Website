@@ -26,18 +26,10 @@ import type {
     readIceCandidateType,
     responseType, tabChangedType, tabRemovedType, tabsAddedType
 } from "@/constants/_functionTypes";
+import { toDataURL } from "@/controller/_dataRequests";
 
 const config = prodConfig;
 console.log(config)
-
-const toDataURL = (url: string) => fetch(url)
-    .then(response =>  response.blob())
-    .then(blob => new Promise((resolve, reject) => {
-        const reader = new FileReader()
-        reader.onloadend = () => resolve(reader.result)
-        reader.onerror = reject
-        reader.readAsDataURL(blob)
-    }));
 
 interface AppIcon {
     imageName: string
@@ -87,6 +79,10 @@ class Firebase {
         })
     }
 
+    /**
+     * Get an application icon from the preloaded list.
+     * @param appPackageName A string of the application name to load.
+     */
     getAppIcon(appPackageName: string) {
         const index = this.appIconsList.findIndex(element => element.imageName === (appPackageName + ".JPG"))
         if (index !== -1) {
