@@ -9,6 +9,7 @@ import {useDashboardStore} from "@/stores/dashboardStore";
 import * as REQUESTS from "@/constants/_requests";
 import CuratedContentDescription from "@/components/CuratedContent/CuratedContentDescription.vue";
 import ContentFilter from "@/components/CuratedContent/ContentFilter.vue";
+import CuratedContentListItem from "@/components/CuratedContent/CuratedContentListItem.vue";
 
 const dashboardPinia = useDashboardStore();
 const showModal = ref(false);
@@ -301,7 +302,7 @@ const resetModal = () => {
     <Modal :show="showModal" @close="closeModal">
       <template v-slot:header>
         <header class="h-20 px-8 w-modal-width bg-white flex justify-between items-center rounded-t-lg">
-          <p class="text-2xl font-medium">Explore the curated content</p>
+          <p class="text-2xl font-medium">Select content</p>
 
           <div class="flex flex-row items-center">
             <!--Allow a user to search via the input-->
@@ -323,14 +324,9 @@ const resetModal = () => {
             </div>
 
             <!--Show the filter menu-->
-            <button class="w-32 h-12 mr-4 text-white bg-navy-side-menu rounded-lg text-base hover:bg-navy-hover-session-button font-medium"
-                    v-on:click="showFilter = !showFilter"
-            >Filter</button>
-
-            <!--Show the filter menu-->
-            <button class="w-32 h-12 text-white bg-navy-side-menu rounded-lg text-base hover:bg-navy-hover-session-button font-medium"
-                    v-on:click="resetModal"
-            >Reset</button>
+            <button v-on:click="showFilter = !showFilter">
+              <img src="/src/assets/icons/filter.svg">
+            </button>
 
             <img
                 v-on:click="closeModal"
@@ -347,41 +343,38 @@ const resetModal = () => {
 
           <div v-if="viewDescription === ''" class="flex flex-col h-96">
             <!--Show the filter area-->
-            <ContentFilter
-                v-if="showFilter"
-                :selected-Year="yearQuery"
-                @yearQuery="updateYear"
-                :selected-subject="subjectQuery"
-                @subjectQuery="updateSubject"
-                :subjects="subjectList"
-                :selected-topic="topicQuery"
-                @topicQuery="updateTopic"
-                :topics="topicList"/>
+            <div class="relative">
+              <div class="absolute right-0 h-80 z-10 my-8">
+                <Transition name="slide-fade">
+                  <ContentFilter
+                      v-if="showFilter"
+                      :selected-Year="yearQuery"
+                      @yearQuery="updateYear"
+                      :selected-subject="subjectQuery"
+                      @subjectQuery="updateSubject"
+                      :subjects="subjectList"
+                      :selected-topic="topicQuery"
+                      @topicQuery="updateTopic"
+                      :topics="topicList"/>
+                </Transition>
+              </div>
+              <Transition name="fade">
+                <div v-if="showFilter" @click="showFilter = false" class="absolute h-96 w-modal-width bg-gray-300 z-5 opacity-70"></div>
+              </Transition>
+            </div>
 
             <!--Load in the curated content-->
             <div class="max-h-96 shrink flex flex-col overflow-y-auto">
               <!--List of curated content items-->
-              <div v-for="(content) in sortedCuratedContent" v-bind:key="content.getTitle()" class="py-1" :id="content.getTitle()">
-                <div class="flex flex-row w-full px-5 items-center justify-between">
-                  <div :class="{
-                        'w-full h-9 pl-5 pr-1 flex flex-row justify-between items-center overflow-ellipsis whitespace-nowrap': true,
-                        'overflow-hidden rounded-lg cursor-pointer': true,
-                        'hover:bg-opacity-50 hover:bg-gray-300': selectedItems.findIndex(item => item.getPackageName() === content.getLink()) === -1,
-                        'bg-white': selectedItems.findIndex(item => item.getPackageName() === content.getLink()) !== -1,
-                        }"
-                  >
-                    <span class="flex-grow overflow-ellipsis whitespace-nowrap overflow-hidden pr-10 mt-0.5"
-                         @click="addOrRemoveItem(content)">{{ content.getTitle() }}</span>
-                    <img class="flex-shrink-0 w-5 h-5 cursor-pointer" src="src/assets/img/options-back.svg" alt=""
-                         @click="viewDescription = content.getLink()"/>
-                  </div>
-                </div>
-              </div>
+              <CuratedContentListItem
+                  v-for="(content, index) in sortedCuratedContent"
+                  :key="index"
+                  :content-item="content"
+                  :selected="selectedItems.findIndex(item => item.getPackageName() === content.getLink()) !== -1"
+                  @select="addOrRemoveItem(content)">
+              </CuratedContentListItem>
             </div>
           </div>
-
-          <!--An individual curated content items details-->
-          <CuratedContentDescription v-else class="h-96 overflow-y-auto" :content-item="selectedItemDescription" @return="viewDescription = ''"/>
 
           <div class="mx-14 mt-8 h-20 bg-white flex items-center justify-between">
             <p class="ml-8 text-lg font-medium mr-2">Share to</p>
@@ -488,3 +481,29 @@ const resetModal = () => {
     </Modal>
   </Teleport>
 </template>
+
+<style>
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+.slide-fade-enter-active {
+  transition: all 0.5s ease-out;
+}
+
+.slide-fade-leave-active {
+  transition: all 0.5s cubic-bezier(1, 0.5, 0.8, 1);
+}
+
+.slide-fade-enter-from,
+.slide-fade-leave-to {
+  transform: translateX(80px);
+  opacity: 0;
+}
+</style>
