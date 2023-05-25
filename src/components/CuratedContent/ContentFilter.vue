@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import {watch, ref} from "vue";
 import BasicDropdown from "@/components/InputFields/BasicDropdown.vue";
+import VueSlider from 'vue-slider-component'
+import 'vue-slider-component/theme/default.css'
 
 const emit = defineEmits<{
   (e: 'subjectQuery', value: string): void
@@ -38,22 +40,9 @@ const props = defineProps({
 const lowerYearFilter = ref(props.selectedYear.split('-')[0] === 'R' ? '0' : props.selectedYear.split('-')[0]);
 const upperYearFilter = ref(props.selectedYear.split('-')[1]);
 
-watch(lowerYearFilter, (newValue) => {
-  if(parseInt(newValue) >= parseInt(upperYearFilter.value)) {
-    upperYearFilter.value = newValue;
-  }
-
-  //Emit new range
-  emit('yearQuery', `${lowerYearFilter.value === '0' ? 'R' : lowerYearFilter.value}-${upperYearFilter.value === '0' ? 'R' : upperYearFilter.value}`);
-});
-
-watch(upperYearFilter, (newValue) => {
-  if(parseInt(newValue) <= parseInt(lowerYearFilter.value)) {
-    lowerYearFilter.value = newValue;
-  }
-
-  //Emit new range
-  emit('yearQuery', `${lowerYearFilter.value === '0' ? 'R' : lowerYearFilter.value}-${upperYearFilter.value === '0' ? 'R' : upperYearFilter.value}`);
+const yearFilter = ref(["R", "12"])
+watch(yearFilter, (newValue) => {
+  emit('yearQuery', `${newValue[0]}-${newValue[1]}`)
 })
 
 const emitSubject = (data: string) => {
@@ -66,16 +55,15 @@ const emitTopic = (data: string) => {
 </script>
 
 <template>
-  <div class="w-modal-width h-20 flex flex-row bg-white rounded-b-lg justify-around">
+  <div class="h-full flex flex-col bg-white rounded-l-lg justify-around px-10">
     <!--Year selection-->
     <div class="w-52 flex flex-col">
       Years
 
       <div class="flex flex-col">
-        <input type="range" v-model="lowerYearFilter" :min="0" :max="12" :step="1"/>
-        <input type="range" v-model="upperYearFilter" :min="0" :max="12" :step="1"/>
+        <VueSlider v-model="yearFilter" :data="['R', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12']"/>
       </div>
-      <p>Selected range: {{ lowerYearFilter === '0' ? 'R' : lowerYearFilter }} - {{ upperYearFilter === '0' ? 'R' : upperYearFilter}}</p>
+      <p>Selected range: {{ yearFilter[0] }} - {{ yearFilter[1] }}</p>
     </div>
 
     <!--Subject selection-->
