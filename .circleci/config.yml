@@ -1,0 +1,60 @@
+version: 2.1
+
+orbs:
+  node: circleci/node@5.1.0
+
+commands:
+  build-and-deploy:
+    parameters:
+      buildType:
+        type: string
+      command:
+        type: string
+    steps:
+      - checkout
+      - run:
+          name: "npm ci"
+          command: "npm ci"
+      - run:
+          name: "build"
+          command: "npm run build"
+      - store_artifacts:
+          path: ~/project/dist
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - project/dist
+
+jobs:
+  run-tests:
+    docker:
+      - image: cimg/node:current
+    steps:
+      - checkout
+      - run:
+          name: Install dependencies
+          command: |
+            npm ci
+      - run:
+          name: Run tests
+          command: |
+            npm test
+  build:
+    executor:
+      name: node/default
+    steps:
+      - build-and-deploy
+
+workflows:
+  build:
+    jobs:
+      - hold:
+          context: LeadMeDeployers
+          type: approval
+          filters:
+            branches:
+              only:
+                - main
+      - build:
+          requires:
+            - hold
