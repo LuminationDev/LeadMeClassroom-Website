@@ -1,15 +1,7 @@
 version: 2.1
 
-orbs:
-  node: circleci/node@5.1.0
-
 commands:
   build-and-deploy:
-    parameters:
-      buildType:
-        type: string
-      command:
-        type: string
     steps:
       - checkout
       - run:
@@ -43,8 +35,8 @@ jobs:
           command: |
             npm test
   build-job:
-    executor:
-      name: node/default
+    docker:
+      - image: cimg/node:current
     steps:
       - build-and-deploy
 
