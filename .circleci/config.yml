@@ -1,0 +1,63 @@
+version: 2.1
+
+orbs:
+  node: circleci/node@5.1.0
+
+commands:
+  build-and-deploy:
+    parameters:
+      buildType:
+        type: string
+      command:
+        type: string
+    steps:
+      - checkout
+      - run:
+          name: "npm ci"
+          command: "npm ci"
+      - run:
+          name: "build"
+          command: "npm run build"
+      - store_artifacts:
+          path: ~/project/dist
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - project/dist
+      - run:
+          name: Deploy Main to Firebase
+          command: ./node_modules/.bin/firebase deploy --token=$FIREBASE_DEPLOY_TOKEN
+
+jobs:
+  run-tests:
+    docker:
+      - image: cimg/node:current
+    steps:
+      - checkout
+      - run:
+          name: Install dependencies
+          command: |
+            npm ci
+      - run:
+          name: Run tests
+          command: |
+            npm test
+  build-job:
+    executor:
+      name: node/default
+    steps:
+      - build-and-deploy
+
+workflows:
+  build-workflow:
+    jobs:
+      - hold:
+          context: LeadMeDeployers
+          type: approval
+          filters:
+            branches:
+              only:
+                - main
+      - build-job:
+          requires:
+            - hold
