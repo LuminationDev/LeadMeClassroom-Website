@@ -151,7 +151,7 @@ function clearFields() {
         <PasswordInput v-model="oldPassword" :v$="v$.oldPassword" class="mb-3" placeholder="Old Password"/>
 
         <!--New password-->
-        <PasswordInput v-model="v$.password.$model" :v$="v$.password" v-on:focusin="changed = false" placeholder="New password"/>
+        <PasswordInput v-model="password" :v$="v$.password" v-on:focusin="changed = false" placeholder="New password"/>
 
         <p class="w-64 px-1 text-red-400 mb-3">{{ error }}</p>
         <p class="w-64 px-1 text-green-400 mb-3">{{ response }}</p>

@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import {defineProps, PropType, ref} from 'vue'
-import { MobileFollower } from "../../../../../models";
+import {defineProps, ref} from 'vue'
+import type {PropType} from 'vue'
+import type { MobileFollower } from "../../../../../models";
 import MobileGridItemFooter from "./MobileGridItemFooter.vue";
 import MobileGridItemContent from "./MobileGridItemContent.vue";
 import MobileGridItemHeader from "./MobileGridItemHeader.vue";

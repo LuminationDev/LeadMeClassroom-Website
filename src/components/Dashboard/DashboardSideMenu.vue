@@ -18,8 +18,8 @@ onBeforeUnmount(() => {
   window.removeEventListener('resize', resizeHandler)
 })
 
-const resizeHandler = (e: Event) => {
-  screenSize.value = e?.currentTarget?.innerWidth
+const resizeHandler = (e: UIEvent) => {
+  screenSize.value = (e?.currentTarget as Window)?.innerWidth
 }
 
 const showSidebar = computed(() => {

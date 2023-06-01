@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import {defineProps, PropType, ref} from 'vue'
-import { WebFollower } from "../../../../../models";
+import {defineProps, ref} from 'vue'
+import type {PropType} from 'vue'
+import type { WebFollower } from "../../../../../models";
 import WebGridItemFooter from "./WebGridItemFooter.vue";
 import WebGridItemContent from "./WebGridItemContent.vue";
 import WebGridItemHeader from "./WebGridItemHeader.vue";

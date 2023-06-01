@@ -100,8 +100,8 @@ class Firebase {
 
         const currentUser = getAuth().currentUser;
         return {
-            name: currentUser?.displayName,
-            marketing: currentUser?.photoURL,
+            name: currentUser?.displayName ?? "",
+            marketing: currentUser?.photoURL ?? "false",
         };
     }
 

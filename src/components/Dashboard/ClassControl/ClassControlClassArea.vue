@@ -42,7 +42,7 @@ function openVideoModal() {
 <template>
   <div class="mt-14 px-5 lg:px-10 sticky top-0 w-full py-4 bg-panel-background">
     <div class="flex flex-row justify-between items-center">
-      <p class="text-3xl font-medium">{{ dashboardPinia.user.displayName }}'{{ dashboardPinia?.user?.displayName?.endsWith('s') ? '' : 's' }} Class</p>
+      <p class="text-3xl font-medium" v-if="dashboardPinia.user">{{ dashboardPinia.user.displayName }}'{{ dashboardPinia?.user?.displayName?.endsWith('s') ? '' : 's' }} Class</p>
       <ClassControlSessionArea />
     </div>
 

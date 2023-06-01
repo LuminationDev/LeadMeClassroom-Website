@@ -2,11 +2,12 @@
 import "../../styles.css";
 import Modal from "./Modal.vue";
 import * as REQUESTS from "../../constants/_requests";
-import {computed, defineProps, PropType, ref } from "vue";
-import MobileFollower from "../../models/Followers/_mobileFollower";
+import { computed, defineProps, ref } from "vue";
+import type { PropType } from "vue";
+import type MobileFollower from "../../models/Followers/_mobileFollower";
 import HoverButton from "../Buttons/HoverButton.vue";
 import Tooltip from "../Buttons/Tooltip.vue";
-import {Application} from "@/models";
+import type {Application} from "@/models";
 import { useDashboardStore } from "@/stores/dashboardStore";
 const dashboardPinia = useDashboardStore();
 
@@ -34,14 +35,14 @@ function openModal() {
   showModal.value = true
 
   if(props.mobileFollower.applications.length > 0) {
-    selectedApplicationId.value = props.mobileFollower.currentApplication.value;
+    selectedApplicationId.value = props.mobileFollower.currentApplication;
   }
 }
 
 //Track the currently selected application
 const selectedApplicationId = ref(REQUESTS.MOBILE_PACKAGE);
 const selectedApplication = computed(() => {
-  const packageName = Object.assign(props.mobileFollower.currentApplication);
+  const packageName = props.mobileFollower.currentApplication;
   console.log(packageName);
 
   if (props.mobileFollower.applications.length === 0) {
@@ -84,7 +85,10 @@ function muteOrUnmuteFollower(mute: boolean) {
   dashboardPinia.requestIndividualAction(props.mobileFollower.getUniqueId(), action, REQUESTS.MOBILE)
 }
 
-function changeActiveApplication(application: Application) {
+function changeActiveApplication(application: Application|null) {
+  if (application === null) {
+    return
+  }
   dashboardPinia.requestActiveMedia(
       props.mobileFollower.getUniqueId(),
       { type: REQUESTS.FORCEACTIVEAPP, action: application.getPackageName() },
@@ -161,7 +165,7 @@ const checkMedia = (packageName: string) => {
               <Tooltip :tip="'Bring to front'" />
 
               <img v-if="selectedApplicationId === '-1'" class="h-5" src="/src/assets/img/studentDetails/student-icon-focus-disabled.svg" alt="focus"/>
-              <HoverButton v-else-if="selectedApplication.id !== mobileFollower.applications[0].id" class="h-5 w-5" @click="changeActiveApplication(selectedApplication)">
+              <HoverButton v-else-if="selectedApplication && selectedApplication.id !== mobileFollower.applications[0].id" class="h-5 w-5" @click="changeActiveApplication(selectedApplication)">
                 <template v-slot:original><img src="/src/assets/img/studentDetails/student-icon-focus.svg"  alt="focus"/></template>
                 <template v-slot:hover><img src="/src/assets/img/studentDetails/student-icon-focus-hover.svg"  alt="focus"/></template>
               </HoverButton>
@@ -176,7 +180,6 @@ const checkMedia = (packageName: string) => {
                 <img class="h-4" src="/src/assets/img/studentDetails/student-icon-close-tab-disabled.svg"  alt="focus"/>
               </div>
 
-              <div v-else-if="selectedApplication.closing" class="lds-dual-ring h-5" />
               <HoverButton v-else @click="returnFollowerApplication()" class="h-5 w-5">
                 <template v-slot:original><img class="h-4" src="/src/assets/img/studentDetails/student-icon-close-tab.svg"  alt="close"/></template>
                 <template v-slot:hover><img class="h-4" src="/src/assets/img/studentDetails/student-icon-close-tab-hover.svg"  alt="close"/></template>
@@ -197,26 +200,26 @@ const checkMedia = (packageName: string) => {
           </div>
 
           <transition-group v-else name="list-complete" tag="div">
-            <div v-for="(application) in mobileFollower.applications" v-bind:key="application" class="py-1" :id="application.id">
+            <div v-for="(application, index) in mobileFollower.applications" :key="index" class="py-1" :id="application.id">
 
               <!--Individual applications-->
               <div class="flex flex-row w-full px-5 items-center justify-between">
                 <div :class="{
                     'w-full h-9 px-5 flex flex-row items-center overflow-ellipsis whitespace-nowrap': true,
                     'overflow-hidden rounded-lg cursor-pointer': true,
-                    'hover:bg-opacity-50 hover:bg-gray-300': selectedApplication.id !== application.id,
-                    'bg-white': selectedApplication.id === application.id,
+                    'hover:bg-opacity-50 hover:bg-gray-300': selectedApplication?.id !== application.id,
+                    'bg-white': selectedApplication?.id === application.id,
                     }"
                     @click="selectedApplicationId = application.id"
                 >
-                  <img class="flex-shrink-0 w-5 h-5 mr-2 cursor-pointer" :src="dashboardPinia.firebase.getAppIcon(application.packageName)" alt=""/>
+                  <img class="flex-shrink-0 w-5 h-5 mr-2 cursor-pointer" :src="dashboardPinia.firebase.getAppIcon(application.packageName) ?? undefined" alt=""/>
                   <span class="flex-shrink overflow-ellipsis whitespace-nowrap overflow-hidden pr-10 mt-0.5">{{ application.getName() }}</span>
 
                   <!--Audible icons-->
                   <div class="flex flex-shrink-0 flex-[1_1_auto] justify-end">
                     <div class="h-4 mr-4 flex flex-row justify-center">
                       <Transition name="icon">
-                        <div v-if="application.audible && !selectedApplication.closing" class="pulse-icon">
+                        <div v-if="application.audible" class="pulse-icon">
                           <div v-if="application.muting" class="lds-dual-ring" />
                           <img v-else-if="application.muted" src="/src/assets/img/studentDetails/student-icon-sound-disabled.svg"  alt=""/>
                           <img v-else src="/src/assets/img/studentDetails/student-icon-sound.svg"  alt=""/>

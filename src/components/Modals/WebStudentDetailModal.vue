@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import "../../styles.css";
 import Modal from "./Modal.vue";
-import { computed, defineProps, PropType, ref } from "vue";
-import WebFollower from "../../models/Followers/_webFollower";
+import { computed, defineProps, ref } from "vue";
+import type { PropType } from "vue";
+import type WebFollower from "../../models/Followers/_webFollower";
 import HoverButton from "../Buttons/HoverButton.vue";
 import Tooltip from "../Buttons/Tooltip.vue";
 import * as REQUESTS from "@/constants/_requests";
 import { useDashboardStore } from "@/stores/dashboardStore";
+import type {Tab} from "@/models";
 const dashboardPinia = useDashboardStore();
 
 defineEmits<{
@@ -70,7 +72,7 @@ function muteOrUnmuteTab(tabId: string, action: boolean) {
   dashboardPinia.requestUpdateMutingTab(props.webFollower.getUniqueId(), tabId, action)
 }
 
-function changeActiveTab(tab: object) {
+function changeActiveTab(tab: Tab) {
   dashboardPinia.requestActiveMedia(
       props.webFollower.getUniqueId(),
       { type: REQUESTS.FORCEACTIVETAB, tab: tab},
@@ -131,7 +133,7 @@ const checkWebsite = (website: string) => {
 
               <img v-if="selectedTab === null" class="h-5 w-5 mr-2" src="/src/assets/img/studentDetails/student-icon-audible-disabled.svg" alt=""/>
               <div v-else-if="selectedTab.muting" class="lds-dual-ring h-5 w-7 mr-2" />
-              <HoverButton class="h-5 w-7" v-else-if="selectedTab.audible" @click="muteOrUnmuteTab(selectedTab.id, !selectedTab.muted)">
+              <HoverButton class="h-5 w-7" v-else-if="selectedTab.audible" @click="selectedTab && muteOrUnmuteTab(selectedTab.id, !selectedTab.muted)">
                 <template v-slot:original>
                   <img v-if="selectedTab.muted" src="/src/assets/img/studentDetails/student-icon-muted.svg" alt=""/>
                   <img v-else class="h-5 w-5" src="/src/assets/img/studentDetails/student-icon-audible.svg"  alt=""/>
@@ -149,7 +151,7 @@ const checkWebsite = (website: string) => {
               <Tooltip :tip="'Bring to front'" />
 
               <img v-if="selectedTabId === '-1'" class="h-5" src="/src/assets/img/studentDetails/student-icon-focus-disabled.svg"  alt="focus"/>
-              <HoverButton v-else-if="selectedTab.id !== webFollower.tabs[0].id" class="h-5 w-5" @click="changeActiveTab(selectedTab)">
+              <HoverButton v-else-if="selectedTab && selectedTab.id !== webFollower.tabs[0].id" class="h-5 w-5" @click="selectedTab && changeActiveTab(selectedTab)">
                 <template v-slot:original><img src="/src/assets/img/studentDetails/student-icon-focus.svg"  alt="focus"/></template>
                 <template v-slot:hover><img src="/src/assets/img/studentDetails/student-icon-focus-hover.svg"  alt="focus"/></template>
               </HoverButton>
@@ -164,8 +166,8 @@ const checkWebsite = (website: string) => {
                 <img class="h-4" src="/src/assets/img/studentDetails/student-icon-close-tab-disabled.svg"  alt="focus"/>
               </div>
 
-              <div v-else-if="selectedTab.closing" class="lds-dual-ring h-5" />
-              <HoverButton v-else @click="deleteFollowerTab(selectedTab.id)" class="h-5 w-5">
+              <div v-else-if="selectedTab && selectedTab.closing" class="lds-dual-ring h-5" />
+              <HoverButton v-else @click="selectedTab && deleteFollowerTab(selectedTab.id)" class="h-5 w-5">
                 <template v-slot:original><img class="h-4" src="/src/assets/img/studentDetails/student-icon-close-tab.svg"  alt="close"/></template>
                 <template v-slot:hover><img class="h-4" src="/src/assets/img/studentDetails/student-icon-close-tab-hover.svg"  alt="close"/></template>
               </HoverButton>
@@ -185,15 +187,15 @@ const checkWebsite = (website: string) => {
           </div>
 
           <transition-group v-else name="list-complete" tag="div">
-            <div v-for="(tab) in webFollower.tabs" v-bind:key="tab" class="py-1" :id="tab.id">
+            <div v-for="(tab, index) in webFollower.tabs" :key="index" class="py-1" :id="tab.id">
 
               <!--Individual tabs-->
               <div class="flex flex-row w-full px-5 items-center justify-between">
                 <div :class="{
                     'w-full h-9 px-5 flex flex-row items-center overflow-ellipsis whitespace-nowrap': true,
                     'overflow-hidden rounded-lg cursor-pointer': true,
-                    'hover:bg-opacity-50 hover:bg-gray-300': selectedTab.id !== tab.id,
-                    'bg-white': selectedTab.id === tab.id,
+                    'hover:bg-opacity-50 hover:bg-gray-300': selectedTab?.id !== tab.id,
+                    'bg-white': selectedTab?.id === tab.id,
                     }"
                     @click="selectedTabId = tab.id"
                 >
@@ -204,7 +206,7 @@ const checkWebsite = (website: string) => {
                   <div class="flex flex-shrink-0 flex-[1_1_auto] justify-end">
                     <div class="h-4 mr-4 flex flex-row justify-center">
                       <Transition name="icon">
-                        <div v-if="tab.audible && !selectedTab.closing" class="pulse-icon">
+                        <div v-if="tab.audible && !selectedTab?.closing" class="pulse-icon">
                           <div v-if="tab.muting" class="lds-dual-ring" />
                           <img v-else-if="tab.muted" src="/src/assets/img/studentDetails/student-icon-sound-disabled.svg"  alt=""/>
                           <img v-else src="/src/assets/img/studentDetails/student-icon-sound.svg"  alt=""/>
@@ -214,7 +216,7 @@ const checkWebsite = (website: string) => {
                   </div>
 
                   <Transition name="icon">
-                    <div v-if="checkWebsite(tab.url) && !selectedTab.closing" class="has-tooltip">
+                    <div v-if="checkWebsite(tab.url) && !selectedTab?.closing" class="has-tooltip">
                       <Tooltip :tip="'Not in task list'" :toolTipMargin="'-ml-1'" :arrow-margin="'ml-1'" />
                       <img
                           class="w-6 h-6 mr-2 cursor-pointer"

@@ -15,7 +15,7 @@ const props = defineProps({
 });
 const emit = defineEmits(['update:modelValue'])
 
-function handleInput(inputEvent: InputEvent) {
+function handleInput(inputEvent: Event) {
   // @ts-ignore
   emit('update:modelValue', inputEvent?.target?.value)
   props.v$.$commit()
@@ -39,7 +39,7 @@ function handleInput(inputEvent: InputEvent) {
         @focusout="() => { v$.$touch() }"
     />
     <div class="flex flex-col items-start" v-if="v$ && v$.$error">
-      <div class="text-red-800" v-for="error in v$.$errors">{{ error.$message }}</div>
+      <div class="text-red-800" v-for="(error, index) in v$.$errors" :key="index">{{ error.$message }}</div>
     </div>
   </div>
 </template>

@@ -2,20 +2,22 @@
 import WebPlaceholder from "./GridItem/StudentPlaceholder.vue";
 import WebGridItem from "./GridItem/Web/WebGridItem.vue";
 import MobileGridItem from "./GridItem/Mobile/MobileGridItem.vue";
-import { WebFollower, MobileFollower } from "../../../models";
+import type { WebFollower, MobileFollower } from "../../../models";
 import { computed } from "vue";
 import { useDashboardStore } from "@/stores/dashboardStore";
+import {storeToRefs} from "pinia";
 const dashboardPinia = useDashboardStore();
+const { webFollowers, mobileFollowers } = storeToRefs(dashboardPinia)
 
 const sortedWebFollowers = computed((): Array<WebFollower> => {
-  return dashboardPinia.webFollowers.sort((a: WebFollower, b: WebFollower) => {
+  return webFollowers.value.slice().sort((a: WebFollower, b: WebFollower) => {
     return a.name.localeCompare(b.name)
   });
 });
 
 /** Only count followers that are connected within the active students number. */
 const activeWebFollowers = computed((): number => {
-  const active = dashboardPinia.webFollowers.filter(follower => {
+  const active = webFollowers.value.filter(follower => {
     return !follower.disconnected
   })
 
@@ -23,13 +25,13 @@ const activeWebFollowers = computed((): number => {
 });
 
 const sortedMobileFollowers = computed((): Array<MobileFollower> => {
-  return dashboardPinia.mobileFollowers.sort((a: MobileFollower, b: MobileFollower) => {
+  return mobileFollowers.value.slice().sort((a: MobileFollower, b: MobileFollower) => {
     return a.name.localeCompare(b.name)
   });
 });
 
 const activeMobileFollowers = computed((): number => {
-  const active = dashboardPinia.mobileFollowers.filter(follower => {
+  const active = mobileFollowers.value.filter(follower => {
     return !follower.disconnected
   })
 
@@ -40,7 +42,7 @@ const activeMobileFollowers = computed((): number => {
 <template>
   <div class="mt-14 ml-10">
     <!--No active students-->
-    <div v-if="dashboardPinia.webFollowers.length === 0 && dashboardPinia.mobileFollowers.length === 0">
+    <div v-if="webFollowers.length === 0 && mobileFollowers.length === 0">
       <p class="text-base text-black">
         Active Students
         <span v-if="activeWebFollowers !== 0">
@@ -52,7 +54,7 @@ const activeMobileFollowers = computed((): number => {
     </div>
 
     <!--Active web students-->
-    <div v-if="dashboardPinia.webFollowers.length !== 0">
+    <div v-if="webFollowers.length !== 0">
       <p class="text-base text-black">
         Active Web Students
         <span v-if="activeWebFollowers !== 0">
@@ -71,7 +73,7 @@ const activeMobileFollowers = computed((): number => {
     </div>
 
     <!--Active mobile students-->
-    <div v-if="dashboardPinia.mobileFollowers.length !== 0">
+    <div v-if="mobileFollowers.length !== 0">
       <p class="text-base text-black mt-5">
         Active Mobile Students
         <span v-if="activeMobileFollowers !== 0">

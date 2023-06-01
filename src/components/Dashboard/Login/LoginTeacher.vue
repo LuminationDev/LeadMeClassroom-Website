@@ -40,7 +40,8 @@ async function validateAndSubmit() {
     if (!getAuth().currentUser?.emailVerified) {
       emit('changeView', 'verify')
     } else {
-      console.log('time to make the change to being in the dashboard')
+      dashboardPinia.user = getAuth().currentUser
+      router.push({ name: 'dashboard' })
     }
     return;
   }
@@ -99,7 +100,7 @@ const emit = defineEmits<{
     </div>
 
     <div class="mb-3">
-      <PasswordInput v-model="v$.password.$model" placeholder="Password" :v$="v$.password"/>
+      <PasswordInput v-model="password" placeholder="Password" :v$="v$.password"/>
       <p class="text-red-400">{{ error }}</p>
     </div>
 

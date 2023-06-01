@@ -15,7 +15,7 @@ class MobileFollower implements Follower {
     uniqueId: string;
     action: string = "none";
     source: string = "none";
-    currentApplication: Ref<UnwrapRef<string>> = ref(REQUESTS.MOBILE_PACKAGE);
+    currentApplication: string = REQUESTS.MOBILE_PACKAGE;
     applications: Application[];
     videos: Video[];
     webRTC: any;
@@ -65,14 +65,6 @@ class MobileFollower implements Follower {
         })
 
         return videos;
-    }
-
-    setCurrentApplication = (currentApplication: string) => {
-        this.currentApplication.value = currentApplication;
-        const app = this.applications.find(res => res.id === currentApplication);
-        if(app === undefined) return; //TODO they may be on the home page?
-
-        this.applications.unshift(this.applications.splice(this.applications.indexOf(app), 1)[0]);
     }
 
     getClassCode = () => {

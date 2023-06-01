@@ -2,8 +2,9 @@
 import WebStudentDetailModal from "../../../../Modals/WebStudentDetailModal.vue";
 import ScreenMonitorModal from "../../../../Modals/ScreenMonitorModal.vue";
 import * as REQUESTS from "../../../../../constants/_requests";
-import { defineProps, PropType, ref } from "vue";
-import {WebFollower} from "../../../../../models";
+import { defineProps, ref } from "vue";
+import type { PropType } from "vue";
+import type {WebFollower} from "../../../../../models";
 import { useDashboardStore } from "@/stores/dashboardStore";
 const dashboardPinia = useDashboardStore();
 

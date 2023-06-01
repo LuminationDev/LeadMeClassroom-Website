@@ -15,9 +15,13 @@ defineProps({
     required: true
   }
 });
-defineEmits(['update:modelValue'])
+const emit = defineEmits(['update:modelValue'])
 
 const showPassword = ref(false)
+
+function handleInput(event: Event) {
+  emit('update:modelValue', (event.target as HTMLInputElement).value)
+}
 </script>
 
 <template>
@@ -30,7 +34,7 @@ const showPassword = ref(false)
           :type="showPassword ? 'text' : 'password'"
           :placeholder='placeholder'
           :value="modelValue"
-          @input="$emit('update:modelValue', $event.target.value)"
+          @input="handleInput"
       />
       <button
           type="button"

@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import * as REQUESTS from "@/constants/_requests";
 import { useDashboardStore } from "@/stores/dashboardStore";
-import { PropType, computed, ref } from "vue";
-import { MobileFollower } from "@/models";
+import { computed, ref } from "vue";
+import type { PropType } from "vue";
+import type { MobileFollower } from "@/models";
 import MediaButton from "@/components/Buttons/MediaButton.vue";
 
 const dashboardPinia = useDashboardStore();

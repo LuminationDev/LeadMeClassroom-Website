@@ -2,11 +2,12 @@
 import "../../styles.css";
 import Modal from "./Modal.vue";
 import * as REQUESTS from "../../constants/_requests";
-import { computed, defineProps, PropType, ref } from "vue";
-import MobileFollower from "../../models/Followers/_mobileFollower";
+import { computed, defineProps, ref } from "vue";
+import type { PropType } from "vue";
+import type MobileFollower from "../../models/Followers/_mobileFollower";
 import HoverButton from "../Buttons/HoverButton.vue";
 import Tooltip from "../Buttons/Tooltip.vue";
-import { Task } from "@/models";
+import type { Task } from "@/models";
 import { useDashboardStore } from "@/stores/dashboardStore";
 const dashboardPinia = useDashboardStore();
 
@@ -45,7 +46,7 @@ const selectedVideoName = ref("");
 //Track the currently selected application
 const selectedTaskName = ref(REQUESTS.MOBILE_PACKAGE);
 const selectedTask = computed(() => {
-  const packageName = Object.assign(props.mobileFollower.currentApplication);
+  const packageName = props.mobileFollower.currentApplication;
   console.log(packageName);
 
   if (props.mobileFollower.tasks.length === 0) {
@@ -72,7 +73,10 @@ function removeFromTasks() {
   dashboardPinia.updateFollowerTasks(props.mobileFollower.getUniqueId(), stringValues, REQUESTS.MOBILE);
 }
 
-function changeActiveApplication(task: Task) {
+function changeActiveApplication(task: Task|null) {
+  if (task === null) {
+    return
+  }
   const request = task.toRequest();
 
   if (request) {
@@ -176,7 +180,7 @@ function closeModal() {
             </div>
           </div>
 
-          <div v-for="(video) in mobileFollower.videos" v-bind:key="video" class="py-1" :id="video.getName()">
+          <div v-for="(video, index) in mobileFollower.videos" :key="index" class="py-1" :id="video.getName()">
 
             <!--Individual applications-->
             <div class="flex flex-row w-full px-5 items-center justify-between">
@@ -207,15 +211,15 @@ function closeModal() {
           </div>
 
           <transition-group v-else name="list-complete" tag="div">
-            <div v-for="(task) in mobileFollower.tasks" v-bind:key="task" class="py-1" :id="task.getName()">
+            <div v-for="(task, index) in mobileFollower.tasks" v-bind:key="index" class="py-1" :id="task.getName()">
 
               <!--Individual applications-->
               <div class="flex flex-row w-full px-5 items-center justify-between">
                 <div :class="{
                     'w-full h-9 px-5 flex flex-row items-center overflow-ellipsis whitespace-nowrap': true,
                     'overflow-hidden rounded-lg cursor-pointer': true,
-                    'hover:bg-opacity-50 hover:bg-gray-300': selectedTask.getName() !== task.getName(),
-                    'bg-white': selectedTask.getName() === task.getName(),
+                    'hover:bg-opacity-50 hover:bg-gray-300': selectedTask?.getName() !== task.getName(),
+                    'bg-white': selectedTask?.getName() === task.getName(),
                     }"
                     @click="selectedTaskName = task.getName()"
                 >

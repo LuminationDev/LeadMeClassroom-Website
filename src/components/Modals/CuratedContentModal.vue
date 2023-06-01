@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import {computed, Ref, ref, watch} from "vue";
+import {computed, ref, watch} from "vue";
+import type { Ref } from "vue";
 import WebGridItem from "../Dashboard/ClassControl/GridItem/Web/WebGridItem.vue";
 import MobileGridItem from "../Dashboard/ClassControl/GridItem/Mobile/MobileGridItem.vue";
 import Modal from "./Modal.vue";
@@ -10,6 +11,7 @@ import * as REQUESTS from "@/constants/_requests";
 import CuratedContentDescription from "@/components/CuratedContent/CuratedContentDescription.vue";
 import ContentFilter from "@/components/CuratedContent/ContentFilter.vue";
 import CuratedContentListItem from "@/components/CuratedContent/CuratedContentListItem.vue";
+import {storeToRefs} from "pinia";
 
 const dashboardPinia = useDashboardStore();
 const showModal = ref(false);
@@ -20,19 +22,20 @@ const followersSelected: Ref<string[]> = ref([]);
 const submissionAttempted = ref(false);
 const yearQuery = ref('R-12');
 const searchQuery = ref('');
-const subjectQuery = ref();
-const topicQuery = ref();
+const subjectQuery = ref("");
+const topicQuery = ref("");
 const showFilter = ref(false);
 const error = ref();
+const { webFollowers, mobileFollowers } = storeToRefs(dashboardPinia)
 
 const sortedWebFollowers = computed((): Array<WebFollower> => {
-  return dashboardPinia.webFollowers.sort((a: WebFollower, b: WebFollower) => {
+  return webFollowers.value.slice().sort((a: WebFollower, b: WebFollower) => {
     return a.name.localeCompare(b.name)
   });
 });
 
 const sortedMobileFollowers = computed((): Array<MobileFollower> => {
-  return dashboardPinia.mobileFollowers.sort((a: MobileFollower, b: MobileFollower) => {
+  return mobileFollowers.value.slice().sort((a: MobileFollower, b: MobileFollower) => {
     return a.name.localeCompare(b.name)
   });
 });
@@ -277,8 +280,8 @@ const resetModal = () => {
   selectedItems.value = [];
   yearQuery.value = 'R-12';
   searchQuery.value = '';
-  subjectQuery.value = undefined;
-  topicQuery.value = undefined;
+  subjectQuery.value = "";
+  topicQuery.value = "";
   showFilter.value = false;
   error.value = undefined;
 }
@@ -308,7 +311,7 @@ const resetModal = () => {
             <!--Allow a user to search via the input-->
             <div class="flex items-center w-60 mr-4">
               <label for="searchInput" class="cursor-pointer w-8 h-8 ml-1 absolute">
-                <img src="src/assets/img/search-icon.svg" alt="Search"/>
+                <img src="/src/assets/img/search-icon.svg" alt="Search"/>
               </label>
               <input
                   id="searchInput"
@@ -320,7 +323,7 @@ const resetModal = () => {
                   v-if="searchQuery !== ''"
                   v-on:click="searchQuery = ''"
                   class="w-3 h-3 relative right-5 cursor-pointer"
-                  src="src/assets/img/cross.svg" alt="Search"/>
+                  src="/src/assets/img/cross.svg" alt="Search"/>
             </div>
 
             <!--Show the filter menu-->
@@ -344,22 +347,20 @@ const resetModal = () => {
           <div v-if="viewDescription === ''" class="flex flex-col h-96">
             <!--Show the filter area-->
             <div class="relative">
-              <div class="absolute right-0 h-80 z-10 my-8">
-                <Transition name="slide-fade">
-                  <ContentFilter
-                      v-if="showFilter"
-                      :selected-Year="yearQuery"
-                      @yearQuery="updateYear"
-                      :selected-subject="subjectQuery"
-                      @subjectQuery="updateSubject"
-                      :subjects="subjectList"
-                      :selected-topic="topicQuery"
-                      @topicQuery="updateTopic"
-                      :topics="topicList"/>
-                </Transition>
+              <div class="absolute right-0 h-80 z-10 my-8 ease-in-out duration-500"
+                   :class="{ 'translate-x-full': !showFilter, 'translate-x-0': showFilter }">
+                <ContentFilter
+                    :selected-Year="yearQuery"
+                    @yearQuery="updateYear"
+                    :selected-subject="subjectQuery"
+                    @subjectQuery="updateSubject"
+                    :subjects="subjectList"
+                    :selected-topic="topicQuery"
+                    @topicQuery="updateTopic"
+                    :topics="topicList"/>
               </div>
-              <Transition name="fade">
-                <div v-if="showFilter" @click="showFilter = false" class="absolute h-96 w-modal-width bg-gray-300 z-5 opacity-70"></div>
+              <Transition name="fading">
+                <div v-if="showFilter" @click="showFilter = false" class="absolute h-96 w-modal-width bg-gray-300 z-5 bg-opacity-70"></div>
               </Transition>
             </div>
 
@@ -406,7 +407,7 @@ const resetModal = () => {
         <div class="w-modal-width max-h-64 overflow-y-auto">
 
           <!--Web followers-->
-          <div v-if="shareTo === 'selected' && shareType === 'web' && dashboardPinia.webFollowers.length"
+          <div v-if="shareTo === 'selected' && shareType === 'web' && webFollowers.length"
                class="mt-4 flex flex-row flex-wrap ml-10 mr-14">
             <WebGridItem
                 v-for="follower in sortedWebFollowers"
@@ -418,7 +419,7 @@ const resetModal = () => {
           </div>
 
           <!--Mobile followers-->
-          <div v-else-if="shareTo === 'selected' && shareType === 'mobile' && dashboardPinia.mobileFollowers.length"
+          <div v-else-if="shareTo === 'selected' && shareType === 'mobile' && mobileFollowers.length"
                class="mt-4 flex flex-row flex-wrap ml-10 mr-14">
             <MobileGridItem
                 v-for="follower in sortedMobileFollowers"
@@ -483,27 +484,18 @@ const resetModal = () => {
 </template>
 
 <style>
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.3s ease;
+.fading-enter-active,
+.fading-leave-active {
+  transition: opacity 0.5s ease;
 }
 
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
+.fading-enter-to,
+.fading-leave-from {
+  opacity: 100%;
 }
 
-.slide-fade-enter-active {
-  transition: all 0.5s ease-out;
-}
-
-.slide-fade-leave-active {
-  transition: all 0.5s cubic-bezier(1, 0.5, 0.8, 1);
-}
-
-.slide-fade-enter-from,
-.slide-fade-leave-to {
-  transform: translateX(80px);
+.fading-enter-from,
+.fading-leave-to {
   opacity: 0;
 }
 </style>

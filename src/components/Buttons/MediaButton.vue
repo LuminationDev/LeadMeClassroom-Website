@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { PropType } from "vue";
-import { MobileFollower } from "@/models";
+import type { PropType } from "vue";
+import type { MobileFollower } from "@/models";
 import HoverButton from "./HoverButton.vue";
 
 defineProps({
@@ -29,7 +29,7 @@ defineProps({
     required: true,
   },
   sendAction: {
-    type: Function,
+    type: Function as PropType<(arg: any[]) => void>,
     required: true
   }
 })
