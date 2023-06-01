@@ -1,9 +1,9 @@
 import * as REQUESTS from "../constants/_requests";
 
 class Task {
-    private readonly name: string;
-    private readonly packageName: string;
-    private readonly type: string;
+    readonly name: string;
+    readonly packageName: string;
+    readonly type: string;
 
     constructor(name: string, packageName: string, type: string) {
         this.name = name;

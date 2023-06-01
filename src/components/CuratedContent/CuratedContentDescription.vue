@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { CuratedContentItem } from "@/models";
-import { PropType } from "vue";
+import type { CuratedContentItem } from "@/models";
+import type { PropType } from "vue";
 
 defineEmits<{
   (e: 'return'): void
@@ -19,7 +19,7 @@ defineProps({
 
     <!--Title and back button-->
     <div class="flex flex-row justify-end">
-      <img class="flex-shrink-0 w-5 h-5 cursor-pointer" src="src/assets/img/options-back.svg" alt=""
+      <img class="flex-shrink-0 w-5 h-5 cursor-pointer" src="/src/assets/img/options-back.svg" alt=""
            @click="$emit('return')"/>
     </div>
 

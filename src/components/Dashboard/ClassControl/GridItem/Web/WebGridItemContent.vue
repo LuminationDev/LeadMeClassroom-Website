@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import "../../../../../styles.css";
-import {computed, defineProps, PropType, ref} from "vue";
-import {WebFollower, Tab} from "../../../../../models";
+import {computed, defineProps, ref} from "vue";
+import type {PropType} from "vue";
+import type {WebFollower, Tab} from "../../../../../models";
 import { useDashboardStore } from "@/stores/dashboardStore";
 const dashboardPinia = useDashboardStore();
 
@@ -81,6 +82,10 @@ const focusInput = () => {
 const revertInput = () => {
   setTimeout(() => {emit('update:renaming', false)}, 200);
 }
+
+function handleInput(event: Event) {
+  emit('update:name', (event.target as HTMLInputElement).value)
+}
 </script>
 
 <template>
@@ -101,7 +106,7 @@ const revertInput = () => {
       <div class="h-6 cursor-pointer flex flex-row mx-2 px-2 items-center hover:bg-white-menu-overlay rounded">
         <img class="flex-shrink-0 w-3 h-3 mr-2" src="/src/assets/img/options-edit.svg" alt=""/>
         <span v-if="!renaming" v-on:click="$emit('update:renaming', true); focusInput()">Rename User</span>
-        <input v-else ref="inputField" class="bg-navy-side-menu w-full pl-1" @input="$emit('update:name', $event.target.value)" @focusout="revertInput"/>
+        <input v-else ref="inputField" class="bg-navy-side-menu w-full pl-1" @input="handleInput" @focusout="revertInput"/>
       </div>
 
       <div class="h-6 mt-1.5 cursor-pointer flex flex-row mx-2 px-2 items-center hover:bg-white-menu-overlay rounded"
@@ -127,7 +132,7 @@ const revertInput = () => {
       </div>
 
       <transition-group v-else name="list" tag="div">
-        <div v-for="(tab, index) in firstThreeTabs" v-bind:key="tab" class="py-1" :id="index">
+        <div v-for="(tab, index) in firstThreeTabs" :key="index" class="py-1" :id="index + ''">
           <div class="flex flex-row px-2 items-center">
             <img class="flex-shrink-0 w-4 h-4 mr-2" :src="tab.getFavicon()"  alt=""/>
             <span class="overflow-ellipsis whitespace-nowrap overflow-hidden">{{ tab.getTabUrlWithoutHttp() }}</span>

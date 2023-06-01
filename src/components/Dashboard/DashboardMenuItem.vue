@@ -4,7 +4,8 @@ const dashboardPinia = useDashboardStore();
 
 defineProps({
   view: {
-    type: String
+    type: String,
+    required: true
   },
   icon: {
     type: String

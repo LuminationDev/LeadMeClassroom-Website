@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import "../../../../../styles.css";
-import { computed, defineProps, PropType, ref } from "vue";
-import { MobileFollower } from "../../../../../models";
-import { Application } from "@/models";
+import { computed, defineProps, ref } from "vue";
+import type { PropType } from "vue";
+import type { Application, MobileFollower } from "@/models";
 import { useDashboardStore } from "@/stores/dashboardStore";
 import MobileGridItemMediaPlayer from "./MobileGridItemMediaPlayer.vue";
 const dashboardPinia = useDashboardStore();
@@ -52,13 +52,13 @@ const currentlyActiveApplication = computed((): Application | null | undefined =
   }
 
   //TODO finish this later when tasks are completed
-  checkActiveTask(props.mobileFollower.currentApplication.value);
+  checkActiveTask(props.mobileFollower.currentApplication);
 
-  const packageName = Object.assign(props.mobileFollower.currentApplication);
+  const packageName = props.mobileFollower.currentApplication
   console.log(packageName);
 
 
-  const app = props.mobileFollower.applications.find(res => res.id === packageName.toString());
+  const app = props.mobileFollower.applications.find(res => res.id === packageName);
 
   console.log(app);
 
@@ -92,6 +92,10 @@ const focusInput = () => {
 const revertInput = () => {
   setTimeout(() => {emit('update:renaming', false)}, 200);
 }
+
+function handleInput(event: Event) {
+  emit('update:name', (event.target as HTMLInputElement).value)
+}
 </script>
 
 <template>
@@ -112,7 +116,7 @@ const revertInput = () => {
       <div class="h-6 cursor-pointer flex flex-row mx-2 px-2 items-center hover:bg-white-menu-overlay rounded">
         <img class="flex-shrink-0 w-3 h-3 mr-2" src="/src/assets/img/options-edit.svg" alt=""/>
         <span v-if="!renaming" v-on:click="$emit('update:renaming', true); focusInput()">Rename User</span>
-        <input v-else ref="inputField" class="bg-navy-side-menu w-full pl-1" @input="$emit('update:name', $event.target.value)" @focusout="revertInput"/>
+        <input v-else ref="inputField" class="bg-navy-side-menu w-full pl-1" @input="handleInput" @focusout="revertInput"/>
       </div>
 
       <div class="h-6 mt-1.5 cursor-pointer flex flex-row mx-2 px-2 items-center hover:bg-white-menu-overlay rounded"
@@ -130,7 +134,7 @@ const revertInput = () => {
     <!--App screen-->
     <div v-else-if="screenType === 'tabs'">
       <!--The assistant page is present but not counted-->
-      <div v-if="currentlyActiveApplication === null" class="py-1">
+      <div v-if="!currentlyActiveApplication" class="py-1">
         <div class="flex flex-row px-2 items-center">
           <img class="flex-shrink-0 w-4 h-4 mr-2" src="/src/assets/img/icon-128.png" alt=""/>
           <span class="overflow-ellipsis whitespace-nowrap overflow-hidden">No applications...</span>
@@ -139,7 +143,7 @@ const revertInput = () => {
 
       <div v-else class="flex flex-col px-2">
         <div class="flex flex-row items-center mb-2">
-          <img class="flex-shrink-0 w-4 h-4 mr-2" :src="dashboardPinia.firebase.getAppIcon(currentlyActiveApplication.packageName)"  alt="Icon"/>
+          <img class="flex-shrink-0 w-4 h-4 mr-2" :src="dashboardPinia.firebase.getAppIcon(currentlyActiveApplication.packageName) ?? undefined"  alt="Icon"/>
           <span class="overflow-ellipsis whitespace-nowrap overflow-hidden">{{ currentlyActiveApplication.getName() }}</span>
         </div>
 

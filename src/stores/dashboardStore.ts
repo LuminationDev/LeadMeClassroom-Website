@@ -8,6 +8,8 @@ import type { User } from "@firebase/auth";
 import { getAuth, sendPasswordResetEmail } from "@firebase/auth";
 import type { Application } from "@/models";
 import { getCuratedContentData, toDataURL } from "@/controller/_dataRequests";
+import type { CuratedContentItem } from "@/models";
+import {cloneDeep} from "lodash";
 
 interface userDetails {
     name: string,
@@ -15,21 +17,12 @@ interface userDetails {
 }
 
 const firebase = new Firebase();
-const leaderDetails = <userDetails>await firebase.getDisplayDetails();
 const { getLocalStorage, setLocalStorage, removeLocalStorage } = useStorage();
 
 /**
  * When the dashboard is first loaded or if the page is refreshed check to see if there was
  * an active class set the necessary details.
  */
-async function onLoad() {
-    const currentClass = await getLocalStorage("CurrentClass") as string;
-    return currentClass ? currentClass : "";
-}
-
-let activeCode = await onLoad();
-
-const curatedContent = await getCuratedContentData();
 
 export const useDashboardStore = defineStore("dashboard", {
     state: () => {
@@ -37,22 +30,37 @@ export const useDashboardStore = defineStore("dashboard", {
             view: "dashboard",
             accountView: "menu",
             firebase: firebase,
-            classCode: activeCode,
-            leaderName: leaderDetails.name,
-            marketing: <string|null>leaderDetails.marketing,
-            webFollowers: <WebFollower[]>([]),
-            webTasks: <String[]>([]),
-            mobileFollowers: <MobileFollower[]>([]),
-            mobileTasks: <String[]>([]),
+            classCode: "",
+            leaderName: "",
+            marketing: <string|null>"",
+            webFollowers: [] as WebFollower[],
+            webTasks: [] as String[],
+            mobileFollowers: [] as MobileFollower[],
+            mobileTasks: [] as String[],
             webLink: "",
-            leader: new Leader(leaderDetails.name),
+            leader: <Leader|null>null,
             webRTCPinia: useWebRTCStore(),
             user: <User|null>null,
-            curatedContent
+            curatedContent: [] as CuratedContentItem[]
         }
     },
 
     actions: {
+        async loadCuratedContent() {
+            this.curatedContent = await getCuratedContentData()
+        },
+
+        async loadLeaderDetails() {
+            const leaderDetails = <userDetails>await firebase.getDisplayDetails();
+            this.leaderName = leaderDetails.name
+            this.marketing = leaderDetails.marketing
+            this.leader = new Leader(this.leaderName)
+        },
+
+        async onLoad() {
+            const currentClass = await getLocalStorage("CurrentClass") as string;
+            this.classCode = currentClass ? currentClass : "";
+        },
         /**
          * Change the current panel to the supplied one.
          */
@@ -77,15 +85,15 @@ export const useDashboardStore = defineStore("dashboard", {
 
             console.log('generating')
             //Hold a temporary reference to be checked against saved/new codes
-            activeCode = this.leader.getClassCode();
+            const activeCode = this.leader?.getClassCode();
 
             //Calling before class code can be attached?
             this.firebase.connectAsLeader(<Leader>this.leader, () => { this.attachClassListeners(false )});
             await this.clearTasks();
-            await setLocalStorage("CurrentClass", this.leader.getClassCode());
+            await setLocalStorage("CurrentClass", this.leader?.getClassCode());
 
             await new Promise(res => setTimeout(res, 200));
-            this.classCode = this.leader.getClassCode();
+            this.classCode = this.leader?.getClassCode() ?? '';
         },
 
         /**
@@ -94,16 +102,16 @@ export const useDashboardStore = defineStore("dashboard", {
          */
         async attachClassListeners(active: boolean) {
             //Do not attach listeners if there is not an active class on creation/load/reload
-            if(activeCode === "") { return; }
+            if(this.classCode === "") { return; }
 
             //Override the auto generated code if there is a saved one
-            this.leader.setClassCode(activeCode);
+            this.leader?.setClassCode(this.classCode);
 
             //Set up the streaming connection
-            this.webRTCPinia.setConnectionDetails(this.sendIceCandidates, activeCode);
+            this.webRTCPinia.setConnectionDetails(this.sendIceCandidates, this.classCode);
 
             this.firebase.followerListeners(
-                activeCode,
+                this.classCode,
                 this.followerResponse,
                 this.updateActiveFollower,
                 this.followerDisconnected,
@@ -112,7 +120,7 @@ export const useDashboardStore = defineStore("dashboard", {
                 this.readIceCandidate
             );
             this.firebase.tabListeners(
-                activeCode,
+                this.classCode,
                 this.followerTabChanged,
                 this.followerTabRemoved,
                 this.followerTabsAdded
@@ -120,7 +128,7 @@ export const useDashboardStore = defineStore("dashboard", {
 
             if(!active) { return; }
 
-            this.firebase.reloadFollowers(activeCode, this.followerResponse);
+            this.firebase.reloadFollowers(this.classCode, this.followerResponse);
         },
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -540,10 +548,8 @@ export const useDashboardStore = defineStore("dashboard", {
 
             const index = this.findFollowerIndex(UUID, REQUESTS.MOBILE);
             if (index === -1) {
-                // @ts-ignore
                 this.mobileFollowers.push(follower)
             } else {
-                // @ts-ignore
                 this.mobileFollowers.splice(index, 1, follower)
             }
         },
@@ -556,19 +562,29 @@ export const useDashboardStore = defineStore("dashboard", {
          */
         updateActiveFollower(UUID: string, key: string, value: string) {
             const index = this.findFollowerIndex(UUID, REQUESTS.MOBILE);
+            const follower = cloneDeep(this.mobileFollowers[index])
             if (index === -1) return;
 
             switch (key){
                 case "currentPackage":
-                    this.mobileFollowers[index].setCurrentApplication(value);
+                    follower.currentApplication = value
+                    // eslint-disable-next-line no-case-declarations
+                    const app = follower.applications.find(item => item.id === value)
+                    if (app) {
+                        follower.applications.unshift(follower.applications.splice(follower.applications.indexOf(app), 1)[0])
+                    }
                     break;
                 case "action":
-                    this.mobileFollowers[index].action = value;
+                    follower.action = value;
                     break;
                 case "source":
-                    this.mobileFollowers[index].source = value;
+                    follower.source = value;
+                    break;
+                case "name":
+                    follower.name = value;
                     break;
             }
+            this.mobileFollowers.splice(index, 1, follower)
         },
 
         /**

@@ -68,7 +68,7 @@ async function validateInputs() {
             .catch((err) => console.log(err));
         // Move to sign in
         emit('registered', true)
-        emit('changeView', 'login')
+        emit('changeView', 'verify')
       })
       .catch((error) => {
         const errorCode = error.code;
@@ -89,7 +89,7 @@ async function validateInputs() {
     <div>
       <TextInput class="mb-2" type="text" placeholder="Name" :v$="v$.name" v-model="name"/>
       <EmailInput class="mb-2" placeholder="Email" :v$="v$.email" v-model="email"/>
-      <TextInput class="mb-3" type="password" placeholder="Password" :v$="v$.password" v-model="v$.password.$model"/>
+      <TextInput class="mb-3" type="password" placeholder="Password" :v$="v$.password" v-model="password"/>
       <p class="text-red-400">{{ error }}</p>
     </div>
 

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import {watch, ref} from "vue";
+import type {PropType} from "vue";
 import BasicDropdown from "@/components/InputFields/BasicDropdown.vue";
 import VueSlider from 'vue-slider-component'
 import 'vue-slider-component/theme/default.css'
@@ -19,7 +20,7 @@ const props = defineProps({
     type: String
   },
   subjects: {
-    type: Array,
+    type: Array as PropType<string[]>,
     default: () => [],
     validator: (value: any) => {
       return value.every((item: any) => typeof item === 'string');
@@ -29,7 +30,7 @@ const props = defineProps({
     type: String
   },
   topics: {
-    type: Array,
+    type: Array as PropType<string[]>,
     default: () => [],
     validator: (value: any) => {
       return value.every((item: any) => typeof item === 'string');

@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { defineProps, PropType } from "vue";
-import { WebFollower } from "../../../../../models";
+import { defineProps } from "vue";
+import type { PropType } from "vue";
+import type { WebFollower } from "../../../../../models";
 import Tooltip from "../../../../Buttons/Tooltip.vue";
 
-defineEmits<{
+const emit = defineEmits<{
   (e: 'update', value: boolean): void
   (e: 'update:screenType', value: string): void
   (e: 'studentDetails'): void
@@ -24,6 +25,9 @@ defineProps({
     required: false,
   }
 });
+function handleInput(event: Event) {
+  emit('update', (event.target as HTMLInputElement).checked)
+}
 </script>
 
 <template>
@@ -38,7 +42,7 @@ defineProps({
         type="checkbox"
         class="h-5 w-5 mx-2 cursor-pointer"
         :disabled="webFollower.disconnected"
-        @input="$emit('update', $event.target.checked)"
+        @input="handleInput"
     >
 
     <!--Follower name-->

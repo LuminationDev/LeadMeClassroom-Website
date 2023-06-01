@@ -17,7 +17,10 @@ defineProps({
     required: true
   }
 });
-defineEmits(['update:modelValue'])
+const emit = defineEmits(['update:modelValue'])
+function handleInput(event: Event) {
+  emit('update:modelValue', (event.target as HTMLInputElement).value)
+}
 </script>
 
 <template>
@@ -29,10 +32,10 @@ defineEmits(['update:modelValue'])
         :type='type'
         :placeholder='placeholder'
         :value="modelValue"
-        @input="$emit('update:modelValue', $event.target.value)"
+        @input="handleInput"
     />
     <div class="flex flex-col items-start" v-if="v$ && v$.$error">
-      <div class="text-red-800" v-for="error in v$.$errors">{{ error.$message }}</div>
+      <div class="text-red-800" v-for="(error, index) in v$.$errors" :key="index">{{ error.$message }}</div>
     </div>
   </div>
 </template>

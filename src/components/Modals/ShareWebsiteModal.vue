@@ -1,17 +1,20 @@
 <script setup lang="ts">
-import { computed, Ref, ref } from "vue";
+import { computed, ref } from "vue";
+import type { Ref } from "vue";
 import useVuelidate from "@vuelidate/core";
 import { helpers, required } from "@vuelidate/validators";
 import WebGridItem from "../Dashboard/ClassControl/GridItem/Web/WebGridItem.vue";
 import MobileGridItem from "../Dashboard/ClassControl/GridItem/Mobile/MobileGridItem.vue";
 import Modal from "./Modal.vue";
-import { MobileFollower, WebFollower } from "../../models";
+import type { MobileFollower, WebFollower } from "../../models";
 import GenericButton from "../Buttons/GenericButton.vue";
 import { useDashboardStore } from "@/stores/dashboardStore";
 import * as REQUESTS from "@/constants/_requests";
 import { Task } from "@/models";
+import {storeToRefs} from "pinia";
 
 const dashboardPinia = useDashboardStore();
+const { webFollowers, mobileFollowers } = storeToRefs(dashboardPinia)
 const showModal = ref(false);
 const websiteLink = ref("");
 const shareType = ref("web");
@@ -24,13 +27,13 @@ defineExpose({
 });
 
 const sortedWebFollowers = computed((): Array<WebFollower> => {
-  return dashboardPinia.webFollowers.sort((a: WebFollower, b: WebFollower) => {
+  return webFollowers.value.slice().sort((a: WebFollower, b: WebFollower) => {
     return a.name.localeCompare(b.name)
   });
 });
 
 const sortedMobileFollowers = computed((): Array<MobileFollower> => {
-  return dashboardPinia.mobileFollowers.sort((a: MobileFollower, b: MobileFollower) => {
+  return mobileFollowers.value.slice().sort((a: MobileFollower, b: MobileFollower) => {
     return a.name.localeCompare(b.name)
   });
 });
@@ -165,7 +168,7 @@ function closeModal() {
               />
             </div>
             <div class="mt-1 ml-6" v-if="v$.websiteLink && v$.websiteLink.$error">
-              <span class="text-red-800" v-bind:key="error.$id" v-for="error in v$.websiteLink.$errors">{{ error.$message }}</span>
+              <span class="text-red-800" :key="error.$uid" v-for="error in v$.websiteLink.$errors">{{ error.$message }}</span>
             </div>
           </div>
           <div class="mx-14 mt-8 h-20 bg-white flex items-center justify-between">
@@ -198,7 +201,7 @@ function closeModal() {
         <div class="w-modal-width max-h-64 overflow-y-auto">
 
           <!--Web followers-->
-          <div v-if="shareTo === 'selected' && shareType === 'web' && dashboardPinia.webFollowers.length"
+          <div v-if="shareTo === 'selected' && shareType === 'web' && webFollowers.length"
                class="mt-4 flex flex-row flex-wrap ml-10 mr-14">
             <WebGridItem
                 v-for="follower in sortedWebFollowers"
@@ -210,7 +213,7 @@ function closeModal() {
           </div>
 
           <!--Mobile followers-->
-          <div v-else-if="shareTo === 'selected' && shareType === 'mobile' && dashboardPinia.mobileFollowers.length"
+          <div v-else-if="shareTo === 'selected' && shareType === 'mobile' && mobileFollowers.length"
                class="mt-4 flex flex-row flex-wrap ml-10 mr-14">
             <MobileGridItem
                 v-for="follower in sortedMobileFollowers"

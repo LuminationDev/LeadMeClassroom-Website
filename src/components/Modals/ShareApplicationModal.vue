@@ -1,13 +1,16 @@
 <script setup lang="ts">
-import { computed, Ref, ref } from "vue";
+import { computed, ref } from "vue";
+import type { Ref } from "vue";
 import MobileGridItem from "../Dashboard/ClassControl/GridItem/Mobile/MobileGridItem.vue";
 import Modal from "./Modal.vue";
 import * as REQUESTS from "../../constants/_requests";
 import { MobileFollower, Task, Application } from "../../models";
 import GenericButton from "../Buttons/GenericButton.vue";
 import { useDashboardStore } from "@/stores/dashboardStore";
+import {storeToRefs} from "pinia";
 
 const dashboardPinia = useDashboardStore();
+const { mobileFollowers } = storeToRefs(dashboardPinia)
 const showModal = ref(false);
 const shareTo = ref("all");
 const followersSelected: Ref<string[]> = ref([]);
@@ -18,7 +21,7 @@ defineExpose({
 });
 
 const sortedFollowers = computed((): Array<MobileFollower> => {
-  return dashboardPinia.mobileFollowers.sort((a: MobileFollower, b: MobileFollower) => {
+  return mobileFollowers.value.slice().sort((a: MobileFollower, b: MobileFollower) => {
     return a.name.localeCompare(b.name)
   });
 });
@@ -131,7 +134,7 @@ function closeModal() {
       <template v-slot:content>
         <div class="w-modal-width">
           <div class="h-96 flex flex-col overflow-y-auto">
-            <div v-for="(application) in dashboardPinia.collectUniqueApplications()" v-bind:key="application" class="py-1" :id="application.id">
+            <div v-for="(application, index) in dashboardPinia.collectUniqueApplications()" :key="index" class="py-1" :id="application.id">
 
               <!--Select applications-->
               <div class="flex flex-row w-full px-5 items-center justify-between">
@@ -143,7 +146,7 @@ function closeModal() {
                       }"
                      @click="addOrRemoveApplication(application)"
                 >
-                  <img class="flex-shrink-0 w-5 h-5 mr-2 cursor-pointer" :src="dashboardPinia.firebase.getAppIcon(application.packageName)" alt=""/>
+                  <img class="flex-shrink-0 w-5 h-5 mr-2 cursor-pointer" :src="dashboardPinia.firebase.getAppIcon(application.packageName) ?? undefined" alt=""/>
                   <span class="flex-shrink overflow-ellipsis whitespace-nowrap overflow-hidden pr-10 mt-0.5">{{ application.getName() }}</span>
                 </div>
               </div>
@@ -166,7 +169,7 @@ function closeModal() {
           </div>
         </div>
         <div class="w-modal-width max-h-64 overflow-y-auto">
-          <div v-if="shareTo === 'selected' && dashboardPinia.mobileFollowers.length"
+          <div v-if="shareTo === 'selected' && mobileFollowers.length"
                class="mt-4 flex flex-row flex-wrap ml-10 mr-14">
             <MobileGridItem
                 v-for="follower in sortedFollowers"

@@ -2,6 +2,7 @@
 import { ref } from "vue";
 import Modal from "./Modal.vue";
 import { useDashboardStore } from "@/stores/dashboardStore";
+import {storeToRefs} from "pinia";
 
 defineEmits<{
   (e: 'webModal'): void
@@ -10,6 +11,7 @@ defineEmits<{
 }>()
 
 const dashboardPinia = useDashboardStore();
+const { webFollowers, mobileFollowers } = storeToRefs(dashboardPinia)
 const showModal = ref(false);
 
 function closeModal() {
@@ -48,7 +50,7 @@ function closeModal() {
 
       <template v-slot:content>
         <div class="w-modal-width-xsm max-h-64">
-          <div v-if="dashboardPinia.webFollowers.length !== 0 || dashboardPinia.mobileFollowers.length !== 0"
+          <div v-if="webFollowers.length !== 0 || mobileFollowers.length !== 0"
                class="mt-8 flex flex-row flex-wrap justify-evenly">
 
             <button
@@ -63,10 +65,10 @@ function closeModal() {
             <button
                 class="w-56 h-9 flex justify-center items-center text-white text-base font-medium"
                 :class="{
-                  'bg-navy-side-menu hover:bg-blue-400 cursor-pointer': dashboardPinia.mobileFollowers.length !== 0,
-                  'bg-gray-400 cursor-default': dashboardPinia.mobileFollowers.length === 0
+                  'bg-navy-side-menu hover:bg-blue-400 cursor-pointer': mobileFollowers.length !== 0,
+                  'bg-gray-400 cursor-default': mobileFollowers.length === 0
                 }"
-                :disabled="dashboardPinia.mobileFollowers.length === 0"
+                :disabled="mobileFollowers.length === 0"
                  v-on:click="$emit('appModal'); showModal = false">
                 <img class="w-6 h-6 mr-3" src="/src/assets/img/media-application.svg" alt="Icon"/>
                 Share application
@@ -75,10 +77,10 @@ function closeModal() {
             <button
                 class="w-56 h-9 flex justify-center items-center text-white text-base font-medium"
                 :class="{
-                  'bg-navy-side-menu hover:bg-blue-400 cursor-pointer': dashboardPinia.mobileFollowers.length !== 0,
-                  'bg-gray-400 cursor-default': dashboardPinia.mobileFollowers.length === 0
+                  'bg-navy-side-menu hover:bg-blue-400 cursor-pointer': mobileFollowers.length !== 0,
+                  'bg-gray-400 cursor-default': mobileFollowers.length === 0
                 }"
-                :disabled="dashboardPinia.mobileFollowers.length === 0"
+                :disabled="mobileFollowers.length === 0"
                 v-on:click="$emit('videoModal'); showModal = false">
               <img class="w-6 h-6 mr-3" src="/src/assets/img/media-video.svg" alt="Icon"/>
               Share video

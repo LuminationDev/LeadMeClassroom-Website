@@ -26,11 +26,18 @@ router.beforeEach(async (to, from) => {
     const auth = getAuth() // todo - move this to store
     const user = auth.currentUser
     if (
-        !user &&
+        (!user || !user.emailVerified) &&
         to.name !== 'login'
     ) {
         // redirect the user to the login page
         return { name: 'login' }
+    }
+    if (
+        (user && user.emailVerified) &&
+        to.name === 'login'
+    ) {
+        // redirect the user to the login page
+        return { name: 'dashboard' }
     }
 })
 

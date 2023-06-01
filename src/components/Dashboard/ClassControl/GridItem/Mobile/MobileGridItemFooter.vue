@@ -2,8 +2,9 @@
 import MobileStudentDetailModal from "../../../../Modals/MobileStudentDetailModal.vue";
 import MobileStudentTaskModal from "../../../../Modals/MobileStudentTaskModal.vue";
 import * as REQUESTS from "../../../../../constants/_requests";
-import { defineProps, PropType, ref } from "vue";
-import { MobileFollower } from "../../../../../models";
+import { defineProps, ref } from "vue";
+import type { PropType } from "vue";
+import type { MobileFollower } from "../../../../../models";
 import { useDashboardStore } from "@/stores/dashboardStore";
 const dashboardPinia = useDashboardStore();
 

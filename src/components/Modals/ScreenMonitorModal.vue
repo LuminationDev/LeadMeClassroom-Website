@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import {defineProps, PropType, ref} from "vue";
+import {defineProps, ref} from "vue";
+import type {PropType} from "vue";
 import Modal from "./Modal.vue";
-import WebFollower from "../../models/Followers/_webFollower";
+import type WebFollower from "../../models/Followers/_webFollower";
 import * as REQUESTS from "../../constants/_requests";
 import {useDashboardStore} from "@/stores/dashboardStore";
 import { useWebRTCStore } from "@/stores/webRTCStore";
