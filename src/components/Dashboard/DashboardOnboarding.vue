@@ -2,6 +2,10 @@
 import { ref } from "vue";
 import { useStorage } from "@/hooks/useStorage";
 import { VOnboardingWrapper, VOnboardingStep, useVOnboarding } from 'v-onboarding';
+import onboardingGetStarted from '/src/assets/img/onboarding/get_started.svg'
+import onboardingShareCode from '/src/assets/img/onboarding/share_code.png'
+import onboardingDeliverContent from '/src/assets/img/onboarding/deliver_content.png'
+import onboardingOnTask from '/src/assets/img/onboarding/keep_on_task.png'
 
 const steps = ref([
   {
@@ -11,7 +15,7 @@ const steps = ref([
     content: {
       title: 'Get started',
       description: 'Generate a class code to begin your session!',
-      image: '/src/assets/img/onboarding/get_started.svg'
+      image: onboardingGetStarted
     },
     options: {
       popper: {
@@ -40,7 +44,7 @@ const steps = ref([
     content: {
       title: 'Share code',
       description: 'Instruct your class to punch in the code on their device',
-      image: '/src/assets/img/onboarding/share_code.png'
+      image: onboardingShareCode
     },
     options: {
       popper: {
@@ -69,7 +73,7 @@ const steps = ref([
     content: {
       title: 'Deliver content instantly',
       description: 'Share website content directly to your student\'s browser',
-      image: '/src/assets/img/onboarding/deliver_content.png'
+      image: onboardingDeliverContent
     },
     options: {
       popper: {
@@ -98,7 +102,7 @@ const steps = ref([
     content: {
       title: 'Keep your students on task',
       description: 'Easily identify students who are off task, and bring them back',
-      image: '/src/assets/img/onboarding/keep_on_task.png'
+      image: onboardingOnTask
     },
     options: {
       popper: {
@@ -127,7 +131,7 @@ const steps = ref([
     content: {
       title: 'View their screen in real time',
       description: 'Request to view a student\'s screen to stay on top',
-      image: '/src/assets/img/onboarding/keep_on_task.png'
+      image: onboardingOnTask
     },
     options: {
       popper: {

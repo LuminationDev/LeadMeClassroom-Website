@@ -3,6 +3,9 @@ import DashboardMenuItem from "../../components/Dashboard/DashboardMenuItem.vue"
 import { useDashboardStore } from "../../stores/dashboardStore";
 import { usePopupStore } from "../../stores/popupStore";
 import {computed, onBeforeMount, onBeforeUnmount, ref} from "vue";
+import logoutIconUrl from '/src/assets/img/menu-icon-logout.svg'
+import accountIconUrl from '/src/assets/img/menu-icon-account.svg'
+import dashboardIconUrl from '/src/assets/img/menu-icon-dashboard.svg'
 const popupPinia = usePopupStore();
 const dashboardPinia = useDashboardStore();
 
@@ -47,13 +50,13 @@ const showSidebar = computed(() => {
 
     <!--Content options-->
     <div class="mt-28 child:mb-6">
-      <DashboardMenuItem icon="/src/assets/img/menu-icon-dashboard.svg" view="/">Dashboard</DashboardMenuItem>
-      <DashboardMenuItem icon="/src/assets/img/menu-icon-account.svg" view="/account">Account</DashboardMenuItem>
+      <DashboardMenuItem :icon="dashboardIconUrl" view="/">Dashboard</DashboardMenuItem>
+      <DashboardMenuItem :icon="accountIconUrl" view="/account">Account</DashboardMenuItem>
     </div>
 
     <!--End the active session and logout-->
     <DashboardMenuItem
-        icon="/src/assets/img/menu-icon-logout.svg" class="fixed bottom-12"
+        :icon="logoutIconUrl" class="fixed bottom-12"
         v-on:click="dashboardPinia.endSession(); popupPinia.handleLogoutClick()"
         view="/"
     >Log Out</DashboardMenuItem>
