@@ -5,6 +5,12 @@ import { computed, ref } from "vue";
 import type { PropType } from "vue";
 import type { MobileFollower } from "@/models";
 import MediaButton from "@/components/Buttons/MediaButton.vue";
+import stopIcon from '/src/assets/img/mediaPlayer/media-stop-icon.svg'
+import stopIconNon from '/src/assets/img/mediaPlayer/media-stop-icon-non.svg'
+import playIcon from '/src/assets/img/mediaPlayer/media-play-icon.svg'
+import playIconNon from '/src/assets/img/mediaPlayer/media-play-icon-non.svg'
+import pauseIcon from '/src/assets/img/mediaPlayer/media-pause-icon.svg'
+import pauseIconNon from '/src/assets/img/mediaPlayer/media-pause-icon-non.svg'
 
 const dashboardPinia = useDashboardStore();
 
@@ -51,8 +57,8 @@ const sendVideoAction = (action: string) => {
     <MediaButton
       :mobile-follower="mobileFollower"
       :action-value="'stop'"
-      :image-src="'/src/assets/img/mediaPlayer/media-stop-icon.svg'"
-      :inactive-image-src="'/src/assets/img/mediaPlayer/media-stop-icon-non.svg'"
+      :image-src="stopIcon"
+      :inactive-image-src="stopIconNon"
       :loading="loading"
       :requested="requestedAction"
       :send-action="() => sendVideoAction(REQUESTS.VIDEOACTIONSTOP)"
@@ -62,8 +68,8 @@ const sendVideoAction = (action: string) => {
     <MediaButton
         :mobile-follower="mobileFollower"
         :action-value="'play'"
-        :image-src="'/src/assets/img/mediaPlayer/media-play-icon.svg'"
-        :inactive-image-src="'/src/assets/img/mediaPlayer/media-play-icon-non.svg'"
+        :image-src="playIcon"
+        :inactive-image-src="playIconNon"
         :loading="loading"
         :requested="requestedAction"
         :send-action="() => sendVideoAction(REQUESTS.VIDEOACTIONPLAY)"
@@ -73,8 +79,8 @@ const sendVideoAction = (action: string) => {
     <MediaButton
         :mobile-follower="mobileFollower"
         :action-value="'pause'"
-        :image-src="'/src/assets/img/mediaPlayer/media-pause-icon.svg'"
-        :inactive-image-src="'/src/assets/img/mediaPlayer/media-pause-icon-non.svg'"
+        :image-src="pauseIcon"
+        :inactive-image-src="pauseIconNon"
         :loading="loading"
         :requested="requestedAction"
         :send-action="() => sendVideoAction(REQUESTS.VIDEOACTIONPAUSE)"
