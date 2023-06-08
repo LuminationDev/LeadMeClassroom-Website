@@ -5,6 +5,12 @@ commands:
     steps:
       - checkout
       - run:
+          name: Create .env
+          command: touch .env
+      - run:
+          name: Initialise .env
+          command: printf 'VITE_SHEETS_API_KEY=%s\VITE_SHEETS_ID=%s' \ $VITE_SHEETS_API_KEY $VITE_SHEETS_ID > .env
+      - run:
           name: "npm ci"
           command: "npm ci"
       - run:
