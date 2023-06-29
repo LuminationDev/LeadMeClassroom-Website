@@ -9,5 +9,13 @@ import AccountGrid from "./AccountGrid.vue";
     </div>
 
     <AccountGrid />
+
+    <!--TODO ask Matt where the new logout button goes-->
+    <!--End the active session and logout-->
+<!--    <GenericButton-->
+<!--        class="fixed bottom-12 w-24 h-12"-->
+<!--        v-on:click="dashboardPinia.endSession(); popupPinia.handleLogoutClick()"-->
+<!--        callback=""-->
+<!--    >Log Out</GenericButton>-->
   </div>
 </template>

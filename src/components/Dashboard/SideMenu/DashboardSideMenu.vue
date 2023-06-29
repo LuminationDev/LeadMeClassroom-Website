@@ -1,16 +1,15 @@
 <script setup lang="ts">
-import DashboardMenuItem from "../../components/Dashboard/DashboardMenuItem.vue";
-import { useDashboardStore } from "../../stores/dashboardStore";
-import { usePopupStore } from "../../stores/popupStore";
+import DashboardMenuItem from "./DashboardMenuItem.vue";
+import { useDashboardStore } from "@/stores/dashboardStore";
 import {computed, onBeforeMount, onBeforeUnmount, ref} from "vue";
-import logoutIconUrl from '/src/assets/img/menu-icon-logout.svg'
-import accountIconUrl from '/src/assets/img/menu-icon-account.svg'
-import dashboardIconUrl from '/src/assets/img/menu-icon-dashboard.svg'
-const popupPinia = usePopupStore();
+import classroomIconUrl from '/src/assets/img/sideMenu/menu-icon-disabled-classroom.svg';
+import endClassIconUrl from '/src/assets/img/sideMenu/menu-icon-disabled-endclass.svg';
+import GenericButton from "@/components/Buttons/GenericButton.vue";
+import DashboardActions from "@/components/Dashboard/SideMenu/DashboardActions.vue";
+
 const dashboardPinia = useDashboardStore();
 
 const hidden = ref(false)
-
 const screenSize = ref(window.innerWidth)
 
 onBeforeMount(() => {
@@ -29,6 +28,17 @@ const showSidebar = computed(() => {
   return hidden.value || screenSize.value > 1024
 })
 
+const classCode = computed(() => {
+  return dashboardPinia.classCode !== ''
+})
+
+async function endSession() {
+  await dashboardPinia.endSession();
+}
+
+async function generateSession() {
+  await dashboardPinia.generateSession();
+}
 </script>
 
 <template>
@@ -48,18 +58,38 @@ const showSidebar = computed(() => {
       <hr class="mx-5 border border-gray-menu-separator">
     </div>
 
+    <!--Class Code-->
+    <div class="mt-5 flex justify-center">
+      <button
+          v-if="classCode"
+          class="h-12 w-48 bg-blue-500
+          text-sm text-white font-poppins font-semibold
+          rounded-md"
+      >Room Code: {{ dashboardPinia.classCode }}</button>
+
+      <GenericButton
+          v-else
+          id="generate_class"
+          class="h-12 w-48 bg-violet-500
+          text-sm text-white font-poppins font-medium
+          rounded-md"
+          :callback="generateSession"
+      >Start a Class</GenericButton>
+    </div>
+
     <!--Content options-->
-    <div class="mt-28 child:mb-6">
-      <DashboardMenuItem :icon="dashboardIconUrl" view="/">Dashboard</DashboardMenuItem>
-      <DashboardMenuItem :icon="accountIconUrl" view="/account">Account</DashboardMenuItem>
+    <div class="mt-8 child:mb-3">
+      <DashboardMenuItem :icon="classroomIconUrl" :enabled="classCode" view="/">Classroom</DashboardMenuItem>
+      <DashboardActions />
     </div>
 
     <!--End the active session and logout-->
     <DashboardMenuItem
-        :icon="logoutIconUrl" class="fixed bottom-12"
-        v-on:click="dashboardPinia.endSession(); popupPinia.handleLogoutClick()"
+        :icon="endClassIconUrl" class="fixed bottom-12"
+        :enabled="classCode"
+        v-on:click="endSession()"
         view="/"
-    >Log Out</DashboardMenuItem>
+    >End Class</DashboardMenuItem>
   </div>
 </template>
 
