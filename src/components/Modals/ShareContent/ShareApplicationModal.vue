@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import type { Ref } from "vue";
-import MobileGridItem from "../Dashboard/ClassControl/GridItem/Mobile/MobileGridItem.vue";
-import Modal from "./Modal.vue";
-import * as REQUESTS from "../../constants/_requests";
-import { MobileFollower, Task, Application } from "../../models";
-import GenericButton from "../Buttons/GenericButton.vue";
+import MobileGridItem from "../../Dashboard/ClassControl/GridItem/Mobile/MobileGridItem.vue";
+import Modal from "../Modal.vue";
+import * as REQUESTS from "../../../constants/_requests";
+import { MobileFollower, Task, Application } from "../../../models";
+import GenericButton from "../../Buttons/GenericButton.vue";
 import { useDashboardStore } from "@/stores/dashboardStore";
 import {storeToRefs} from "pinia";
 

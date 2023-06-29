@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import {computed, ref, watch} from "vue";
 import type { Ref } from "vue";
-import WebGridItem from "../Dashboard/ClassControl/GridItem/Web/WebGridItem.vue";
-import MobileGridItem from "../Dashboard/ClassControl/GridItem/Mobile/MobileGridItem.vue";
-import Modal from "./Modal.vue";
+import WebGridItem from "../../Dashboard/ClassControl/GridItem/Web/WebGridItem.vue";
+import MobileGridItem from "../../Dashboard/ClassControl/GridItem/Mobile/MobileGridItem.vue";
+import Modal from "../Modal.vue";
 import {CuratedContentItem, MobileFollower, Task, WebFollower} from "@/models";
-import GenericButton from "../Buttons/GenericButton.vue";
+import GenericButton from "../../Buttons/GenericButton.vue";
 import {useDashboardStore} from "@/stores/dashboardStore";
 import * as REQUESTS from "@/constants/_requests";
 import CuratedContentDescription from "@/components/CuratedContent/CuratedContentDescription.vue";

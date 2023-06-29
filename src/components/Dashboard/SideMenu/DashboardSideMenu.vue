@@ -2,8 +2,8 @@
 import DashboardMenuItem from "./DashboardMenuItem.vue";
 import { useDashboardStore } from "@/stores/dashboardStore";
 import {computed, onBeforeMount, onBeforeUnmount, ref} from "vue";
-import classroomIconUrl from '/src/assets/img/sideMenu/menu-icon-disabled-classroom.svg';
-import endClassIconUrl from '/src/assets/img/sideMenu/menu-icon-disabled-endclass.svg';
+import classroomIconUrl from '/src/assets/img/sideMenu/menu-icon-classroom.svg';
+import endClassIconUrl from '/src/assets/img/sideMenu/menu-icon-endclass.svg';
 import GenericButton from "@/components/Buttons/GenericButton.vue";
 import DashboardActions from "@/components/Dashboard/SideMenu/DashboardActions.vue";
 

@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import DashboardMenuItem from "./DashboardMenuItem.vue";
-import shareContentIconUrl from '/src/assets/img/sideMenu/menu-icon-disabled-sharecontent.svg';
-import lockIconUrl from '/src/assets/img/sideMenu/menu-icon-disabled-lock.svg';
+import lockIconUrl from '/src/assets/img/sideMenu/menu-icon-lock.svg';
 import {computed, ref} from "vue";
 import {useDashboardStore} from "@/stores/dashboardStore";
+import ShareContentModal from "@/components/Modals/ShareContent/ShareContentModal.vue";
 import * as REQUESTS from "@/constants/_requests";
 
 const dashboardPinia = useDashboardStore();
@@ -12,9 +11,9 @@ const classCode = computed(() => {
   return dashboardPinia.classCode !== ''
 })
 
+// Screen control area
 const loading = ref(false);
 const locked = ref(false);
-
 async function screenControl() {
   loading.value = true;
   await new Promise(res => setTimeout(res, 500));
@@ -26,7 +25,8 @@ async function screenControl() {
 </script>
 
 <template>
-  <DashboardMenuItem :icon="shareContentIconUrl" :enabled="classCode" view="/">Share Content</DashboardMenuItem>
+  <!--Sharing content-->
+  <ShareContentModal />
 
   <!--Screen lock/unlock-->
   <button

@@ -3,25 +3,33 @@ import { computed, ref } from "vue";
 import type { Ref } from "vue";
 import useVuelidate from "@vuelidate/core";
 import { helpers, required } from "@vuelidate/validators";
-import MobileGridItem from "../Dashboard/ClassControl/GridItem/Mobile/MobileGridItem.vue";
-import Modal from "./Modal.vue";
-import type { MobileFollower } from "../../models";
-import GenericButton from "../Buttons/GenericButton.vue";
+import WebGridItem from "../../Dashboard/ClassControl/GridItem/Web/WebGridItem.vue";
+import MobileGridItem from "../../Dashboard/ClassControl/GridItem/Mobile/MobileGridItem.vue";
+import Modal from "../Modal.vue";
+import type { MobileFollower, WebFollower } from "../../../models";
+import GenericButton from "../../Buttons/GenericButton.vue";
 import { useDashboardStore } from "@/stores/dashboardStore";
 import * as REQUESTS from "@/constants/_requests";
-import {Task} from "@/models";
+import { Task } from "@/models";
 import {storeToRefs} from "pinia";
 
 const dashboardPinia = useDashboardStore();
-const {  mobileFollowers } = storeToRefs(dashboardPinia)
+const { webFollowers, mobileFollowers } = storeToRefs(dashboardPinia)
 const showModal = ref(false);
-const videoLink = ref("");
+const websiteLink = ref("");
+const shareType = ref("web");
 const shareTo = ref("all");
 const followersSelected: Ref<string[]> = ref([]);
 const submissionAttempted = ref(false);
 
 defineExpose({
   openModal
+});
+
+const sortedWebFollowers = computed((): Array<WebFollower> => {
+  return webFollowers.value.slice().sort((a: WebFollower, b: WebFollower) => {
+    return a.name.localeCompare(b.name)
+  });
 });
 
 const sortedMobileFollowers = computed((): Array<MobileFollower> => {
@@ -32,11 +40,11 @@ const sortedMobileFollowers = computed((): Array<MobileFollower> => {
 
 const rules = {
   websiteLink: {
-    required: helpers.withMessage("Video link is required", required)
+    required: helpers.withMessage("Website link is required", required)
   }
 }
 
-const v$ = useVuelidate(rules, { websiteLink: videoLink })
+const v$ = useVuelidate(rules, { websiteLink })
 
 async function validate(): Promise<boolean> {
   submissionAttempted.value = true
@@ -65,13 +73,14 @@ async function submit() {
     return;
   }
 
-  const request = { type: REQUESTS.FORCEACTIVEVIDEOLINK, action: videoLink.value };
+  const request = { type: REQUESTS.WEBSITE, action: websiteLink.value };
+  const shareTypeRequest = shareType.value === "web" ? REQUESTS.WEB : REQUESTS.MOBILE;
 
   if (shareTo.value === 'all') {
-    dashboardPinia.requestAction(request, REQUESTS.MOBILE);
+    dashboardPinia.requestAction(request, shareTypeRequest);
   } else if (shareTo.value === 'selected') {
     followersSelected.value.forEach(id => {
-      dashboardPinia.requestIndividualAction(id, request, REQUESTS.MOBILE);
+      dashboardPinia.requestIndividualAction(id, request, shareTypeRequest);
     });
   }
 
@@ -83,15 +92,14 @@ async function submitNewTask() {
     return;
   }
 
-  let task: Task = new Task("VR Video", videoLink.value, "Video");
+  let task: Task = new Task("Website", websiteLink.value, "Website");
 
-  const followersToProcess = shareTo.value === 'all' ? sortedMobileFollowers.value :
-      sortedMobileFollowers.value.filter(f => followersSelected.value.includes(f.getUniqueId()));
-
-  followersToProcess.forEach(follower => {
-    follower.tasks.push(task);
-    const stringValues = follower.tasks.map(app => app.toStringEntry());
-    dashboardPinia.updateFollowerTasks(follower.getUniqueId(), stringValues, REQUESTS.MOBILE);
+  sortedMobileFollowers.value.forEach(follower => {
+    if (shareTo.value === 'all' || followersSelected.value.includes(follower.getUniqueId())) {
+      follower.tasks.push(task);
+      const taskEntries = follower.tasks.map(app => app.toStringEntry()); //turn the task array into a string for firebase
+      dashboardPinia.updateFollowerTasks(follower.getUniqueId(), taskEntries, REQUESTS.MOBILE);
+    }
   });
 }
 
@@ -112,6 +120,8 @@ function openModal() {
 
 function closeModal() {
   v$.value.$reset();
+  shareTo.value = "all";
+  followersSelected.value = [];
   showModal.value = false
   submissionAttempted.value = false
 }
@@ -135,7 +145,7 @@ function closeModal() {
     <Modal :show="showModal" @close="closeModal">
       <template v-slot:header>
         <header class="h-20 px-8 w-modal-width bg-white flex justify-between items-center rounded-t-lg">
-          <p class="text-2xl font-medium">Share video links with your class</p>
+          <p class="text-2xl font-medium">Share links with your class</p>
 
           <img
               v-on:click="closeModal"
@@ -165,6 +175,18 @@ function closeModal() {
             <p class="ml-8 text-lg font-medium mr-2">Share to</p>
             <div class="flex justify-start">
               <label class="mr-4 lg:mr-14 flex justify-between items-center">
+                <input class="h-5 w-5 mr-4" name="shareType" type="radio" v-model="shareType" value="web">
+                <span class="text-base">Web users</span>
+              </label>
+
+              <label class="flex justify-between items-center mr-8 lg:mr-20">
+                <input class="h-5 w-5 mr-4" name="shareType" type="radio" v-model="shareType" value="mobile">
+                <span class="text-base">Mobile users</span>
+              </label>
+            </div>
+
+            <div class="flex justify-start">
+              <label class="mr-4 lg:mr-14 flex justify-between items-center">
                 <input class="h-5 w-5 mr-4" name="shareTo" type="radio" v-model="shareTo" value="all">
                 <span class="text-base">All connected users</span>
               </label>
@@ -178,8 +200,20 @@ function closeModal() {
         </div>
         <div class="w-modal-width max-h-64 overflow-y-auto">
 
+          <!--Web followers-->
+          <div v-if="shareTo === 'selected' && shareType === 'web' && webFollowers.length"
+               class="mt-4 flex flex-row flex-wrap ml-10 mr-14">
+            <WebGridItem
+                v-for="follower in sortedWebFollowers"
+                :key="follower.getUniqueId()"
+                class="pl-4 pt-4 w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/6"
+                :webFollower="follower"
+                :controls="false"
+                @update="(value: boolean) => { handleFollowerSelection(follower.getUniqueId(), value) }"/>
+          </div>
+
           <!--Mobile followers-->
-          <div v-if="shareTo === 'selected' && mobileFollowers.length"
+          <div v-else-if="shareTo === 'selected' && shareType === 'mobile' && mobileFollowers.length"
                class="mt-4 flex flex-row flex-wrap ml-10 mr-14">
             <MobileGridItem
                 v-for="follower in sortedMobileFollowers"
@@ -191,7 +225,7 @@ function closeModal() {
           </div>
 
           <!--No followers-->
-          <div v-else-if="shareTo === 'selected'" class="flex justify-center items-center bg-gray-200 mx-14 mt-4 px-5 py-5">
+          <div class="flex justify-center items-center bg-gray-200 mx-14 mt-4 px-5 py-5" v-else-if="shareTo === 'selected'">
             <span>No students connected</span>
           </div>
         </div>
@@ -199,7 +233,9 @@ function closeModal() {
 
       <template v-slot:footer>
         <footer class="mt-11 mb-8 mx-14 text-right flex flex-row justify-between">
-          <div class="flex flex-row">
+
+          <!--Add the webside to a mobile followers task list-->
+          <div class="flex flex-row" :class="{'invisible': shareType === 'web'}">
             <button class="w-36 h-11 mr-4 text-blue-500 text-base rounded-lg hover:bg-gray-default font-medium"
                     v-on:click="clearTaskList"
             >Clear tasks</button>
@@ -232,7 +268,7 @@ function closeModal() {
               <GenericButton
                   class="w-52 h-12 text-white bg-blue-500 rounded-lg text-base hover:bg-blue-400 font-medium"
                   :callback="submit"
-              >Share video</GenericButton>
+              >Share link</GenericButton>
             </div>
           </div>
         </footer>
