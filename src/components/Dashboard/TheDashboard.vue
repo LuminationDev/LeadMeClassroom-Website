@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import DashboardSideMenu from "./DashboardSideMenu.vue";
-import DashboardTitleBar from "./DashboardTitleBar.vue";
+import DashboardSideMenu from "./SideMenu/DashboardSideMenu.vue";
 import { onBeforeMount, onMounted, ref } from "vue";
 import { getAuth } from "@firebase/auth";
 import { useDashboardStore } from "@/stores/dashboardStore";
@@ -38,9 +37,6 @@ onBeforeMount(() => {
 
     <div class="flex flex-grow flex-col h-screen">
       <div class="flex flex-grow flex-col h-screen">
-        <!--TitleBar-->
-        <DashboardTitleBar v-if="emailVerified" />
-
         <!--MainArea-->
         <div class="flex flex-col flex-grow bg-panel-background font-poppins overflow-hidden">
           <router-view />

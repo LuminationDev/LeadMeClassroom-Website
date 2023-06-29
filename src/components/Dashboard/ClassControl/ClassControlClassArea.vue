@@ -1,110 +1,51 @@
 <script setup lang="ts">
-import ShareWebsiteModal from "../../../components/Modals/ShareWebsiteModal.vue";
-import ShareApplicationModal from "@/components/Modals/ShareApplicationModal.vue";
-import ShareVideoModal from "@/components/Modals/ShareVideoModal.vue";
-import ShareMediaModal from "@/components/Modals/ShareMediaModal.vue";
-import CuratedContentModal from "@/components/Modals/CuratedContentModal.vue";
-import ClassControlSessionArea from "./ClassControlSessionArea.vue";
-import * as REQUESTS from "../../../constants/_requests";
 import { ref } from "vue";
+import settingsIconUrl from '/src/assets/img/settings-icon-cog.svg';
+import accountIconUrl from '/src/assets/img/sideMenu/menu-icon-account.svg';
+import logoutIconUrl from '/src/assets/img/sideMenu/menu-icon-logout.svg';
 import { useDashboardStore } from "@/stores/dashboardStore";
+import { usePopupStore} from "@/stores/popupStore";
 
 const dashboardPinia = useDashboardStore();
-const loading = ref(false);
-const locked = ref(false);
-
-async function screenControl() {
-  loading.value = true;
-  await new Promise(res => setTimeout(res, 500));
-  locked.value = !locked.value;
-  loading.value = false;
-  dashboardPinia.requestAction({ type: REQUESTS.SCREENCONTROL, action: locked.value ? REQUESTS.BLOCK : REQUESTS.UNBLOCK }, REQUESTS.WEB);
-  dashboardPinia.requestAction({ type: REQUESTS.SCREENCONTROL, action: locked.value ? REQUESTS.BLOCK : REQUESTS.UNBLOCK }, REQUESTS.MOBILE);
-}
-
-//Reference to the separate media modals to open them externally
-const websiteRef = ref<InstanceType<typeof ShareWebsiteModal> | null>(null)
-function openWebsiteModal() {
-  websiteRef.value?.openModal();
-}
-
-const applicationRef = ref<InstanceType<typeof ShareApplicationModal> | null>(null)
-function openApplicationModal() {
-  applicationRef.value?.openModal();
-}
-
-const videoRef = ref<InstanceType<typeof ShareVideoModal> | null>(null)
-function openVideoModal() {
-  videoRef.value?.openModal();
-}
+const popupPinia = usePopupStore();
+const open = ref(false);
 </script>
 
 <template>
   <div class="mt-14 px-5 lg:px-10 sticky top-0 w-full py-4 bg-panel-background">
     <div class="flex flex-row justify-between items-center">
-      <p class="text-3xl font-medium" v-if="dashboardPinia.user">{{ dashboardPinia.user.displayName }}'{{ dashboardPinia?.user?.displayName?.endsWith('s') ? '' : 's' }} Class</p>
-      <ClassControlSessionArea />
-    </div>
+      <p class="text-3xl font-medium" v-if="dashboardPinia.user">{{ dashboardPinia.user?.displayName }}'{{ dashboardPinia?.user?.displayName?.endsWith('s') ? '' : 's' }} Class</p>
 
-    <!--Action Area-->
-    <div class="mt-8 flex child:mr-4">
+      <!--Settings drop down-->
+      <div class="flex flex-col">
+        <img v-on:click="open = !open" class="cursor-pointer" :src="settingsIconUrl" alt="Icon" v-on:blur="console.log('blur')"/>
 
-      <!--Media is the default however the others are needed as hidden references-->
-      <ShareMediaModal @webModal="openWebsiteModal" @appModal="openApplicationModal" @videoModal="openVideoModal" />
-      <div :class="{'hidden': true}">
-        <ShareWebsiteModal ref="websiteRef" />
-        <ShareApplicationModal ref="applicationRef" />
-        <ShareVideoModal ref="videoRef" />
+        <div v-if="open" class="w-44 h-28 flex flex-col absolute right-5 lg:right-10 top-20 bg-gray-200 rounded-lg">
+          <!--Gray tip-->
+          <div class="ml-36 pl-1 h-0 w-0 border-x-8 border-x-transparent border-b-[16px] border-b-gray-200 -mt-3.5"></div>
+
+          <div class="ml-2 mt-2.5">
+            <!--Navigate to the account page-->
+            <router-link class="w-40 h-10 flex flex-row
+              items-center rounded-lg bg-white text-lg
+              font-semibold hover:bg-gray-300" to="/account">
+              <img class="w-6 h-6 mx-3" :src="accountIconUrl" alt="Icon"/>
+
+              Settings
+            </router-link>
+
+            <!--End the active session and logout-->
+            <div class="w-40 h-10 mt-2.5 flex flex-row
+              items-center rounded-lg bg-white text-lg
+              font-semibold text-red-600 cursor-pointer
+              hover:bg-gray-300"
+              v-on:click="dashboardPinia.endSession(); popupPinia.handleLogoutClick()">
+              <img class="w-6 h-6 mx-3" :src="logoutIconUrl" alt="Icon"/>
+              Log Out
+            </div>
+          </div>
+        </div>
       </div>
-
-      <!--Curated content-->
-      <CuratedContentModal />
-
-      <!--Screen lock/unlock-->
-      <button :class="{
-          'w-56 h-9 flex justify-center font-medium items-center text-white': true,
-          'bg-navy-side-menu hover:bg-navy-hover-session-button': locked,
-          'bg-blue-500 hover:bg-blue-400': !locked
-          }"
-          :disabled="loading"
-          v-on:click="screenControl();"
-      >
-        <span v-if="loading" class="lds-dual-ring-screen h-4 w-4 mr-3"></span>
-
-        <span v-else class="flex flex-row place-items-center">
-          <img v-if="locked" class="w-4 h-4 mr-3" src="/src/assets/img/session-icon-unlock.svg" alt="Icon"/>
-          <img v-else class="w-4 h-4 mr-3" src="/src/assets/img/session-icon-lock.svg" alt="Icon"/>
-          <span class="text-base">
-            {{locked ? 'Unlock screens' : 'Lock screens'}}
-          </span>
-        </span>
-      </button>
     </div>
   </div>
 </template>
-
-<style>
-.lds-dual-ring-screen {
-  display: inline-block;
-  width: 20px;
-  height: 20px;
-}
-.lds-dual-ring-screen:after {
-  content: " ";
-  display: block;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  border: 2px solid #ffffff;
-  border-color: #ffffff transparent #ffffff transparent;
-  animation: lds-dual-ring-screen 1.2s linear infinite;
-}
-@keyframes lds-dual-ring-screen {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
-}
-</style>
