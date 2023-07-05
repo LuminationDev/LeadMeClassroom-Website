@@ -3,11 +3,11 @@ import { computed, ref } from "vue";
 import type { Ref } from "vue";
 import useVuelidate from "@vuelidate/core";
 import { helpers, required } from "@vuelidate/validators";
-import WebGridItem from "../../Dashboard/ClassControl/GridItem/Web/WebGridItem.vue";
-import MobileGridItem from "../../Dashboard/ClassControl/GridItem/Mobile/MobileGridItem.vue";
+import WebGridItem from "../../Classroom/ClassControl/GridItem/Web/WebGridItem.vue";
+import MobileGridItem from "../../Classroom/ClassControl/GridItem/Mobile/MobileGridItem.vue";
 import type { MobileFollower, WebFollower } from "../../../models";
 import GenericButton from "../../Buttons/GenericButton.vue";
-import { useDashboardStore } from "@/stores/dashboardStore";
+import { useClassroomStore } from "@/stores/classroomStore";
 import * as REQUESTS from "@/constants/_requests";
 import { Task } from "@/models";
 import {storeToRefs} from "pinia";
@@ -16,8 +16,8 @@ defineEmits<{
   (e: 'back'): void
 }>()
 
-const dashboardPinia = useDashboardStore();
-const { webFollowers, mobileFollowers } = storeToRefs(dashboardPinia)
+const classroomPinia = useClassroomStore();
+const { webFollowers, mobileFollowers } = storeToRefs(classroomPinia)
 const showModal = ref(false);
 const websiteLink = ref("");
 const shareType = ref("web");
@@ -76,10 +76,10 @@ async function submit() {
   const shareTypeRequest = shareType.value === "web" ? REQUESTS.WEB : REQUESTS.MOBILE;
 
   if (shareTo.value === 'all') {
-    dashboardPinia.requestAction(request, shareTypeRequest);
+    classroomPinia.requestAction(request, shareTypeRequest);
   } else if (shareTo.value === 'selected') {
     followersSelected.value.forEach(id => {
-      dashboardPinia.requestIndividualAction(id, request, shareTypeRequest);
+      classroomPinia.requestIndividualAction(id, request, shareTypeRequest);
     });
   }
 
@@ -97,7 +97,7 @@ async function submitNewTask() {
     if (shareTo.value === 'all' || followersSelected.value.includes(follower.getUniqueId())) {
       follower.tasks.push(task);
       const taskEntries = follower.tasks.map(app => app.toStringEntry()); //turn the task array into a string for firebase
-      dashboardPinia.updateFollowerTasks(follower.getUniqueId(), taskEntries, REQUESTS.MOBILE);
+      classroomPinia.updateFollowerTasks(follower.getUniqueId(), taskEntries, REQUESTS.MOBILE);
     }
   });
 }
@@ -109,7 +109,7 @@ function clearTaskList() {
 
   followers.forEach(follower => {
     follower.clearTasks();
-    dashboardPinia.updateFollowerTasks(follower.getUniqueId(), [], REQUESTS.MOBILE);
+    classroomPinia.updateFollowerTasks(follower.getUniqueId(), [], REQUESTS.MOBILE);
   });
 }
 

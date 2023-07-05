@@ -8,9 +8,9 @@ import useVuelidate from "@vuelidate/core";
 
 import {getAuth, signInWithEmailAndPassword} from "@firebase/auth";
 import {useRouter} from "vue-router";
-import {useDashboardStore} from "@/stores/dashboardStore";
+import {useClassroomStore} from "@/stores/classroomStore";
 
-const dashboardPinia = useDashboardStore();
+const classroomPinia = useClassroomStore();
 
 const router = useRouter()
 
@@ -40,8 +40,8 @@ async function validateAndSubmit() {
     if (!getAuth().currentUser?.emailVerified) {
       emit('changeView', 'verify')
     } else {
-      dashboardPinia.user = getAuth().currentUser
-      router.push({ name: 'dashboard' })
+      classroomPinia.user = getAuth().currentUser
+      router.push({ name: 'classroom' })
     }
     return;
   }
@@ -52,8 +52,8 @@ async function validateAndSubmit() {
         if (!auth.currentUser?.emailVerified) {
           emit('changeView', 'verify')
         } else {
-          dashboardPinia.user = auth.currentUser
-          router.push({ name: 'dashboard' })
+          classroomPinia.user = auth.currentUser
+          router.push({ name: 'classroom' })
         }
       })
       .catch((response) => {

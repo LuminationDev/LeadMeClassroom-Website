@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import {computed, ref, watch} from "vue";
 import type { Ref } from "vue";
-import WebGridItem from "../../Dashboard/ClassControl/GridItem/Web/WebGridItem.vue";
-import MobileGridItem from "../../Dashboard/ClassControl/GridItem/Mobile/MobileGridItem.vue";
+import WebGridItem from "../../Classroom/ClassControl/GridItem/Web/WebGridItem.vue";
+import MobileGridItem from "../../Classroom/ClassControl/GridItem/Mobile/MobileGridItem.vue";
 import Modal from "../Modal.vue";
 import {CuratedContentItem, MobileFollower, Task, WebFollower} from "@/models";
 import GenericButton from "../../Buttons/GenericButton.vue";
-import {useDashboardStore} from "@/stores/dashboardStore";
+import {useClassroomStore} from "@/stores/classroomStore";
 import * as REQUESTS from "@/constants/_requests";
 import CuratedContentDescription from "@/components/CuratedContent/CuratedContentDescription.vue";
 import ContentFilter from "@/components/CuratedContent/ContentFilter.vue";
@@ -17,7 +17,7 @@ defineEmits<{
   (e: 'back'): void
 }>()
 
-const dashboardPinia = useDashboardStore();
+const classroomPinia = useClassroomStore();
 const showModal = ref(false);
 const shareType = ref("web");
 const shareTo = ref("all");
@@ -30,7 +30,7 @@ const subjectQuery = ref("");
 const topicQuery = ref("");
 const showFilter = ref(false);
 const error = ref();
-const { webFollowers, mobileFollowers } = storeToRefs(dashboardPinia)
+const { webFollowers, mobileFollowers } = storeToRefs(classroomPinia)
 
 const sortedWebFollowers = computed((): Array<WebFollower> => {
   return webFollowers.value.slice().sort((a: WebFollower, b: WebFollower) => {
@@ -50,7 +50,7 @@ const sortedMobileFollowers = computed((): Array<MobileFollower> => {
 const sortedCuratedContent = computed((): Array<CuratedContentItem> => {
   const shouldFilter = searchQuery.value !== '' || yearQuery.value !== '' || subjectQuery.value !== '' || topicQuery.value !== '';
 
-  const filteredContent = dashboardPinia.curatedContent.filter((item) => {
+  const filteredContent = classroomPinia.curatedContent.filter((item) => {
     const title = item.getTitle().toLocaleLowerCase();
     const years = item.getYears();
     const subjects = item.getSubjects();
@@ -98,7 +98,7 @@ const containsYearLevel = (years: string) => {
 
 const subjectList = computed(() => {
   // Extract subjects from each item and flatten the array
-  let subjects = dashboardPinia.curatedContent.flatMap(item => item.getSubjects().split(','));
+  let subjects = classroomPinia.curatedContent.flatMap(item => item.getSubjects().split(','));
   subjects = subjects.filter(subject => subject !== "" && subject !== "-"); //Remove the null values
   // Create a Set to store unique subject values and convert Set back to an array
   return Array.from(new Set(subjects));
@@ -106,7 +106,7 @@ const subjectList = computed(() => {
 
 const topicList = computed(() => {
   // Extract topics from each item and flatten the array
-  let topics = dashboardPinia.curatedContent.flatMap(item => item.getTopics().split(','));
+  let topics = classroomPinia.curatedContent.flatMap(item => item.getTopics().split(','));
   topics = topics.filter(topic => topic !== "" && topic !== "-"); //Remove the null values
   // Create a Set to store unique subject values and convert Set back to an array
   return Array.from(new Set(topics));
@@ -171,11 +171,11 @@ const singleItem = () => {
   const action = selectedItems.value[0].getPackageName();
 
   if (shareTo.value === 'all') {
-    dashboardPinia.requestAction({ type: actionType, action }, requestAction);
+    classroomPinia.requestAction({ type: actionType, action }, requestAction);
   } else if (shareTo.value === 'selected') {
     const followers = followersSelected.value;
     followers.forEach((id) => {
-      dashboardPinia.requestIndividualAction(id, { type: actionType, action }, requestAction);
+      classroomPinia.requestIndividualAction(id, { type: actionType, action }, requestAction);
     });
   }
 }
@@ -188,7 +188,7 @@ const multiItem = () => {
   sortedMobileFollowers.value.forEach(follower => {
     if (shareTo.value === 'all' || followersSelected.value.includes(follower.getUniqueId())) {
       follower.tasks = Array.from(new Set(follower.tasks.concat(selectedItems.value)));
-      dashboardPinia.updateFollowerTasks(follower.getUniqueId(), follower.tasks.map(app => app.toStringEntry()), REQUESTS.MOBILE);
+      classroomPinia.updateFollowerTasks(follower.getUniqueId(), follower.tasks.map(app => app.toStringEntry()), REQUESTS.MOBILE);
     }
   });
 }
@@ -200,7 +200,7 @@ const clearTaskList = () => {
 
   followers.forEach(follower => {
     follower.clearTasks();
-    dashboardPinia.updateFollowerTasks(follower.getUniqueId(), [], REQUESTS.MOBILE);
+    classroomPinia.updateFollowerTasks(follower.getUniqueId(), [], REQUESTS.MOBILE);
   });
 }
 

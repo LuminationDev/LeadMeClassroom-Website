@@ -1,31 +1,31 @@
 <script setup lang="ts">
-import DashboardSideMenu from "./SideMenu/DashboardSideMenu.vue";
+import ClassroomSideMenu from "./SideMenu/ClassroomSideMenu.vue";
 import { onBeforeMount, onMounted, ref } from "vue";
 import { getAuth } from "@firebase/auth";
-import { useDashboardStore } from "@/stores/dashboardStore";
+import { useClassroomStore } from "@/stores/classroomStore";
 import { useRouter } from "vue-router";
 
-const dashboardPinia = useDashboardStore();
+const classroomPinia = useClassroomStore();
 const router = useRouter()
 const emailVerified = ref(false)
 const loaded = ref(false)
 
 //Check for any active class on load
 onMounted(async () => {
-  dashboardPinia.loadCuratedContent()
-  await dashboardPinia.onLoad()
-  await dashboardPinia.attachClassListeners(true)
+  classroomPinia.loadCuratedContent()
+  await classroomPinia.onLoad()
+  await classroomPinia.attachClassListeners(true)
   const auth = getAuth()
-  dashboardPinia.user = auth.currentUser
-  if (dashboardPinia.user) {
-    emailVerified.value = dashboardPinia.user.emailVerified
+  classroomPinia.user = auth.currentUser
+  if (classroomPinia.user) {
+    emailVerified.value = classroomPinia.user.emailVerified
   }
   loaded.value = true
 });
 
 onBeforeMount(() => {
   router.push({
-    name: 'dashboard'
+    name: 'classroom'
   });
 });
 </script>
@@ -33,7 +33,7 @@ onBeforeMount(() => {
 <template>
   <div class="flex font-poppins">
     <!--SideMenu-->
-    <DashboardSideMenu v-if="emailVerified" />
+    <ClassroomSideMenu v-if="emailVerified" />
 
     <div class="flex flex-grow flex-col h-screen">
       <div class="flex flex-grow flex-col h-screen">

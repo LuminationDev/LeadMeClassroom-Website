@@ -2,12 +2,12 @@
 import { usePopupStore } from "../../../stores/popupStore";
 import GenericButton from "../../Buttons/GenericButton.vue";
 import {onMounted, ref} from "vue";
-import LoginInitial from "@/components/Dashboard/Login/LoginInitial.vue";
-import LoginTeacher from "@/components/Dashboard/Login/LoginTeacher.vue";
-import LoginStudent from "@/components/Dashboard/Login/LoginStudent.vue";
-import LoginPasswordReset from "@/components/Dashboard/Login/LoginPasswordReset.vue";
-import LoginSignup from "@/components/Dashboard/Login/LoginSignup.vue";
-import LoginVerifyEmail from "@/components/Dashboard/Login/LoginVerifyEmail.vue";
+import LoginInitial from "@/components/Classroom/Login/LoginInitial.vue";
+import LoginTeacher from "@/components/Classroom/Login/LoginTeacher.vue";
+import LoginStudent from "@/components/Classroom/Login/LoginStudent.vue";
+import LoginPasswordReset from "@/components/Classroom/Login/LoginPasswordReset.vue";
+import LoginSignup from "@/components/Classroom/Login/LoginSignup.vue";
+import LoginVerifyEmail from "@/components/Classroom/Login/LoginVerifyEmail.vue";
 import {getAuth} from "@firebase/auth";
 
 const currentView = ref("welcome")

@@ -1,14 +1,14 @@
 import { createApp } from 'vue'
 import { createPinia } from "pinia";
 import * as VueRouter from 'vue-router'
-import Dashboard from './Dashboard.vue'
-import Account from '../../components/Dashboard/Account/AccountMain.vue'
+import Classroom from './Classroom.vue'
+import Account from '../../components/Classroom/Account/AccountMain.vue'
 
-const app = createApp(Dashboard);
+const app = createApp(Classroom);
 app.use(createPinia());
 
 const routes = [
-    { name: 'dashboard', path: '/', component: Dashboard },
+    { name: 'classroom', path: '/', component: Classroom },
     { name: 'account', path: '/account', component: Account },
 ]
 

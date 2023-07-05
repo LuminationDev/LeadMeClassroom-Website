@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import DashboardMenuItem from "./DashboardMenuItem.vue";
-import { useDashboardStore } from "@/stores/dashboardStore";
-import {computed, onBeforeMount, onBeforeUnmount, ref} from "vue";
+import ClassroomMenuItem from "./ClassroomMenuItem.vue";
+import { useClassroomStore } from "@/stores/classroomStore";
+import { computed, onBeforeMount, onBeforeUnmount, ref } from "vue";
 import classroomIconUrl from '/src/assets/img/sideMenu/menu-icon-classroom.svg';
 import endClassIconUrl from '/src/assets/img/sideMenu/menu-icon-endclass.svg';
 import GenericButton from "@/components/Buttons/GenericButton.vue";
-import DashboardActions from "@/components/Dashboard/SideMenu/DashboardActions.vue";
+import ClassroomActions from "@/components/Classroom/SideMenu/ClassroomActions.vue";
 
-const dashboardPinia = useDashboardStore();
+const classroomPinia = useClassroomStore();
 
 const hidden = ref(false)
 const screenSize = ref(window.innerWidth)
@@ -29,15 +29,15 @@ const showSidebar = computed(() => {
 })
 
 const classCode = computed(() => {
-  return dashboardPinia.classCode !== ''
+  return classroomPinia.classCode !== ''
 })
 
 async function endSession() {
-  await dashboardPinia.endSession();
+  await classroomPinia.endSession();
 }
 
 async function generateSession() {
-  await dashboardPinia.generateSession();
+  await classroomPinia.generateSession();
 }
 </script>
 
@@ -65,7 +65,7 @@ async function generateSession() {
           class="h-12 w-48 bg-blue-500
           text-sm text-white font-poppins font-semibold
           rounded-md"
-      >Room Code: {{ dashboardPinia.classCode }}</button>
+      >Room Code: {{ classroomPinia.classCode }}</button>
 
       <GenericButton
           v-else
@@ -79,17 +79,23 @@ async function generateSession() {
 
     <!--Content options-->
     <div class="mt-8 child:mb-3">
-      <DashboardMenuItem :icon="classroomIconUrl" :enabled="classCode" view="/">Classroom</DashboardMenuItem>
-      <DashboardActions />
+      <ClassroomMenuItem
+          :icon="classroomIconUrl"
+          :enabled="classCode" view="/"
+          :panel="'classroom'"
+          v-on:click="classroomPinia.view = 'classroom'"
+      >Classroom</ClassroomMenuItem>
+
+      <ClassroomActions />
     </div>
 
     <!--End the active session and logout-->
-    <DashboardMenuItem
+    <ClassroomMenuItem
         :icon="endClassIconUrl" class="fixed bottom-12"
         :enabled="classCode"
         v-on:click="endSession()"
         view="/"
-    >End Class</DashboardMenuItem>
+    >End Class</ClassroomMenuItem>
   </div>
 </template>
 

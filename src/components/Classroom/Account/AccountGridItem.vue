@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import {useDashboardStore} from "../../../stores/dashboardStore";
-const dashboardPinia = useDashboardStore();
+import { useClassroomStore } from "@/stores/classroomStore";
+const classroomPinia = useClassroomStore();
 
 defineProps({
   title: {
@@ -19,7 +19,7 @@ defineProps({
     <div class="mr-5 flex flex-grow justify-end">
       <img :class="{
             'w-7 h-7': true,
-            'rotate-180': dashboardPinia.accountView !== 'menu'
+            'rotate-180': classroomPinia.accountView !== 'menu'
            }"
            src="/src/assets/img/settings-icon-arrow.svg"
            alt="Settings arrow"

@@ -3,10 +3,10 @@ import { ref } from "vue";
 import settingsIconUrl from '/src/assets/img/settings-icon-cog.svg';
 import accountIconUrl from '/src/assets/img/sideMenu/menu-icon-account.svg';
 import logoutIconUrl from '/src/assets/img/sideMenu/menu-icon-logout.svg';
-import { useDashboardStore } from "@/stores/dashboardStore";
+import { useClassroomStore } from "@/stores/classroomStore";
 import { usePopupStore} from "@/stores/popupStore";
 
-const dashboardPinia = useDashboardStore();
+const classroomPinia = useClassroomStore();
 const popupPinia = usePopupStore();
 const open = ref(false);
 </script>
@@ -14,7 +14,9 @@ const open = ref(false);
 <template>
   <div class="mt-14 px-5 lg:px-10 sticky top-0 w-full py-4 bg-panel-background">
     <div class="flex flex-row justify-between items-center">
-      <p class="text-3xl font-medium" v-if="dashboardPinia.user">{{ dashboardPinia.user?.displayName }}'{{ dashboardPinia?.user?.displayName?.endsWith('s') ? '' : 's' }} Class</p>
+      <p class="text-3xl font-medium" v-if="classroomPinia.user">{{
+          classroomPinia.user?.displayName
+        }}'{{ classroomPinia?.user?.displayName?.endsWith('s') ? '' : 's' }} Class</p>
 
       <!--Settings drop down-->
       <div class="flex flex-col">
@@ -28,7 +30,8 @@ const open = ref(false);
             <!--Navigate to the account page-->
             <router-link class="w-40 h-10 flex flex-row
               items-center rounded-lg bg-white text-lg
-              font-semibold hover:bg-gray-300" to="/account">
+              font-semibold hover:bg-gray-300" to="/account"
+              v-on:click="classroomPinia.view = 'settings'">
               <img class="w-6 h-6 mx-3" :src="accountIconUrl" alt="Icon"/>
 
               Settings
@@ -39,7 +42,7 @@ const open = ref(false);
               items-center rounded-lg bg-white text-lg
               font-semibold text-red-600 cursor-pointer
               hover:bg-gray-300"
-              v-on:click="dashboardPinia.endSession(); popupPinia.handleLogoutClick()">
+              v-on:click="classroomPinia.endSession(); popupPinia.handleLogoutClick()">
               <img class="w-6 h-6 mx-3" :src="logoutIconUrl" alt="Icon"/>
               Log Out
             </div>

@@ -8,8 +8,8 @@ import type MobileFollower from "../../models/Followers/_mobileFollower";
 import HoverButton from "../Buttons/HoverButton.vue";
 import Tooltip from "../Buttons/Tooltip.vue";
 import type {Application} from "@/models";
-import { useDashboardStore } from "@/stores/dashboardStore";
-const dashboardPinia = useDashboardStore();
+import { useClassroomStore } from "@/stores/classroomStore";
+const classroomPinia = useClassroomStore();
 
 defineEmits<{
   (e: 'taskManager'): void
@@ -70,7 +70,7 @@ function returnFollowerApplication() {
   //Reset the selected value
   selectedApplicationId.value = REQUESTS.MOBILE_PACKAGE;
 
-  dashboardPinia.requestActiveMedia(
+  classroomPinia.requestActiveMedia(
       props.mobileFollower.getUniqueId(),
       { type: REQUESTS.FORCEACTIVEAPP, action: REQUESTS.MOBILE_PACKAGE },
       REQUESTS.MOBILE
@@ -82,14 +82,14 @@ function muteOrUnmuteFollower(mute: boolean) {
   props.mobileFollower.muted = mute;
 
   const action = { type: REQUESTS.DEVICEAUDIO, action: mute ? REQUESTS.MUTE : REQUESTS.UNMUTE }
-  dashboardPinia.requestIndividualAction(props.mobileFollower.getUniqueId(), action, REQUESTS.MOBILE)
+  classroomPinia.requestIndividualAction(props.mobileFollower.getUniqueId(), action, REQUESTS.MOBILE)
 }
 
 function changeActiveApplication(application: Application|null) {
   if (application === null) {
     return
   }
-  dashboardPinia.requestActiveMedia(
+  classroomPinia.requestActiveMedia(
       props.mobileFollower.getUniqueId(),
       { type: REQUESTS.FORCEACTIVEAPP, action: application.getPackageName() },
       REQUESTS.MOBILE
@@ -106,7 +106,7 @@ function closeModal() {
  * @param packageName A string representing the package name of the currently active application for a follower.
  */
 const checkMedia = (packageName: string) => {
-  let tasks = dashboardPinia.mobileTasks;
+  let tasks = classroomPinia.mobileTasks;
   if(tasks.length === 0) { return; }
 
   return !tasks.some((res) => (packageName.includes(res.toString())));
@@ -212,7 +212,7 @@ const checkMedia = (packageName: string) => {
                     }"
                     @click="selectedApplicationId = application.id"
                 >
-                  <img class="flex-shrink-0 w-5 h-5 mr-2 cursor-pointer" :src="dashboardPinia.firebase.getAppIcon(application.packageName) ?? undefined" alt=""/>
+                  <img class="flex-shrink-0 w-5 h-5 mr-2 cursor-pointer" :src="classroomPinia.firebase.getAppIcon(application.packageName) ?? undefined" alt=""/>
                   <span class="flex-shrink overflow-ellipsis whitespace-nowrap overflow-hidden pr-10 mt-0.5">{{ application.getName() }}</span>
 
                   <!--Audible icons-->

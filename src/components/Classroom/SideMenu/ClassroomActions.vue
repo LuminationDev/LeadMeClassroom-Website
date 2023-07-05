@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import lockIconUrl from '/src/assets/img/sideMenu/menu-icon-lock.svg';
 import {computed, ref} from "vue";
-import {useDashboardStore} from "@/stores/dashboardStore";
+import {useClassroomStore} from "@/stores/classroomStore";
 import ShareContentModal from "@/components/Modals/ShareContent/ShareContentModal.vue";
 import * as REQUESTS from "@/constants/_requests";
 
-const dashboardPinia = useDashboardStore();
+const classroomPinia = useClassroomStore();
 
 const classCode = computed(() => {
-  return dashboardPinia.classCode !== ''
+  return classroomPinia.classCode !== ''
 })
 
 // Screen control area
@@ -19,8 +19,8 @@ async function screenControl() {
   await new Promise(res => setTimeout(res, 500));
   locked.value = !locked.value;
   loading.value = false;
-  dashboardPinia.requestAction({ type: REQUESTS.SCREENCONTROL, action: locked.value ? REQUESTS.BLOCK : REQUESTS.UNBLOCK }, REQUESTS.WEB);
-  dashboardPinia.requestAction({ type: REQUESTS.SCREENCONTROL, action: locked.value ? REQUESTS.BLOCK : REQUESTS.UNBLOCK }, REQUESTS.MOBILE);
+  classroomPinia.requestAction({ type: REQUESTS.SCREENCONTROL, action: locked.value ? REQUESTS.BLOCK : REQUESTS.UNBLOCK }, REQUESTS.WEB);
+  classroomPinia.requestAction({ type: REQUESTS.SCREENCONTROL, action: locked.value ? REQUESTS.BLOCK : REQUESTS.UNBLOCK }, REQUESTS.MOBILE);
 }
 </script>
 

@@ -282,7 +282,7 @@ class Firebase {
 
     /**
      * Run through all the student entries within the existing class entry and reattach the listeners that may have
-     * been severed when a page reload occurred, loading the students again to the dashboard as well.
+     * been severed when a page reload occurred, loading the students again to the classroom as well.
      * @param classCode A string representing the class a teacher is currently controlling.
      * @param followerResponse
      */

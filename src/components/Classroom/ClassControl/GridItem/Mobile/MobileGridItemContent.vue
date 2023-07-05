@@ -3,9 +3,9 @@ import "../../../../../styles.css";
 import { computed, defineProps, ref } from "vue";
 import type { PropType } from "vue";
 import type { Application, MobileFollower } from "@/models";
-import { useDashboardStore } from "@/stores/dashboardStore";
+import { useClassroomStore } from "@/stores/classroomStore";
 import MobileGridItemMediaPlayer from "./MobileGridItemMediaPlayer.vue";
-const dashboardPinia = useDashboardStore();
+const classroomPinia = useClassroomStore();
 
 const emit = defineEmits<{
   (e: 'update:renaming', value: boolean): void
@@ -75,7 +75,7 @@ const currentlyActiveApplication = computed((): Application | null | undefined =
  * @param packageName A string representing the display name of the currently active application for a mobile follower.
  */
 const checkActiveTask = async (packageName: string) => {
-  let tasks = dashboardPinia.mobileTasks;
+  let tasks = classroomPinia.mobileTasks;
   if(tasks.length === 0) { return; }
 
   props.mobileFollower.offTask = !tasks.some((res) => (packageName.includes(res.toString())));
@@ -143,7 +143,7 @@ function handleInput(event: Event) {
 
       <div v-else class="flex flex-col px-2">
         <div class="flex flex-row items-center mb-2">
-          <img class="flex-shrink-0 w-4 h-4 mr-2" :src="dashboardPinia.firebase.getAppIcon(currentlyActiveApplication.packageName) ?? undefined"  alt="Icon"/>
+          <img class="flex-shrink-0 w-4 h-4 mr-2" :src="classroomPinia.firebase.getAppIcon(currentlyActiveApplication.packageName) ?? undefined" alt="Icon"/>
           <span class="overflow-ellipsis whitespace-nowrap overflow-hidden">{{ currentlyActiveApplication.getName() }}</span>
         </div>
 

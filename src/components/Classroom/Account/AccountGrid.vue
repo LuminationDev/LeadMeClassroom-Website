@@ -8,8 +8,8 @@ import useVuelidate from "@vuelidate/core";
 import {ref} from "vue";
 import GenericButton from "../../Buttons/GenericButton.vue";
 
-import {useDashboardStore} from "../../../stores/dashboardStore";
-const dashboardPinia = useDashboardStore();
+import { useClassroomStore } from "@/stores/classroomStore";
+const classroomPinia = useClassroomStore();
 
 const response = ref('');
 const error = ref('');
@@ -49,7 +49,7 @@ async function validateEmail() {
   const result = await v$.value.email.$validate();
   if (!result) { return; }
 
-  const success = await dashboardPinia.handlePasswordReset(email.value);
+  const success = await classroomPinia.handlePasswordReset(email.value);
   if(success !== 'success') {
     error.value = success;
     return;
@@ -68,7 +68,7 @@ async function validatePassword() {
   const passwordResult = await v$.value.password.$validate();
   if (!emailResult || !oldResult || !passwordResult) { return; }
 
-  const result = await dashboardPinia.changeUserPassword(email.value, oldPassword.value, password.value);
+  const result = await classroomPinia.changeUserPassword(email.value, oldPassword.value, password.value);
   if(result !== 'success') {
     error.value = result;
     return;
@@ -88,7 +88,7 @@ async function validateAndSubmit() {
   const result = await v$.value.name.$validate();
   if (!result) { return; }
 
-  await dashboardPinia.changeDisplayName(name.value);
+  await classroomPinia.changeDisplayName(name.value);
 
   name.value = '';
   v$.value.$reset();
@@ -96,7 +96,7 @@ async function validateAndSubmit() {
 }
 
 async function changeMarketing() {
-  await dashboardPinia.changeMarketingPreference(dashboardPinia.marketing === 'false');
+  await classroomPinia.changeMarketingPreference(classroomPinia.marketing === 'false');
   resetChanged();
 }
 
@@ -118,7 +118,7 @@ function changePasswordView(view: string) {
 function changeView(view: string) {
   clearFields();
   changed.value = false;
-  dashboardPinia.changeAccountView(view);
+  classroomPinia.changeAccountView(view);
 }
 
 function clearFields() {
@@ -132,14 +132,14 @@ function clearFields() {
 
 <template>
   <Transition name="fade" mode="out-in">
-    <div v-if="dashboardPinia.accountView === 'menu'">
+    <div v-if="classroomPinia.accountView === 'menu'">
       <AccountGridItem :title="'Reset password'" v-on:click="changeView('resetPassword')"/>
       <AccountGridItem :title="'Change name'" v-on:click="changeView('changeName')"/>
       <AccountGridItem :title="'Email subscription'" v-on:click="changeView('changeSubscription')"/>
     </div>
 
     <!--Resetting password page-->
-    <div v-else-if="dashboardPinia.accountView === 'resetPassword'">
+    <div v-else-if="classroomPinia.accountView === 'resetPassword'">
       <AccountGridItem :title="'Back'" v-on:click="changeView('menu')"/>
 
       <!--Change password area-->
@@ -189,7 +189,7 @@ function clearFields() {
     </div>
 
     <!--Changing display name page-->
-    <div v-else-if="dashboardPinia.accountView === 'changeName'">
+    <div v-else-if="classroomPinia.accountView === 'changeName'">
       <AccountGridItem :title="'Back'" v-on:click="changeView('menu')"/>
 
       <TextInput v-model="name" :v$="v$.name" v-on:focusin="changed = false" class="mb-3" type="text" placeholder="Display name"/>
@@ -200,23 +200,23 @@ function clearFields() {
     </div>
 
     <!--Marketing page-->
-    <div v-else-if="dashboardPinia.accountView === 'changeSubscription'">
+    <div v-else-if="classroomPinia.accountView === 'changeSubscription'">
       <AccountGridItem class="mb-10" :title="'Back'" v-on:click="changeView('menu')"/>
 
       <p class="text-base mb-3 text-black font-semibold">Email subscription</p>
       <p class="mb-3 text-sm text-black">Receive emails about product updates, new features and offerings from LeadMe</p>
       <p class="text-sm mb-10 text-black">Status:
         <span :class="{
-          'text-green-400': dashboardPinia.marketing !== 'false',
-          'text-red-400': dashboardPinia.marketing === 'false',
+          'text-green-400': classroomPinia.marketing !== 'false',
+          'text-red-400': classroomPinia.marketing === 'false',
         }"
-        >{{dashboardPinia.marketing === "false" ? "Not subscribed" : "Subscribed"}}
+        >{{ classroomPinia.marketing === "false" ? "Not subscribed" : "Subscribed" }}
         </span>
       </p>
 
       <GenericButton class="flex justify-center items-center" :type="'primary'" :callback="changeMarketing">
         <img v-if="changed" class="w-8 h-8" src="/src/assets/img/tick.svg" alt="Icon"/>
-        <p v-else>{{dashboardPinia.marketing === "false" ? "Subscribe" : "Unsubscribe"}}</p>
+        <p v-else>{{ classroomPinia.marketing === "false" ? "Subscribe" : "Unsubscribe" }}</p>
       </GenericButton>
     </div>
   </Transition>

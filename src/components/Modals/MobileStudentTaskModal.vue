@@ -8,8 +8,8 @@ import type MobileFollower from "../../models/Followers/_mobileFollower";
 import HoverButton from "../Buttons/HoverButton.vue";
 import Tooltip from "../Buttons/Tooltip.vue";
 import type { Task } from "@/models";
-import { useDashboardStore } from "@/stores/dashboardStore";
-const dashboardPinia = useDashboardStore();
+import { useClassroomStore } from "@/stores/classroomStore";
+const classroomPinia = useClassroomStore();
 
 const props = defineProps({
   mobileFollower: {
@@ -70,7 +70,7 @@ function removeFromTasks() {
 
   props.mobileFollower.tasks = props.mobileFollower.tasks.filter(entry => entry.getName() !== task.getName());
   const stringValues = props.mobileFollower.tasks.map(app => app.toStringEntry());
-  dashboardPinia.updateFollowerTasks(props.mobileFollower.getUniqueId(), stringValues, REQUESTS.MOBILE);
+  classroomPinia.updateFollowerTasks(props.mobileFollower.getUniqueId(), stringValues, REQUESTS.MOBILE);
 }
 
 function changeActiveApplication(task: Task|null) {
@@ -80,7 +80,7 @@ function changeActiveApplication(task: Task|null) {
   const request = task.toRequest();
 
   if (request) {
-    dashboardPinia.requestActiveMedia(
+    classroomPinia.requestActiveMedia(
         props.mobileFollower.getUniqueId(),
         request,
         REQUESTS.MOBILE
@@ -89,7 +89,7 @@ function changeActiveApplication(task: Task|null) {
 }
 
 function pushSelectedVideo(video: String) {
-  dashboardPinia.requestActiveMedia(
+  classroomPinia.requestActiveMedia(
       props.mobileFollower.getUniqueId(),
       {type: REQUESTS.FORCEACTIVEVIDEOLOCAL, action: video},
       REQUESTS.MOBILE

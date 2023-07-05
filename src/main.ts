@@ -1,18 +1,18 @@
 import { createApp } from 'vue'
 import { createPinia } from "pinia";
 import * as VueRouter from 'vue-router';
-import ClassControl from './components/Dashboard/ClassControl/ClassControlMain.vue';
-import Dashboard from './pages/dashboard/Dashboard.vue';
-import Account from './components/Dashboard/Account/AccountMain.vue';
-import LoginBase from './components/Dashboard/Login/LoginBase.vue';
+import ClassControl from './components/Classroom/ClassControl/ClassControlMain.vue';
+import Classroom from './pages/classroom/Classroom.vue';
+import Account from './components/Classroom/Account/AccountMain.vue';
+import LoginBase from './components/Classroom/Login/LoginBase.vue';
 import './assets/main.css';
 import { getAuth } from "@firebase/auth";
 
-const app = createApp(Dashboard);
+const app = createApp(Classroom);
 app.use(createPinia());
 
 const routes = [
-    { name: 'dashboard', path: '/', component: ClassControl },
+    { name: 'classroom', path: '/', component: ClassControl },
     { name: 'login', path: '/login', component: LoginBase },
     { name: 'account', path: '/account', component: Account },
 ]
@@ -37,7 +37,7 @@ router.beforeEach(async (to, from) => {
         to.name === 'login'
     ) {
         // redirect the user to the login page
-        return { name: 'dashboard' }
+        return { name: 'classroom' }
     }
 })
 

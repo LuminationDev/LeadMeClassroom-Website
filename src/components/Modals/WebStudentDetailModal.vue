@@ -7,9 +7,9 @@ import type WebFollower from "../../models/Followers/_webFollower";
 import HoverButton from "../Buttons/HoverButton.vue";
 import Tooltip from "../Buttons/Tooltip.vue";
 import * as REQUESTS from "@/constants/_requests";
-import { useDashboardStore } from "@/stores/dashboardStore";
+import { useClassroomStore } from "@/stores/classroomStore";
 import type {Tab} from "@/models";
-const dashboardPinia = useDashboardStore();
+const classroomPinia = useClassroomStore();
 
 defineEmits<{
   (e: 'screenMonitor'): void
@@ -64,16 +64,16 @@ const muteTooltip = computed(() => {
 });
 
 function deleteFollowerTab(tabId: string) {
-  dashboardPinia.requestDeleteFollowerTab(props.webFollower.getUniqueId(), tabId)
+  classroomPinia.requestDeleteFollowerTab(props.webFollower.getUniqueId(), tabId)
 }
 
 function muteOrUnmuteTab(tabId: string, action: boolean) {
   console.log('heard a mute request', action)
-  dashboardPinia.requestUpdateMutingTab(props.webFollower.getUniqueId(), tabId, action)
+  classroomPinia.requestUpdateMutingTab(props.webFollower.getUniqueId(), tabId, action)
 }
 
 function changeActiveTab(tab: Tab) {
-  dashboardPinia.requestActiveMedia(
+  classroomPinia.requestActiveMedia(
       props.webFollower.getUniqueId(),
       { type: REQUESTS.FORCEACTIVETAB, tab: tab},
       REQUESTS.WEB
@@ -90,7 +90,7 @@ function closeModal() {
  * @param website A string representing the URL of the currently active website for a follower.
  */
 const checkWebsite = (website: string) => {
-  let tasks = dashboardPinia.webTasks;
+  let tasks = classroomPinia.webTasks;
   if(tasks.length === 0) { return; }
 
   let strict = true; //determine if website needs to be exact or just same hostname

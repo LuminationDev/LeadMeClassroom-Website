@@ -4,10 +4,10 @@ import WebGridItem from "./GridItem/Web/WebGridItem.vue";
 import MobileGridItem from "./GridItem/Mobile/MobileGridItem.vue";
 import type { WebFollower, MobileFollower } from "../../../models";
 import { computed } from "vue";
-import { useDashboardStore } from "@/stores/dashboardStore";
+import { useClassroomStore } from "@/stores/classroomStore";
 import {storeToRefs} from "pinia";
-const dashboardPinia = useDashboardStore();
-const { webFollowers, mobileFollowers } = storeToRefs(dashboardPinia)
+const classroomPinia = useClassroomStore();
+const { webFollowers, mobileFollowers } = storeToRefs(classroomPinia)
 
 const sortedWebFollowers = computed((): Array<WebFollower> => {
   return webFollowers.value.slice().sort((a: WebFollower, b: WebFollower) => {

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import * as REQUESTS from "@/constants/_requests";
-import { useDashboardStore } from "@/stores/dashboardStore";
+import { useClassroomStore } from "@/stores/classroomStore";
 import { computed, ref } from "vue";
 import type { PropType } from "vue";
 import type { MobileFollower } from "@/models";
@@ -12,7 +12,7 @@ import playIconNon from '/src/assets/img/mediaPlayer/media-play-icon-non.svg'
 import pauseIcon from '/src/assets/img/mediaPlayer/media-pause-icon.svg'
 import pauseIconNon from '/src/assets/img/mediaPlayer/media-pause-icon-non.svg'
 
-const dashboardPinia = useDashboardStore();
+const classroomPinia = useClassroomStore();
 
 const props = defineProps({
   mobileFollower: {
@@ -43,7 +43,7 @@ const loading = computed(() => {
 const sendVideoAction = (action: string) => {
   requestedAction.value = action;
 
-  dashboardPinia.requestIndividualAction(
+  classroomPinia.requestIndividualAction(
       props.mobileFollower.getUniqueId(),
       { type: REQUESTS.VIDEOACTION, action: action },
       REQUESTS.MOBILE

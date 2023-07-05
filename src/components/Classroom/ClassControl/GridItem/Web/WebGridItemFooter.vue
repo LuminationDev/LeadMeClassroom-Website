@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import MobileStudentDetailModal from "../../../../Modals/MobileStudentDetailModal.vue";
-import MobileStudentTaskModal from "../../../../Modals/MobileStudentTaskModal.vue";
+import WebStudentDetailModal from "../../../../Modals/WebStudentDetailModal.vue";
+import ScreenMonitorModal from "../../../../Modals/ScreenMonitorModal.vue";
 import * as REQUESTS from "../../../../../constants/_requests";
 import { defineProps, ref } from "vue";
 import type { PropType } from "vue";
-import type { MobileFollower } from "../../../../../models";
-import { useDashboardStore } from "@/stores/dashboardStore";
-const dashboardPinia = useDashboardStore();
+import type {WebFollower} from "../../../../../models";
+import { useClassroomStore } from "@/stores/classroomStore";
+const classroomPinia = useClassroomStore();
 
 const emit = defineEmits<{
   (e: 'update:removing', value: boolean): void
@@ -14,8 +14,8 @@ const emit = defineEmits<{
 }>()
 
 const props = defineProps({
-  mobileFollower: {
-    type: Object as PropType<MobileFollower>,
+  webFollower: {
+    type: Object as PropType<WebFollower>,
     required: true,
   },
   controls: {
@@ -52,30 +52,31 @@ defineExpose({
  * Remove the follower from the class.
  */
 const kickFollower = () => {
-  dashboardPinia.endIndividualSession(props.mobileFollower.getUniqueId(), REQUESTS.MOBILE);
+  classroomPinia.endIndividualSession(props.webFollower.getUniqueId(), REQUESTS.WEB);
 }
 
 const updateFollowerName = () => {
   if(props.name === undefined) { return; }
-  props.mobileFollower.name = props.name;
-  dashboardPinia.renameFollower(props.name, props.mobileFollower.getUniqueId(), REQUESTS.MOBILE);
+  props.webFollower.name = props.name;
+  classroomPinia.renameFollower(props.name, props.webFollower.getUniqueId(), REQUESTS.WEB);
 }
 
 const removeFollower = () => {
   emit('update:removing', true);
   setTimeout(() => {
-    dashboardPinia.removeFollower(props.mobileFollower.getUniqueId(), REQUESTS.MOBILE)
+    classroomPinia.removeFollower(props.webFollower.getUniqueId(), REQUESTS.WEB)
   }, 500)
 }
 
-const detailsRef = ref<InstanceType<typeof MobileStudentDetailModal> | null>(null)
-function openDetailsModal() {
-  detailsRef.value?.openModal();
+//Reference to the screen monitor modal to open it externally
+const monitorRef = ref<InstanceType<typeof ScreenMonitorModal> | null>(null)
+function openMonitorModal() {
+  monitorRef.value?.initiateMonitoring();
 }
 
-const taskRef = ref<InstanceType<typeof MobileStudentTaskModal> | null>(null)
-function openTaskModal() {
-  taskRef.value?.openModal();
+const detailsRef = ref<InstanceType<typeof WebStudentDetailModal> | null>(null)
+function openDetailsModal() {
+  detailsRef.value?.openModal();
 }
 </script>
 
@@ -85,7 +86,7 @@ function openTaskModal() {
       <Transition name="fade" mode="out-in">
 
         <!--Disconnected screen-->
-        <button v-if="mobileFollower.disconnected" @click="removeFollower" class="w-full flex justify-center items-center">
+        <button v-if="webFollower.disconnected" @click="removeFollower" class="w-full flex justify-center items-center">
           <span class="text-sm text-white font-poppins">Dismiss</span>
         </button>
 
@@ -106,13 +107,13 @@ function openTaskModal() {
 
         <!--Tab screen-->
         <div v-else-if="controls" class="flex w-full">
-          <!--Task management-->
-          <MobileStudentTaskModal ref="taskRef" :mobileFollower="mobileFollower" />
+          <!--Screenshot and WebRTC modal-->
+          <ScreenMonitorModal ref="monitorRef" :webFollower="webFollower" />
 
           <div class="h-10 mt-1 w-px bg-white"></div>
 
           <!--Expanded student details modal-->
-          <MobileStudentDetailModal ref="detailsRef" @taskManager="openTaskModal" :mobileFollower="mobileFollower" />
+          <WebStudentDetailModal ref="detailsRef" @screenMonitor="openMonitorModal" :webFollower="webFollower" />
         </div>
 
       </Transition>

@@ -3,16 +3,16 @@ import { computed, ref } from "vue";
 import type { Ref } from "vue";
 import useVuelidate from "@vuelidate/core";
 import { helpers, required } from "@vuelidate/validators";
-import MobileGridItem from "../../Dashboard/ClassControl/GridItem/Mobile/MobileGridItem.vue";
+import MobileGridItem from "../../Classroom/ClassControl/GridItem/Mobile/MobileGridItem.vue";
 import type { MobileFollower } from "../../../models";
 import GenericButton from "../../Buttons/GenericButton.vue";
-import { useDashboardStore } from "@/stores/dashboardStore";
+import { useClassroomStore } from "@/stores/classroomStore";
 import * as REQUESTS from "@/constants/_requests";
 import {Task} from "@/models";
 import {storeToRefs} from "pinia";
 
-const dashboardPinia = useDashboardStore();
-const {  mobileFollowers } = storeToRefs(dashboardPinia)
+const classroomPinia = useClassroomStore();
+const {  mobileFollowers } = storeToRefs(classroomPinia)
 const showModal = ref(false);
 const videoLink = ref("");
 const shareTo = ref("all");
@@ -71,10 +71,10 @@ async function submit() {
   const request = { type: REQUESTS.FORCEACTIVEVIDEOLINK, action: videoLink.value };
 
   if (shareTo.value === 'all') {
-    dashboardPinia.requestAction(request, REQUESTS.MOBILE);
+    classroomPinia.requestAction(request, REQUESTS.MOBILE);
   } else if (shareTo.value === 'selected') {
     followersSelected.value.forEach(id => {
-      dashboardPinia.requestIndividualAction(id, request, REQUESTS.MOBILE);
+      classroomPinia.requestIndividualAction(id, request, REQUESTS.MOBILE);
     });
   }
 
@@ -94,7 +94,7 @@ async function submitNewTask() {
   followersToProcess.forEach(follower => {
     follower.tasks.push(task);
     const stringValues = follower.tasks.map(app => app.toStringEntry());
-    dashboardPinia.updateFollowerTasks(follower.getUniqueId(), stringValues, REQUESTS.MOBILE);
+    classroomPinia.updateFollowerTasks(follower.getUniqueId(), stringValues, REQUESTS.MOBILE);
   });
 }
 
@@ -105,7 +105,7 @@ function clearTaskList() {
 
   followers.forEach(follower => {
     follower.clearTasks();
-    dashboardPinia.updateFollowerTasks(follower.getUniqueId(), [], REQUESTS.MOBILE);
+    classroomPinia.updateFollowerTasks(follower.getUniqueId(), [], REQUESTS.MOBILE);
   });
 }
 

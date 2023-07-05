@@ -20,14 +20,13 @@ const firebase = new Firebase();
 const { getLocalStorage, setLocalStorage, removeLocalStorage } = useStorage();
 
 /**
- * When the dashboard is first loaded or if the page is refreshed check to see if there was
+ * When the classroom is first loaded or if the page is refreshed check to see if there was
  * an active class set the necessary details.
  */
-
-export const useDashboardStore = defineStore("dashboard", {
+export const useClassroomStore = defineStore("dashboard", {
     state: () => {
         return {
-            view: "dashboard",
+            view: "classroom",
             accountView: "menu",
             firebase: firebase,
             classCode: "",
@@ -310,7 +309,7 @@ export const useDashboardStore = defineStore("dashboard", {
         },
 
         /**
-         * Update the dashboard store with the new web follower object that has been entered in firebase.
+         * Update the classroom store with the new web follower object that has been entered in firebase.
          * @param UUID
          * @param snapshot
          */
@@ -528,7 +527,7 @@ export const useDashboardStore = defineStore("dashboard", {
         ///////////////////////////////////////////MOBILE FUNCTIONS/////////////////////////////////////////////////////
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         /**
-         * Update the dashboard store with the new mobile follower object that has been entered in firebase.
+         * Update the classroom store with the new mobile follower object that has been entered in firebase.
          * @param UUID
          * @param snapshot
          */

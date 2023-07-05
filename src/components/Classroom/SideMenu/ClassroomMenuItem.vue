@@ -1,9 +1,13 @@
 <script setup lang="ts">
-import { useDashboardStore } from "@/stores/dashboardStore";
-const dashboardPinia = useDashboardStore();
+import { useClassroomStore } from "@/stores/classroomStore";
+const classroomPinia = useClassroomStore();
 
 defineProps({
   view: {
+    type: String,
+    required: true
+  },
+  panel: {
     type: String,
     required: true
   },
@@ -23,8 +27,8 @@ defineProps({
         'h-12 w-48 ml-4 pl-3 flex items-center rounded-lg font-light': true,
         'cursor-pointer': enabled,
         'cursor-default': !enabled,
-        'bg-white-menu-overlay': dashboardPinia.view === view && enabled,
-        'hover:bg-white-menu-overlay': dashboardPinia.view !== view && enabled,
+        'bg-white-menu-overlay': classroomPinia.view === panel && enabled,
+        'hover:bg-white-menu-overlay': classroomPinia.view !== panel && enabled,
       }"
     :to="view">
 

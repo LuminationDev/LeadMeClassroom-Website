@@ -3,8 +3,8 @@ import "../../../../../styles.css";
 import {computed, defineProps, ref} from "vue";
 import type {PropType} from "vue";
 import type {WebFollower, Tab} from "../../../../../models";
-import { useDashboardStore } from "@/stores/dashboardStore";
-const dashboardPinia = useDashboardStore();
+import { useClassroomStore } from "@/stores/classroomStore";
+const classroomPinia = useClassroomStore();
 
 const emit = defineEmits<{
   (e: 'update:renaming', value: boolean): void
@@ -62,7 +62,7 @@ const firstThreeTabs = computed((): Array<Tab> => {
  * @param website A string representing the URL of the currently active website for a follower.
  */
 const checkActiveTask = async (website: string) => {
-  let tasks = dashboardPinia.webTasks;
+  let tasks = classroomPinia.webTasks;
   if(tasks.length === 0) { return; }
 
   let strict = true; //determine if website needs to be exact or just same hostname

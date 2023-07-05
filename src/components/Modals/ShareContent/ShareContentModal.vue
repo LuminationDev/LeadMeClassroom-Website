@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import {computed, ref} from "vue";
+import { useClassroomStore } from "@/stores/classroomStore";
+import { storeToRefs } from "pinia";
 import Modal from "../Modal.vue";
-import { useDashboardStore } from "@/stores/dashboardStore";
-import {storeToRefs} from "pinia";
 import shareContentIconUrl from '/src/assets/img/sideMenu/menu-icon-sharecontent.svg';
 import ShareVideoInsert from "@/components/Modals/ShareContent/ShareVideoInsert.vue";
 import ShareApplicationInsert from "@/components/Modals/ShareContent/ShareApplicationInsert.vue";
@@ -13,19 +13,21 @@ import mobileIconUrl from '/src/assets/img/share-content-mobile.svg';
 import devicesIconUrl from '/src/assets/img/share-content-devices.svg';
 import linkIconUrl from '/src/assets/img/share-content-link.svg';
 
-const dashboardPinia = useDashboardStore();
+const classroomPinia = useClassroomStore();
+const panelName = 'shareContent';
 
 // TODO change the layout depending on the follower types/numbers
-const { webFollowers, mobileFollowers } = storeToRefs(dashboardPinia)
+const { webFollowers, mobileFollowers } = storeToRefs(classroomPinia)
 const showModal = ref(false);
 const sharePanel = ref('menu');
 
 const classCode = computed(() => {
-  return dashboardPinia.classCode !== ''
+  return classroomPinia.classCode !== ''
 })
 
 function openModal() {
   if(classCode.value) {
+    classroomPinia.view = panelName
     showModal.value = true
   }
 }
@@ -33,6 +35,7 @@ function openModal() {
 function closeModal() {
   showModal.value = false
   sharePanel.value = 'menu';
+  classroomPinia.view = 'classroom'
 }
 </script>
 
@@ -42,6 +45,7 @@ function closeModal() {
         'h-12 w-48 ml-4 pl-3 flex items-center rounded-lg font-light': true,
         'cursor-pointer': classCode,
         'cursor-default': !classCode,
+        'bg-white-menu-overlay': classroomPinia.view === panelName && classCode,
         'hover:bg-white-menu-overlay': classCode,
       }"
     v-on:click="openModal"
@@ -82,15 +86,13 @@ function closeModal() {
           <!--Show the url input screen-->
           <div class="flex justify-between items-center
               text-gray-400 text-lg
-              bg-white rounded-2xl p-1 h-16 cursor-pointer">
+              bg-white rounded-2xl p-1 h-16 cursor-pointer"
+              v-on:click="sharePanel = 'url'">
 
             <!--Placeholder to keep the url text centered-->
             <div class="w-5 h-5 ml-5"></div>
 
-            <div
-              class="flex justify-center items-center"
-              v-on:click="sharePanel = 'url'"
-            >
+            <div class="flex justify-center items-center">
               <img class="w-5 h-5 mr-3" :src="linkIconUrl" alt="Icon"/>
               Share a Custom URL
             </div>
