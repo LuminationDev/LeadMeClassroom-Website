@@ -1,19 +1,19 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import type { Ref } from "vue";
-import MobileGridItem from "../../Dashboard/ClassControl/GridItem/Mobile/MobileGridItem.vue";
+import MobileGridItem from "../../Classroom/ClassControl/GridItem/Mobile/MobileGridItem.vue";
 import * as REQUESTS from "../../../constants/_requests";
 import { MobileFollower, Task, Application } from "../../../models";
 import GenericButton from "../../Buttons/GenericButton.vue";
-import { useDashboardStore } from "@/stores/dashboardStore";
+import { useClassroomStore } from "@/stores/classroomStore";
 import { storeToRefs } from "pinia";
 
 defineEmits<{
   (e: 'back'): void
 }>()
 
-const dashboardPinia = useDashboardStore();
-const { mobileFollowers } = storeToRefs(dashboardPinia)
+const classroomPinia = useClassroomStore();
+const { mobileFollowers } = storeToRefs(classroomPinia)
 const shareTo = ref("all");
 const followersSelected: Ref<string[]> = ref([]);
 const submissionAttempted = ref(false);
@@ -68,11 +68,11 @@ function submit() {
  */
 function singleApp() {
   if (shareTo.value === 'all') {
-    dashboardPinia.requestAction({type: REQUESTS.FORCEACTIVEAPP, action: selectedApplications.value[0]}, REQUESTS.MOBILE);
+    classroomPinia.requestAction({type: REQUESTS.FORCEACTIVEAPP, action: selectedApplications.value[0]}, REQUESTS.MOBILE);
   }
   else if (shareTo.value === 'selected') {
     followersSelected.value.forEach(id => {
-      dashboardPinia.requestIndividualAction(id, {type: REQUESTS.FORCEACTIVEAPP, action: selectedApplications.value[0]}, REQUESTS.MOBILE)
+      classroomPinia.requestIndividualAction(id, {type: REQUESTS.FORCEACTIVEAPP, action: selectedApplications.value[0]}, REQUESTS.MOBILE)
     });
   }
 }
@@ -85,7 +85,7 @@ function multiApp() {
   sortedFollowers.value.forEach(follower => {
     if (shareTo.value === 'all' || followersSelected.value.includes(follower.getUniqueId())) {
       follower.tasks = Array.from(new Set(follower.tasks.concat(selectedApplications.value)));
-      dashboardPinia.updateFollowerTasks(follower.getUniqueId(), follower.tasks.map(app => app.toStringEntry()), REQUESTS.MOBILE);
+      classroomPinia.updateFollowerTasks(follower.getUniqueId(), follower.tasks.map(app => app.toStringEntry()), REQUESTS.MOBILE);
     }
   });
 }
@@ -98,7 +98,7 @@ function closeModal() {
 <template>
   <div class="w-modal-width-sm">
     <div class="h-96 flex flex-col overflow-y-auto">
-      <div v-for="(application, index) in dashboardPinia.collectUniqueApplications()" :key="index" class="py-1" :id="application.id">
+      <div v-for="(application, index) in classroomPinia.collectUniqueApplications()" :key="index" class="py-1" :id="application.id">
 
         <!--Select applications-->
         <div class="flex flex-row w-full px-5 items-center justify-between">
@@ -110,7 +110,7 @@ function closeModal() {
                 }"
                @click="addOrRemoveApplication(application)"
           >
-            <img class="flex-shrink-0 w-5 h-5 mr-2 cursor-pointer" :src="dashboardPinia.firebase.getAppIcon(application.packageName) ?? undefined" alt=""/>
+            <img class="flex-shrink-0 w-5 h-5 mr-2 cursor-pointer" :src="classroomPinia.firebase.getAppIcon(application.packageName) ?? undefined" alt=""/>
             <span class="flex-shrink overflow-ellipsis whitespace-nowrap overflow-hidden pr-10 mt-0.5">{{ application.getName() }}</span>
           </div>
         </div>

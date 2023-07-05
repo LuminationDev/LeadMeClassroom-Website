@@ -4,11 +4,11 @@ import type {PropType} from "vue";
 import Modal from "./Modal.vue";
 import type WebFollower from "../../models/Followers/_webFollower";
 import * as REQUESTS from "../../constants/_requests";
-import {useDashboardStore} from "@/stores/dashboardStore";
+import {useClassroomStore} from "@/stores/classroomStore";
 import { useWebRTCStore } from "@/stores/webRTCStore";
 import Tooltip from "../Buttons/Tooltip.vue";
 
-const dashboardPinia = useDashboardStore();
+const classroomPinia = useClassroomStore();
 const webRTCPinia = useWebRTCStore();
 
 const props = defineProps({
@@ -29,7 +29,7 @@ defineExpose({
  */
 function initiateMonitoring() {
   showModal.value = true
-  dashboardPinia.requestIndividualAction(props.webFollower.getUniqueId(), { type: REQUESTS.MONITORSTARTED }, REQUESTS.WEB);
+  classroomPinia.requestIndividualAction(props.webFollower.getUniqueId(), { type: REQUESTS.MONITORSTARTED }, REQUESTS.WEB);
 }
 
 /**
@@ -40,11 +40,11 @@ function handleMonitorFollowerButton() {
     console.log("Sending webRTC permission message to firebase");
     props.webFollower.monitoring = false;
     props.webFollower.permission = null;
-    dashboardPinia.requestIndividualAction(props.webFollower.getUniqueId(), { type: REQUESTS.MONITORENDED }, REQUESTS.WEB);
+    classroomPinia.requestIndividualAction(props.webFollower.getUniqueId(), { type: REQUESTS.MONITORENDED }, REQUESTS.WEB);
   } else {
     props.webFollower.monitoring = true;
     webRTCPinia.stopTracks(props.webFollower.getUniqueId()); //stop video call if exists
-    dashboardPinia.requestIndividualAction(props.webFollower.getUniqueId(), { type: REQUESTS.MONITORPERMISSION }, REQUESTS.WEB);
+    classroomPinia.requestIndividualAction(props.webFollower.getUniqueId(), { type: REQUESTS.MONITORPERMISSION }, REQUESTS.WEB);
   }
 }
 
@@ -55,7 +55,7 @@ function handleMonitorFollowerButton() {
 function cancelMonitor() {
   props.webFollower.monitoring = false;
   props.webFollower.permission = null;
-  dashboardPinia.requestIndividualAction(props.webFollower.getUniqueId(), { type: REQUESTS.MONITORENDED }, REQUESTS.WEB);
+  classroomPinia.requestIndividualAction(props.webFollower.getUniqueId(), { type: REQUESTS.MONITORENDED }, REQUESTS.WEB);
 }
 
 /**

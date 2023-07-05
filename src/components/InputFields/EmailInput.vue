@@ -28,18 +28,29 @@ function handleInput(inputEvent: Event) {
 
 <template>
   <div>
-    <input
-        v-if="v$"
-        class="w-64 h-12 rounded-lg border-2 px-3 text-sm"
-        :class="v$.$error ? 'border-red-800 focus:border-red-900' : ''"
-        type='email'
-        :placeholder='placeholder'
-        :value="modelValue"
-        @input="handleInput"
-        @focusout="() => { v$.$touch() }"
-    />
+    <div class="flex flex-row">
+      <div class="relative">
+        <img
+            class="absolute mt-3.5 left-3 w-5 h-5"
+            :class="{ 'invisible': modelValue.length !== 0 }"
+            src="src/assets/img/login/login-icon-email.svg"
+            alt="email icon">
+
+        <input
+            v-if="v$"
+            class="w-64 h-12 rounded-lg border-2 px-3 text-sm"
+            :class="v$.$error ? 'border-red-800 focus:border-red-900' : ''"
+            type='email'
+            :placeholder='`       ${placeholder}`'
+            :value="modelValue"
+            @input="handleInput"
+            @focusout="() => { v$.$touch() }"
+        />
+      </div>
+    </div>
+
     <div class="flex flex-col items-start" v-if="v$ && v$.$error">
-      <div class="text-red-800" v-for="(error, index) in v$.$errors" :key="index">{{ error.$message }}</div>
+      <div class="text-red-800 text-sm" v-for="(error, index) in v$.$errors" :key="index">{{ error.$message }}</div>
     </div>
   </div>
 </template>

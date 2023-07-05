@@ -5,16 +5,16 @@
 //Assistant page callback
 export type assistantCallbackFunction = (data: any) => void;
 
-//Generating a session for dashboardStore
+//Generating a session for classroomStore
 export type generateType = () => void;
 
-//Follower functions for dashboardStore
+//Follower functions for classroomStore
 export type responseType = (UUID: string, response: any, name: string, key: string|null) => void;
 export type disconnectedType = (UUID: string, followerType: string) => void;
 export type addedType = (UUID: string, snapshot: any) => void;
 export type readIceCandidateType = (UUID: string, snapshot: any) => void;
 
-//Follower tab functions for dashboardStore
+//Follower tab functions for classroomStore
 export type tabChangedType = (UUID: string, response: any, key: string) => void;
 export type tabRemovedType = (UUID: string, key: string) => void;
 export type tabsAddedType = (UUID: string, response: any) => void;
