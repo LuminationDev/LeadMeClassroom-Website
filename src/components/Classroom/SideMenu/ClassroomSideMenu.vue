@@ -6,6 +6,7 @@ import classroomIconUrl from '/src/assets/img/sideMenu/menu-icon-classroom.svg';
 import endClassIconUrl from '/src/assets/img/sideMenu/menu-icon-endclass.svg';
 import GenericButton from "@/components/Buttons/GenericButton.vue";
 import ClassroomActions from "@/components/Classroom/SideMenu/ClassroomActions.vue";
+import RoomCodeModal from "@/components/Modals/RoomCode/RoomCodeModal.vue";
 
 const classroomPinia = useClassroomStore();
 
@@ -60,12 +61,16 @@ async function generateSession() {
 
     <!--Class Code-->
     <div class="mt-5 flex justify-center">
-      <button
+<!--      <button-->
+<!--          v-if="classCode"-->
+<!--          class="h-12 w-48 bg-blue-500-->
+<!--          text-sm text-white font-poppins font-semibold-->
+<!--          rounded-md"-->
+<!--      >Room Code: {{ classroomPinia.classCode }}</button>-->
+
+      <RoomCodeModal
           v-if="classCode"
-          class="h-12 w-48 bg-blue-500
-          text-sm text-white font-poppins font-semibold
-          rounded-md"
-      >Room Code: {{ classroomPinia.classCode }}</button>
+          :class-code="classroomPinia.classCode"/>
 
       <GenericButton
           v-else
@@ -93,6 +98,7 @@ async function generateSession() {
     <ClassroomMenuItem
         :icon="endClassIconUrl" class="fixed bottom-12"
         :enabled="classCode"
+        :panel="''"
         v-on:click="endSession()"
         view="/"
     >End Class</ClassroomMenuItem>

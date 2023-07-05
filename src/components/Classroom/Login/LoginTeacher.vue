@@ -103,7 +103,7 @@ const emit = defineEmits<{
     </div>
 
     <form @submit.prevent class="pb-5">
-    <!-- todo <div class="mb-3" v-if="popupPinia.justCreatedAccount">Thanks for signing up, please verify your email and login to get started</div>-->
+      <!-- todo <div class="mb-3" v-if="popupPinia.justCreatedAccount">Thanks for signing up, please verify your email and login to get started</div>-->
       <slot name="messages"></slot>
       <div class="mb-2">
         <EmailInput v-model="email" :v$="v$.email" placeholder="Email" />
@@ -111,7 +111,7 @@ const emit = defineEmits<{
 
       <div class="mb-3">
         <PasswordInput v-model="password" placeholder="Password" :v$="v$.password"/>
-        <p class="text-red-400">{{ error }}</p>
+        <p class="w-64 text-red-400 text-sm">{{ error }}</p>
       </div>
 
       <p
