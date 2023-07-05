@@ -92,32 +92,47 @@ const emit = defineEmits<{
 </script>
 
 <template>
-  <form @submit.prevent class="mt-6 pb-5">
-<!-- todo    <div class="mb-3" v-if="popupPinia.justCreatedAccount">Thanks for signing up, please verify your email and login to get started</div>-->
-    <slot name="messages"></slot>
-    <div class="mb-2">
-      <EmailInput v-model="email" :v$="v$.email" placeholder="Email" />
+  <div>
+    <div class="flex flex-col items-center">
+      <img
+          class="w-8 h-8 mb-8"
+          src="/src/assets/img/icon-128.png"
+          alt="header icon" />
+
+      <p class="text-center mb-4 text-white">Welcome to LeadMe!</p>
     </div>
 
-    <div class="mb-3">
-      <PasswordInput v-model="password" placeholder="Password" :v$="v$.password"/>
-      <p class="text-red-400">{{ error }}</p>
-    </div>
+    <form @submit.prevent class="pb-5">
+    <!-- todo <div class="mb-3" v-if="popupPinia.justCreatedAccount">Thanks for signing up, please verify your email and login to get started</div>-->
+      <slot name="messages"></slot>
+      <div class="mb-2">
+        <EmailInput v-model="email" :v$="v$.email" placeholder="Email" />
+      </div>
 
-    <p
-        class="text-right mb-3 font-medium text-blue-400 cursor-pointer"
-        v-on:click="() => { emit('changeView', 'reset') }"
-    >
-      Forgot password?
-    </p>
+      <div class="mb-3">
+        <PasswordInput v-model="password" placeholder="Password" :v$="v$.password"/>
+        <p class="text-red-400">{{ error }}</p>
+      </div>
 
-    <GenericButton :type="'secondary'" :callback="validateAndSubmit">Sign in</GenericButton>
-
-    <div class="mt-12 font-medium">
-      <p class="text-gray-separator">
-        New to LeadMe?
-        <span class="cursor-pointer text-blue-400" v-on:click="() => { emit('changeView', 'register') }">Sign up</span>
+      <p
+          class="text-right mb-7 text-sm font-medium text-blue-400 cursor-pointer"
+          v-on:click="() => { emit('changeView', 'reset') }"
+      >
+        Forgot password?
       </p>
-    </div>
-  </form>
+
+      <GenericButton
+          class="text-white h-11"
+          :type="'secondary'"
+          :callback="validateAndSubmit"
+      >Sign in</GenericButton>
+
+      <div class="mt-4 font-medium">
+        <p class="text-gray-separator text-sm">
+          New to LeadMe?
+          <span class="cursor-pointer text-blue-400" v-on:click="() => { emit('changeView', 'register') }">Sign up</span>
+        </p>
+      </div>
+    </form>
+  </div>
 </template>

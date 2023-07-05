@@ -5,7 +5,8 @@ import EmailInput from "../../InputFields/EmailInput.vue";
 import { ref, computed } from "vue";
 import useVuelidate from "@vuelidate/core";
 import { required, email as emailRule, sameAs, helpers, minLength } from "@vuelidate/validators";
-import {createUserWithEmailAndPassword, getAuth, sendEmailVerification, updateProfile} from "@firebase/auth";
+import { createUserWithEmailAndPassword, getAuth, sendEmailVerification, updateProfile } from "@firebase/auth";
+import PasswordInput from "@/components/InputFields/PasswordInput.vue";
 
 const emit = defineEmits<{
   (e: 'changeView', newView: string): void
@@ -85,38 +86,57 @@ async function validateInputs() {
 </script>
 
 <template>
-  <form @submit.prevent class="mt-9 pb-7">
-    <div>
-      <TextInput class="mb-2" type="text" placeholder="Name" :v$="v$.name" v-model="name"/>
-      <EmailInput class="mb-2" placeholder="Email" :v$="v$.email" v-model="email"/>
-      <TextInput class="mb-3" type="password" placeholder="Password" :v$="v$.password" v-model="password"/>
-      <p class="text-red-400">{{ error }}</p>
+  <div>
+    <div class="flex flex-col items-center">
+      <img
+          class="w-8 h-8 mb-10"
+          src="/src/assets/img/icon-128.png"
+          alt="header icon" />
     </div>
 
-    <div class="mb-4 flex items-start flex-col">
-      <label class="inline-flex items-center">
-        <input class="w-4 h-4" type="checkbox" v-model="termsModel"/>
-        <span :class="{
-          'w-56 ml-4 text-xsm text-left': true,
-          'text-gray-popup-text': terms,
-          'text-red-800': !terms && v$.terms.$dirty
-        }">By signing up, I agree to LeadMe's <a target="_blank" href="https://leadmeprivacypolicies.herokuapp.com/policies/classroom" class="underline underline-offset-1">Terms and Conditions</a></span>
-      </label>
-      <div class="ml-8 mt-1 text-start" v-if="v$.terms && v$.terms.$error">
-        <span class="text-red-800" v-for="(error, index) in v$.terms.$errors" :key="index">{{ error.$message }}</span>
+    <form @submit.prevent class="pb-7">
+      <div>
+        <TextInput class="mb-2 w-64" type="text" placeholder="Name" :v$="v$.name" v-model="name"/>
+        <EmailInput class="mb-2" placeholder="Email" :v$="v$.email" v-model="email"/>
+        <PasswordInput class="mb-2" placeholder="Password" :v$="v$.password" v-model="password"/>
+        <p class="text-red-400">{{ error }}</p>
       </div>
-    </div>
 
-    <label class="inline-flex items-center mb-4">
-      <input class="w-4 h-4" type="checkbox" v-model="marketing"/>
-      <span class="w-56 ml-4 text-xsm text-left text-gray-popup-text">I want to receive emails about product updates, new features and offerings from LeadMe!</span>
-    </label>
+      <div class="mt-5 mb-4 flex items-start flex-col">
+        <label class="inline-flex items-center">
+          <input class="w-4 h-4" type="checkbox" v-model="termsModel"/>
+          <span class="w-56 ml-4 text-xsm text-left text-gray-300">
+            By signing up, I agree to LeadMe's
+            <a
+                target="_blank"
+                href="https://leadmeprivacypolicies.herokuapp.com/policies/classroom"
+                class="underline text-gray-300 underline-offset-1"
+            >Terms and Conditions</a></span>
+        </label>
 
-    <GenericButton :type="'secondary'" :callback="validateInputs">Sign up</GenericButton>
-    <p class="text-red-400">{{ error }}</p>
+        <div class="ml-8 w-52 mt-1 text-start text-xsm" v-if="v$.terms && v$.terms.$error">
+          <span class="text-red-800" v-for="(error, index) in v$.terms.$errors" :key="index">{{ error.$message }}</span>
+        </div>
+      </div>
 
-    <p class="mt-3 cursor-pointer text-blue-400 font-medium" v-on:click="$emit('changeView', 'login')">
-      Sign in instead?
-    </p>
-  </form>
+      <label class="inline-flex items-center mb-5">
+        <input class="w-4 h-4" type="checkbox" v-model="marketing"/>
+        <span class="w-56 ml-4 text-xsm text-left text-gray-300">I want to receive emails about product updates, new features and offerings from LeadMe!</span>
+      </label>
+
+      <div>
+        <GenericButton
+            class="h-11 text-white"
+            :type="'secondary'"
+            :callback="validateInputs"
+        >Sign up</GenericButton>
+
+        <p class="text-red-400">{{ error }}</p>
+
+        <p class="mt-3 cursor-pointer text-blue-400 text-sm font-medium" v-on:click="$emit('changeView', 'login')">
+          Sign in instead?
+        </p>
+      </div>
+    </form>
+  </div>
 </template>

@@ -27,26 +27,26 @@ function handleInput(event: Event) {
 <template>
   <div>
     <div class="flex flex-row">
-      <input
-          v-if="v$"
-          class="w-52 h-12 rounded-bl-lg rounded-tl-lg border-2 px-3 text-sm"
-          :class="v$.$error ? 'border-red-800 focus:border-red-900' : 'border-r-white border-l-gray-200 border-b-gray-200 border-t-gray-200'"
-          :type="showPassword ? 'text' : 'password'"
-          :placeholder='placeholder'
-          :value="modelValue"
-          @input="handleInput"
-      />
-      <button
-          type="button"
-          class="w-12 h-12 rounded-br-lg rounded-tr-lg bg-white
-            border-2 border-r-px border-r-gray-200 border-b-gray-200
-            border-t-gray-200"
-          @click="showPassword = !showPassword">
-        <span class="flex justify-center">
-          <img v-if="showPassword" class="w-6 h-5" src="/src/assets/icons/eye_icon.svg" alt="Icon"/>
-          <img v-else class="w-6 h-5" src="/src/assets/icons/eye_slash_icon.svg" alt="Icon"/>
-        </span>
-      </button>
+      <div class="relative">
+        <input
+            v-if="v$"
+            class="w-64 h-12 rounded-lg border-2 px-3 text-sm"
+            :class="v$.$error ? 'border-red-800 focus:border-red-900' : 'border-r-white border-l-gray-200 border-b-gray-200 border-t-gray-200'"
+            :type="showPassword ? 'text' : 'password'"
+            :placeholder='placeholder'
+            :value="modelValue"
+            @input="handleInput"
+        />
+        <button
+            type="button"
+            class="absolute right-0 w-6 h-5 mt-3.5 mr-2 rounded-br-lg rounded-tr-lg bg-white"
+            @click="showPassword = !showPassword">
+          <span class="flex justify-center">
+            <img v-if="showPassword" class="w-6 h-5" src="/src/assets/icons/eye-icon.svg" alt="Icon"/>
+            <img v-else class="w-6 h-5" src="/src/assets/icons/eye-slash-icon.svg" alt="Icon"/>
+          </span>
+        </button>
+      </div>
     </div>
 
     <div class="flex flex-col items-start" v-if="v$ && v$.$error">

@@ -192,7 +192,7 @@ function clearFields() {
     <div v-else-if="classroomPinia.accountView === 'changeName'">
       <AccountGridItem :title="'Back'" v-on:click="changeView('menu')"/>
 
-      <TextInput v-model="name" :v$="v$.name" v-on:focusin="changed = false" class="mb-3" type="text" placeholder="Display name"/>
+      <TextInput v-model="name" :v$="v$.name" v-on:focusin="changed = false" class="mb-3 64" type="text" placeholder="Display name"/>
       <GenericButton class="flex justify-center items-center" :type="'primary'" :callback="validateAndSubmit">
         <img v-if="changed" class="w-8 h-8" src="/src/assets/img/tick.svg" alt="Icon"/>
         <p v-else>Confirm</p>

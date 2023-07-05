@@ -1,32 +1,28 @@
 <script setup lang="ts">
 import GenericButton from "../../Buttons/GenericButton.vue";
 
-const emit = defineEmits<{
+defineEmits<{
   (e: 'changeView', newView: string): void
 }>()
 </script>
 
 <template>
-  <div>
+  <div class="flex flex-col items-center">
+    <img
+        class="w-8 h-8 mb-8"
+        src="/src/assets/img/icon-128.png"
+        alt="header icon" />
 
-    Welcome to
-    <img src="/src/assets/img/icon-popup-header.svg" />
-    <hr />
-
-    <p class="text-left mb-3 text-gray-separator">I am a...</p>
-    <GenericButton :type="'primary'" :callback="() => { $emit('changeView', 'student') }">Student</GenericButton>
-
-    <div class="relative mb-3">
-      <div class="absolute inset-0 flex items-center">
-        <div class="w-full border-b border-gray-separator"></div>
-      </div>
-      <div class="relative flex justify-center">
-        <span class="bg-white px-2 pb-0.5 text-sm text-gray-separator">or</span>
-      </div>
-    </div>
+    <p class="text-center mb-3 text-white">I am a...</p>
 
     <GenericButton
-        class="bg-panel-background border border-blue-500 border-2 hover:bg-white-menu-overlay"
+        class="text-white h-11"
+        :type="'primary'"
+        :callback="() => { $emit('changeView', 'student') }"
+    >Student</GenericButton>
+
+    <GenericButton
+        class="text-white bg-violet-500 h-11"
         :type="'secondary'"
         :callback="() => { $emit('changeView', 'login') }"
     >Teacher</GenericButton>

@@ -48,20 +48,34 @@ async function validateAndSubmit() {
 </script>
 
 <template>
-  <form
-    class="pb-5 flex flex-col items-center"
-    @submit.prevent>
-    <p class="mt-2 mb-9 w-56">Enter the email address associated with your account.</p>
-
-    <div class="mb-4">
-      <EmailInput v-model="email" :v$="v$.email" placeholder="Email" />
-      <p class="text-red-400">{{ error }}</p>
+  <div>
+    <div class="flex flex-col items-center">
+      <img
+          class="w-8 h-8 mb-8"
+          src="/src/assets/img/icon-128.png"
+          alt="header icon" />
     </div>
 
-    <GenericButton class="mb-14" :type="'secondary'" :callback="validateAndSubmit">Submit</GenericButton>
-  </form>
+    <p class="text-left w-64 text-white text-sm mb-3">Enter the email address associated with your account.</p>
 
-  <p class="pb-5 text-gray-separator cursor-pointer"
-     v-on:click="$emit('changeView', 'login')"
-  >Teacher Login</p>
+    <form
+      class="pb-5 flex flex-col"
+      @submit.prevent>
+
+      <div class="mb-2">
+        <EmailInput v-model="email" :v$="v$.email" placeholder="Email" />
+        <p class="text-red-400">{{ error }}</p>
+      </div>
+
+      <GenericButton
+          class="mb-4 h-11 text-white text-sm"
+          :type="'secondary'"
+          :callback="validateAndSubmit"
+      >Reset Password</GenericButton>
+
+      <p class="pb-5 cursor-pointer text-blue-400 text-sm"
+         v-on:click="$emit('changeView', 'login')"
+      >Back to Login</p>
+    </form>
+  </div>
 </template>

@@ -27,7 +27,7 @@ function handleInput(event: Event) {
   <div>
     <input
         v-if="v$"
-        class="w-64 h-12 rounded-lg border-2 px-3 text-sm"
+        class="w-full h-12 rounded-lg border-2 px-3 text-sm"
         :class="v$.$error ? 'border-red-800 focus:border-red-900' : ''"
         :type='type'
         :placeholder='placeholder'
