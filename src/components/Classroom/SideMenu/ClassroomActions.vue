@@ -40,7 +40,7 @@ async function screenControl() {
     v-on:click="screenControl();"
   >
     <span v-if="loading" class="flex flex-row place-items-center">
-    <span class="lds-dual-ring-screen h-5 w-5 mr-3"></span>
+      <span class="lds-dual-ring-screen h-5 w-5 mr-3"></span>
       <span :class="{
         'text-base': true,
         'text-white': classCode,

@@ -61,13 +61,6 @@ async function generateSession() {
 
     <!--Class Code-->
     <div class="mt-5 flex justify-center">
-<!--      <button-->
-<!--          v-if="classCode"-->
-<!--          class="h-12 w-48 bg-blue-500-->
-<!--          text-sm text-white font-poppins font-semibold-->
-<!--          rounded-md"-->
-<!--      >Room Code: {{ classroomPinia.classCode }}</button>-->
-
       <RoomCodeModal
           v-if="classCode"
           :class-code="classroomPinia.classCode"/>
