@@ -28,12 +28,20 @@ function handleInput(event: Event) {
   <div>
     <div class="flex flex-row">
       <div class="relative">
+        <img
+          class="absolute mt-3.5 left-3 w-5 h-5"
+          :class="{ 'invisible': modelValue.length !== 0 }"
+          src="src/assets/img/login/login-icon-password.svg"
+          alt="password icon">
+
         <input
             v-if="v$"
             class="w-64 h-12 rounded-lg border-2 px-3 text-sm"
-            :class="v$.$error ? 'border-red-800 focus:border-red-900' : 'border-r-white border-l-gray-200 border-b-gray-200 border-t-gray-200'"
+            :class="{
+              'border-red-800 focus:border-red-900' : v$.$error,
+            }"
             :type="showPassword ? 'text' : 'password'"
-            :placeholder='placeholder'
+            :placeholder='`       ${placeholder}`'
             :value="modelValue"
             @input="handleInput"
         />
@@ -50,7 +58,7 @@ function handleInput(event: Event) {
     </div>
 
     <div class="flex flex-col items-start" v-if="v$ && v$.$error">
-      <div class="text-red-800" v-for="error in v$.$errors">{{ error.$message }}</div>
+      <div class="text-red-800 text-sm" v-for="error in v$.$errors">{{ error.$message }}</div>
     </div>
   </div>
 </template>
