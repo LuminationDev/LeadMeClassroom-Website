@@ -13,6 +13,11 @@ defineProps({
   v$: {
     type: Object,
     required: true
+  },
+  showError: {
+    type: Boolean,
+    required: false,
+    default: true
   }
 });
 const emit = defineEmits(['update:modelValue'])
@@ -57,7 +62,7 @@ function handleInput(event: Event) {
       </div>
     </div>
 
-    <div class="flex flex-col items-start" v-if="v$ && v$.$error">
+    <div class="flex flex-col items-start" v-if="v$ && v$.$error && showError">
       <div class="text-red-800 text-sm" v-for="error in v$.$errors">{{ error.$message }}</div>
     </div>
   </div>
