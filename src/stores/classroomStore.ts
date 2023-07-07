@@ -9,11 +9,12 @@ import { getAuth, sendPasswordResetEmail } from "@firebase/auth";
 import type { Application } from "@/models";
 import { getCuratedContentData, toDataURL } from "@/controller/_dataRequests";
 import type { CuratedContentItem } from "@/models";
-import {cloneDeep} from "lodash";
+import { cloneDeep } from "lodash";
 
 interface userDetails {
     name: string,
-    marketing: string
+    marketing: boolean,
+    email: string
 }
 
 const firebase = new Firebase();
@@ -27,11 +28,12 @@ export const useClassroomStore = defineStore("dashboard", {
     state: () => {
         return {
             view: "classroom",
-            accountView: "menu",
+            accountView: "main",
             firebase: firebase,
             classCode: "",
             leaderName: "",
-            marketing: <string|null>"",
+            leaderEmail: "",
+            marketing: <boolean>false,
             webFollowers: [] as WebFollower[],
             webTasks: [] as String[],
             mobileFollowers: [] as MobileFollower[],
@@ -53,6 +55,7 @@ export const useClassroomStore = defineStore("dashboard", {
             const leaderDetails = <userDetails>await firebase.getDisplayDetails();
             this.leaderName = leaderDetails.name
             this.marketing = leaderDetails.marketing
+            this.leaderEmail = leaderDetails.email
             this.leader = new Leader(this.leaderName)
         },
 
@@ -617,7 +620,7 @@ export const useClassroomStore = defineStore("dashboard", {
             const auth = getAuth();
             return await sendPasswordResetEmail(auth, email)
                 .then(() => { return "success"; })
-                .catch((error) => { return this.getUsefulErrorMessageFromFirebaseCode(error.code); });
+                .catch((error) => { return this.firebase.getUsefulErrorMessageFromFirebaseCode(error.code); });
         },
 
         /**
@@ -630,31 +633,7 @@ export const useClassroomStore = defineStore("dashboard", {
             const result = await this.firebase.setPassword(email, currentPassword, newPassword);
 
             if(result === "success") { return result; }
-            return this.getUsefulErrorMessageFromFirebaseCode(result);
-        },
-
-        getUsefulErrorMessageFromFirebaseCode(error: string) {
-            switch (error) {
-                case 'auth/email-already-exists':
-                    return 'This email is already in use. Try signing in instead.'
-                case 'auth/id-token-expired':
-                case 'auth/id-token-revoked':
-                case 'auth/invalid-id-token':
-                    return 'Your login session has expired. Please logout and try again'
-                case 'auth/invalid-email':
-                case 'auth/user-mismatch':
-                    return 'This email is invalid. Please check your email address and try again.'
-                case 'auth/invalid-password':
-                    return 'This password is invalid. Please check that it is at least 6 characters.'
-                case 'auth/user-not-found':
-                    return 'No account was found for these login details. Please check your details and try again.'
-                case 'auth/wrong-password':
-                    return 'This password does not match the login details for this account. Please try again.'
-                case 'auth/too-many-requests':
-                    return 'Too many attempts have been made to login to this account. Please reset your password or try again later.'
-                default:
-                    return 'An error has occurred. Please contact support and give them this error code: ' + error
-            }
+            return this.firebase.getUsefulErrorMessageFromFirebaseCode(result);
         },
 
         /**
@@ -662,17 +641,34 @@ export const useClassroomStore = defineStore("dashboard", {
          * name as well.
          * @param name A string representing the new display name.
          */
-        async changeDisplayName(name: string) {
+        async changeDisplayName(name: string): Promise<string> {
             await this.firebase.setDisplayName(name);
             this.leaderName = name;
+            return "success";
+        },
+
+        /**
+         * Change the email associated with the firebase account. This can only be performed on a logged-in user that
+         * has recently logged in.
+         * @param email
+         */
+        async changeEmailAddress(email: string): Promise<string> {
+            const result = await this.firebase.setEmailAddress(email);
+
+            if (result === "success") {
+                this.leaderEmail = email;
+            }
+
+            return result;
         },
 
         /**
          * Change whether a user has accepted or denied permission to be contacted for marketing purposes.
          * @param preference A boolean representing if they have opted in for marketing.
          */
-        async changeMarketingPreference(preference: boolean) {
-            this.marketing = <string|null>await this.firebase.setMarketingPreference(preference);
+        async changeMarketingPreference(preference: boolean): Promise<string> {
+            this.marketing = <boolean>await this.firebase.setMarketingPreference(preference);
+            return "success";
         },
     }
 });

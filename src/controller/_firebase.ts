@@ -16,7 +16,7 @@ import {
     remove,
     off
 } from 'firebase/database';
-import { browserLocalPersistence, getAuth, setPersistence, updateProfile, updatePassword, reauthenticateWithCredential, EmailAuthProvider } from "@firebase/auth";
+import { browserLocalPersistence, getAuth, setPersistence, updateProfile, updatePassword, reauthenticateWithCredential, EmailAuthProvider, updateEmail } from "@firebase/auth";
 import * as REQUESTS from '../constants/_requests';
 import type { Leader } from "../models";
 import type {
@@ -29,7 +29,6 @@ import type {
 import { toDataURL } from "@/controller/_dataRequests";
 
 const config = prodConfig;
-console.log(config)
 
 interface AppIcon {
     imageName: string
@@ -101,7 +100,8 @@ class Firebase {
         const currentUser = getAuth().currentUser;
         return {
             name: currentUser?.displayName ?? "",
-            marketing: currentUser?.photoURL ?? "false",
+            marketing: currentUser?.photoURL === 'true',
+            email: currentUser?.email ?? ""
         };
     }
 
@@ -136,12 +136,28 @@ class Firebase {
     }
 
     /**
+     * Update the email address of the currently active user.
+     * @param email
+     */
+    setEmailAddress = async (email: string): Promise<string> => {
+        const user = getAuth().currentUser;
+        if (user) {
+            return updateEmail(user, email).then(() => {
+                return "success";
+            }).catch(error => {
+                return this.getUsefulErrorMessageFromFirebaseCode(error.code);
+            });
+        }
+        return "No user found";
+    }
+
+    /**
      * Update the marketing preference of the currently active user.
      * @param preference
      */
     setMarketingPreference = async (preference: boolean) => {
-        await updateProfile(getAuth().currentUser!, { photoURL: preference ? Date.now().toString() : 'false' })
-        return preference ? Date.now().toString() : 'false';
+        await updateProfile(getAuth().currentUser!, { photoURL: preference ? 'true' : 'false' })
+        return preference;
     }
 
     /**
@@ -395,6 +411,36 @@ class Firebase {
     sendIceCandidates = (senderId: string, UUID: string, data: string, classCode: string) => {
         const msgRef = ref(this.db, `ice/${classCode}/${UUID}`);
         push(msgRef, { sender: senderId, message: data }).then(msg => remove(msg));
+    }
+
+    /**
+     * Return a useful human-readable message from a supplied firebase error status.
+     * @param error
+     */
+    getUsefulErrorMessageFromFirebaseCode(error: string) {
+        switch (error) {
+            case 'auth/email-already-exists':
+                return 'This email is already in use. Try signing in instead.'
+            case 'auth/id-token-expired':
+            case 'auth/id-token-revoked':
+            case 'auth/invalid-id-token':
+                return 'Your login session has expired. Please logout and try again'
+            case 'auth/invalid-email':
+            case 'auth/user-mismatch':
+                return 'This email is invalid. Please check your email address and try again.'
+            case 'auth/invalid-password':
+                return 'This password is invalid. Please check that it is at least 6 characters.'
+            case 'auth/user-not-found':
+                return 'No account was found for these login details. Please check your details and try again.'
+            case 'auth/wrong-password':
+                return 'This password does not match the login details for this account. Please try again.'
+            case 'auth/too-many-requests':
+                return 'Too many attempts have been made to login to this account. Please reset your password or try again later.'
+            case 'auth/requires-recent-login':
+                return 'A recent login is required for this change.'
+            default:
+                return 'An error has occurred. Please contact support and give them this error code: ' + error
+        }
     }
 }
 

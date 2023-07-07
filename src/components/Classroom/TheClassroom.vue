@@ -1,14 +1,17 @@
 <script setup lang="ts">
 import ClassroomSideMenu from "./SideMenu/ClassroomSideMenu.vue";
-import { onBeforeMount, onMounted, ref } from "vue";
+import {computed, onBeforeMount, onMounted, ref} from "vue";
 import { getAuth } from "@firebase/auth";
 import { useClassroomStore } from "@/stores/classroomStore";
 import { useRouter } from "vue-router";
 
 const classroomPinia = useClassroomStore();
 const router = useRouter()
-const emailVerified = ref(false)
 const loaded = ref(false)
+
+const emailVerified = computed(() => {
+  return classroomPinia.user?.emailVerified ?? false
+});
 
 //Check for any active class on load
 onMounted(async () => {
@@ -17,9 +20,6 @@ onMounted(async () => {
   await classroomPinia.attachClassListeners(true)
   const auth = getAuth()
   classroomPinia.user = auth.currentUser
-  if (classroomPinia.user) {
-    emailVerified.value = classroomPinia.user.emailVerified
-  }
   loaded.value = true
 });
 

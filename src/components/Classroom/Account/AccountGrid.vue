@@ -1,24 +1,37 @@
 <script setup lang="ts">
-import AccountGridItem from "./AccountGridItem.vue";
-import {required, helpers, minLength, email as emailRule} from "@vuelidate/validators";
-import TextInput from "../../InputFields/TextInput.vue";
-import PasswordInput from "../../InputFields/PasswordInput.vue";
-import EmailInput from "../../InputFields/EmailInput.vue";
+import {computed, reactive, ref} from "vue";
 import useVuelidate from "@vuelidate/core";
-import {ref} from "vue";
+import { required, helpers, email as emailRule } from "@vuelidate/validators";
+import TextInput from "../../InputFields/TextInput.vue";
+import AccountPasswordReset from "@/components/Classroom/Account/AccountPasswordReset.vue";
+import AccountPasswordChange from "@/components/Classroom/Account/AccountPasswordChange.vue";
 import GenericButton from "../../Buttons/GenericButton.vue";
-
 import { useClassroomStore } from "@/stores/classroomStore";
+import EmailInput from "@/components/InputFields/EmailInput.vue";
+import ActionBarBase from "@/components/ActionBar/ActionBarBase.vue";
+import AccountNotSaved from "@/components/Classroom/Account/AccountNotSaved.vue";
+
 const classroomPinia = useClassroomStore();
 
-const response = ref('');
-const error = ref('');
-const passwordView = ref('change');
-const changed = ref(false);
-const name = ref('');
-const email = ref('');
-const oldPassword = ref('');
-const password = ref('');
+const initialObject = {
+  displayName: "",
+  email: "",
+  marketing: ""
+}
+
+const response = reactive({
+  displayName: "",
+  email: "",
+  marketing: ""
+});
+const error = reactive({
+  displayName: "",
+  email: "",
+  marketing: ""
+});
+const marketing = ref(classroomPinia.marketing);
+const name = ref(classroomPinia.leaderName);
+const email = ref(classroomPinia.leaderEmail);
 const rules = {
   name: {
     required: helpers.withMessage("Name is required", required),
@@ -28,208 +41,174 @@ const rules = {
     required: helpers.withMessage("Email is required", required),
     emailRule: helpers.withMessage("Email must be a valid email address", emailRule),
     $lazy: true
-  },
-  oldPassword: {
-    required: helpers.withMessage("Current password is required", required),
-    $autoDirty: true
-  },
-  password: {
-    required: helpers.withMessage("Password is required", required),
-    minLength: helpers.withMessage("Password must be at least 8 characters", minLength(8)),
-    specialCharacters: helpers.withMessage("Password must have a special character", helpers.regex(/^(?=.*[*.!@#$%^&(){}\[\]:;<>,?\/~_+\-=|]).*$/)),
-    lowerCase: helpers.withMessage("Password must have a lowercase letter", helpers.regex(/^(?=.*[a-z]).*$/)),
-    upperCase: helpers.withMessage("Password must have an uppercase letter", helpers.regex(/^(?=.*[A-Z]).*$/)),
-    numbers: helpers.withMessage("Password must have at least one number", helpers.regex(/^(?=.*[0-9]).*$/))
-  },
-}
-
-const v$ = useVuelidate(rules, { name, email, oldPassword, password })
-
-async function validateEmail() {
-  const result = await v$.value.email.$validate();
-  if (!result) { return; }
-
-  const success = await classroomPinia.handlePasswordReset(email.value);
-  if(success !== 'success') {
-    error.value = success;
-    return;
   }
-
-  error.value = '';
-  response.value = 'We have sent a password recovery link to your email.';
-  email.value = '';
-  v$.value.$reset();
-  resetChanged();
 }
 
-async function validatePassword() {
-  const emailResult = await v$.value.email.$validate();
-  const oldResult = await v$.value.oldPassword.$validate();
-  const passwordResult = await v$.value.password.$validate();
-  if (!emailResult || !oldResult || !passwordResult) { return; }
+const v$ = useVuelidate(rules, { name, email })
 
-  const result = await classroomPinia.changeUserPassword(email.value, oldPassword.value, password.value);
-  if(result !== 'success') {
-    error.value = result;
-    return;
-  }
+const changed = computed(() => {
+  return marketing.value !== classroomPinia.marketing
+      || name.value !== classroomPinia.leaderName
+      || email.value !== classroomPinia.leaderEmail
+})
 
-  error.value = '';
-  response.value = 'Your password has been updated!';
-  email.value = '';
-  oldPassword.value = '';
-  password.value = '';
-  v$.value.$reset();
-  resetChanged();
-}
-
-
-async function validateAndSubmit() {
-  const result = await v$.value.name.$validate();
-  if (!result) { return; }
-
-  await classroomPinia.changeDisplayName(name.value);
-
-  name.value = '';
-  v$.value.$reset();
-  resetChanged();
-}
-
-async function changeMarketing() {
-  await classroomPinia.changeMarketingPreference(classroomPinia.marketing === 'false');
-  resetChanged();
-}
-
-function resetChanged() {
-  changed.value = true;
-  setTimeout(() => { changed.value = false; }, 2000);
+/**
+ * Revert any changes made to the settings
+ */
+function rollbackChanges() {
+  marketing.value = classroomPinia.marketing;
+  name.value = classroomPinia.leaderName;
+  email.value = classroomPinia.leaderEmail;
+  clearFields();
 }
 
 /**
- * Swap between the change password and forgot password fields whilst resetting the validation and input fields.
- * @param view
+ * Save the updated display name or email address
  */
-function changePasswordView(view: string) {
+async function validateAndSubmit() {
+  const nameResult = await v$.value.name.$validate();
+  const emailResult = await v$.value.email.$validate();
+  if (!nameResult || !emailResult) { return; }
+
+  // Only clear the response/error if there are none
   clearFields();
-  v$.value.$reset();
-  passwordView.value = view;
+
+  // Check if name has been changed
+  if (name.value !== classroomPinia.leaderName) {
+    const result = await classroomPinia.changeDisplayName(name.value);
+    error.displayName = result !== 'success' ? result : '';
+    response.displayName = result === 'success' ? 'Successfully updated.' : '';
+  }
+
+  // Check if email has been changed
+  if (email.value !== classroomPinia.leaderEmail) {
+    const result = await classroomPinia.changeEmailAddress(email.value);
+    error.email = result !== 'success' ? result : '';
+    response.email = result === 'success' ? 'Successfully updated.' : '';
+  }
+
+  // Check if marketing has been changed
+  if (marketing.value !== classroomPinia.marketing) {
+    const result = await classroomPinia.changeMarketingPreference(marketing.value);
+    error.marketing = result !== 'success' ? result : '';
+    response.marketing = result === 'success' ? 'Successfully updated.' : '';
+  }
 }
 
 function changeView(view: string) {
-  clearFields();
-  changed.value = false;
+  rollbackChanges();
   classroomPinia.changeAccountView(view);
 }
 
 function clearFields() {
-  response.value = '';
-  error.value = '';
-  email.value = '';
-  password.value = '';
+  Object.assign(response, initialObject);
+  Object.assign(error, initialObject);
   v$.value.$reset();
 }
 </script>
 
 <template>
-  <Transition name="fade" mode="out-in">
-    <div v-if="classroomPinia.accountView === 'menu'">
-      <AccountGridItem :title="'Reset password'" v-on:click="changeView('resetPassword')"/>
-      <AccountGridItem :title="'Change name'" v-on:click="changeView('changeName')"/>
-      <AccountGridItem :title="'Email subscription'" v-on:click="changeView('changeSubscription')"/>
-    </div>
+  <div class="relative h-full">
+    <Transition name="fade" mode="out-in">
+      <div v-if="classroomPinia.accountView === 'main'">
+        <div class="mb-8">
 
-    <!--Resetting password page-->
-    <div v-else-if="classroomPinia.accountView === 'resetPassword'">
-      <AccountGridItem :title="'Back'" v-on:click="changeView('menu')"/>
+          <!--Changing display name-->
+          <p class="text-sm text-gray-400 font-semibold mb-3">Preferred Name</p>
+          <div class="flex flex-row items-center mb-1">
+            <TextInput v-model="name" :v$="v$.name" v-on:focusin="changed = false" class="w-64" type="text" placeholder="Display name"/>
+            <AccountNotSaved :show="name !== classroomPinia.leaderName"/>
+          </div>
 
-      <!--Change password area-->
-      <div v-if="passwordView === 'change'">
-        <!--Account email-->
-        <EmailInput v-model="email" :v$="v$.email" class="mb-3" placeholder="Email" />
+          <div class="mb-8">
+            <div class="flex flex-row text-sm text-gray-400">
+              <img class="w-3.5 mr-1" src="src/assets/img/account-icon-alert.svg" alt="alert"/>
+              This name is display to your students.
+            </div>
+            <p v-if="response.displayName !== ''"  class="w-64 px-1 text-green-400 text-sm">{{ response.displayName }}</p>
+            <p v-if="error.displayName !== ''" class="px-1 text-red-800 text-sm mb-3">{{ error.displayName }}</p>
+          </div>
 
-        <!--Old password-->
-        <PasswordInput v-model="oldPassword" :v$="v$.oldPassword" class="mb-3" placeholder="Old Password"/>
+          <!--Changing email address-->
+          <p class="text-sm text-gray-400 font-semibold mb-3">Email Address</p>
+          <div class="mb-3">
+            <div class="flex flex-row items-center mb-1">
+              <EmailInput placeholder="Email" :v$="v$.email" v-model="email"/>
+              <AccountNotSaved :show="email !== classroomPinia.leaderEmail"/>
+            </div>
+            <p v-if="response.email !== ''"  class="w-64 px-1 text-green-400 text-sm">{{ response.email }}</p>
+            <p v-if="error.email !== ''" class="px-1 text-red-800 text-sm mb-3">{{ error.email }}</p>
+          </div>
+        </div>
 
-        <!--New password-->
-        <PasswordInput v-model="password" :v$="v$.password" v-on:focusin="changed = false" placeholder="New password"/>
+        <!--Password options-->
+        <p class="text-sm text-gray-400 font-semibold mb-3">Password</p>
+        <GenericButton
+            class="flex justify-center items-center
+            text-white h-11 text-sm mb-8"
+            :type="'primary'"
+            :callback="() => changeView('changePassword')"
+        >Change Password</GenericButton>
 
-        <p class="w-64 px-1 text-red-400 mb-3">{{ error }}</p>
-        <p class="w-64 px-1 text-green-400 mb-3">{{ response }}</p>
+  <!--      Todo add when we have full accounts and can check the timestamp of the password-->
+  <!--      <div class="flex flex-row text-sm text-gray-400 mb-8">-->
+  <!--        <img class="w-3.5 mr-1" src="src/assets/img/account-icon-alert.svg" alt="alert"/>-->
+  <!--        Password was changed x month ago.-->
+  <!--      </div>-->
 
-        <GenericButton class="flex justify-center items-center" :type="'primary'" :callback="validatePassword">
-          <img v-if="changed" class="w-8 h-8" src="/src/assets/img/tick.svg" alt="Icon"/>
-          <p v-else>Reset Password</p>
-        </GenericButton>
+        <!--Marketing area-->
+        <div class="mb-5">
+          <p class="text-sm text-gray-400 font-semibold mb-3">News & Updates</p>
 
-        <p
-            class="mb-3 font-medium text-blue-400 cursor-pointer"
-            v-on:click="changePasswordView('forgot')"
-        >Forgot password?</p>
+          <div class="flex flex-row items-center">
+            <label class="inline-flex">
+              <input class="w-4 h-4" type="checkbox" v-model="marketing"/>
+              <span class="w-56 ml-4 -mt-1 text-xsm text-left text-gray-400">
+                I want to receive emails about product updates, new features and offerings from LeadMe!
+              </span>
+            </label>
+
+            <AccountNotSaved :show="marketing !== classroomPinia.marketing"/>
+          </div>
+
+          <p v-if="response.marketing !== ''" class="w-64 px-1 text-green-400 text-sm mb-3">{{ response.marketing }}</p>
+          <p v-if="error.marketing !== ''" class="px-1 text-red-800 text-sm mb-3">{{ error.marketing }}</p>
+        </div>
       </div>
 
-      <!--Forgot password area-->
-      <div v-else-if="passwordView === 'forgot'">
-        <!--Forgot password area-->
-        <!--Account email-->
-        <EmailInput v-model="email" :v$="v$.email" placeholder="Email" />
-
-        <p class="w-64 px-1 text-red-400 mb-3">{{ error }}</p>
-        <p class="w-64 px-1 text-green-400 mb-3">{{ response }}</p>
-
-        <GenericButton class="flex justify-center items-center" :type="'primary'" :callback="validateEmail">
-          <img v-if="changed" class="w-8 h-8" src="/src/assets/img/tick.svg" alt="Icon"/>
-          <p v-else>Forgot password</p>
-        </GenericButton>
-
-        <p
-            class="mb-3 font-medium text-blue-400 cursor-pointer"
-            v-on:click="changePasswordView('change')"
-        >Change password?</p>
+      <!--Changing password page-->
+      <div v-else-if="classroomPinia.accountView === 'changePassword'">
+        <AccountPasswordChange @change-view="changeView" :email="classroomPinia.leaderEmail"/>
       </div>
-    </div>
 
-    <!--Changing display name page-->
-    <div v-else-if="classroomPinia.accountView === 'changeName'">
-      <AccountGridItem :title="'Back'" v-on:click="changeView('menu')"/>
+      <!--Resetting password page-->
+      <div v-else-if="classroomPinia.accountView === 'resetPassword'">
+        <AccountPasswordReset @change-view="changeView" :email="classroomPinia.leaderEmail"/>
+      </div>
+    </Transition>
 
-      <TextInput v-model="name" :v$="v$.name" v-on:focusin="changed = false" class="mb-3 64" type="text" placeholder="Display name"/>
-      <GenericButton class="flex justify-center items-center" :type="'primary'" :callback="validateAndSubmit">
-        <img v-if="changed" class="w-8 h-8" src="/src/assets/img/tick.svg" alt="Icon"/>
-        <p v-else>Confirm</p>
-      </GenericButton>
-    </div>
+    <Transition name="fade" mode="out-in">
+      <ActionBarBase v-if="changed" class="absolute bottom-56">
+        <template v-slot:right>
+          <div class="flex flex-row text-sm text-white items-center">
+            <div class="mr-2">
+              Some settings have been updated
+            </div>
 
-    <!--Marketing page-->
-    <div v-else-if="classroomPinia.accountView === 'changeSubscription'">
-      <AccountGridItem class="mb-10" :title="'Back'" v-on:click="changeView('menu')"/>
+            <div class="h-9 flex items-center px-3
+            rounded-3xl cursor-pointer bg-blue-400
+            hover:bg-blue-300"
+            v-on:click="async () => { await validateAndSubmit() }"
+            >Save Settings</div>
 
-      <p class="text-base mb-3 text-black font-semibold">Email subscription</p>
-      <p class="mb-3 text-sm text-black">Receive emails about product updates, new features and offerings from LeadMe</p>
-      <p class="text-sm mb-10 text-black">Status:
-        <span :class="{
-          'text-green-400': classroomPinia.marketing !== 'false',
-          'text-red-400': classroomPinia.marketing === 'false',
-        }"
-        >{{ classroomPinia.marketing === "false" ? "Not subscribed" : "Subscribed" }}
-        </span>
-      </p>
-
-      <GenericButton class="flex justify-center items-center" :type="'primary'" :callback="changeMarketing">
-        <img v-if="changed" class="w-8 h-8" src="/src/assets/img/tick.svg" alt="Icon"/>
-        <p v-else>{{ classroomPinia.marketing === "false" ? "Subscribe" : "Unsubscribe" }}</p>
-      </GenericButton>
-    </div>
-  </Transition>
+            <div class="h-9 flex items-center px-3
+            rounded-3xl cursor-pointer bg-gray-400
+            hover:bg-gray-300 ml-2"
+            v-on:click="rollbackChanges"
+            >Cancel</div>
+          </div>
+        </template>
+      </ActionBarBase>
+    </Transition>
+  </div>
 </template>
-
-<style>
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.15s ease;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-}
-</style>
