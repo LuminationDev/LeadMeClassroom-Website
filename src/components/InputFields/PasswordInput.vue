@@ -1,6 +1,11 @@
 <script setup lang="ts">
-import {ref} from "vue";
+import { ref } from "vue";
+import passwordFaded from '/src/assets/img/login/login-icon-password-fade.svg';
+import passwordActive from '/src/assets/img/login/login-icon-password-active.svg';
+import passwordSolid from '/src/assets/img/login/login-icon-password-solid.svg';
+import ImageState from "@/components/Images/ImageState.vue";
 
+const inputFocus = ref(false);
 defineProps({
   placeholder: {
     type: String,
@@ -33,22 +38,28 @@ function handleInput(event: Event) {
   <div>
     <div class="flex flex-row">
       <div class="relative">
-        <img
-          class="absolute mt-3.5 left-3 w-5 h-5"
-          :class="{ 'invisible': modelValue.length !== 0 }"
-          src="src/assets/img/login/login-icon-password.svg"
-          alt="password icon">
+        <ImageState
+            class="absolute mt-3.5 left-3 w-5 h-5"
+            :faded="modelValue.length === 0 && !inputFocus"
+            :active="inputFocus"
+            :solid="modelValue.length > 0 && !inputFocus"
+            :faded-src="passwordFaded"
+            :active-src="passwordActive"
+            :solid-src="passwordSolid"
+            :alt="'password icon'"/>
 
         <input
             v-if="v$"
-            class="w-64 h-12 rounded-lg border-2 px-3 text-sm"
+            class="w-64 h-12 pl-9 rounded-lg border-2 px-3 text-sm"
             :class="{
               'border-red-800 focus:border-red-900' : v$.$error,
             }"
             :type="showPassword ? 'text' : 'password'"
-            :placeholder='`       ${placeholder}`'
+            :placeholder='`${placeholder}`'
             :value="modelValue"
             @input="handleInput"
+            @focus="inputFocus = true"
+            @focusout="inputFocus = false"
         />
         <button
             type="button"

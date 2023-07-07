@@ -1,4 +1,11 @@
 <script setup lang="ts">
+import {ref} from "vue";
+import emailFaded from '/src/assets/img/login/login-icon-email-fade.svg';
+import emailActive from '/src/assets/img/login/login-icon-email-active.svg';
+import emailSolid from '/src/assets/img/login/login-icon-email-solid.svg';
+import ImageState from "@/components/Images/ImageState.vue";
+
+const inputFocus = ref(false);
 const props = defineProps({
   placeholder: {
     type: String,
@@ -23,28 +30,32 @@ function handleInput(inputEvent: Event) {
     props.v$.$touch()
   }
 }
-
 </script>
 
 <template>
   <div>
     <div class="flex flex-row">
       <div class="relative">
-        <img
+        <ImageState
             class="absolute mt-3.5 left-3 w-5 h-5"
-            :class="{ 'invisible': modelValue.length !== 0 }"
-            src="src/assets/img/login/login-icon-email.svg"
-            alt="email icon">
+            :faded="modelValue.length === 0 && !inputFocus"
+            :active="inputFocus"
+            :solid="modelValue.length > 0 && !inputFocus"
+            :faded-src="emailFaded"
+            :active-src="emailActive"
+            :solid-src="emailSolid"
+            :alt="'email icon'"/>
 
         <input
             v-if="v$"
-            class="w-64 h-12 rounded-lg border-2 px-3 text-sm"
+            class="w-64 h-12 pl-9 rounded-lg border-2 px-3 text-sm"
             :class="v$.$error ? 'border-red-800 focus:border-red-900' : ''"
             type='email'
-            :placeholder='`       ${placeholder}`'
+            :placeholder='`${placeholder}`'
             :value="modelValue"
             @input="handleInput"
-            @focusout="() => { v$.$touch() }"
+            @focus="inputFocus = true"
+            @focusout="v$.$touch(); inputFocus = false"
         />
       </div>
     </div>
