@@ -7,7 +7,10 @@ import AccountPasswordReset from "@/components/Classroom/Account/AccountPassword
 import AccountPasswordChange from "@/components/Classroom/Account/AccountPasswordChange.vue";
 import GenericButton from "../../Buttons/GenericButton.vue";
 import { useClassroomStore } from "@/stores/classroomStore";
-import EmailInput from "@/components/InputFields/EmailInput.vue";
+import AccountInput from "@/components/InputFields/AccountInput.vue";
+import emailFaded from '/src/assets/img/login/login-icon-email-fade.svg';
+import emailActive from '/src/assets/img/login/login-icon-email-active.svg';
+import emailSolid from '/src/assets/img/login/login-icon-email-solid.svg';
 import ActionBarBase from "@/components/ActionBar/ActionBarBase.vue";
 import AccountNotSaved from "@/components/Classroom/Account/AccountNotSaved.vue";
 
@@ -133,7 +136,14 @@ function clearFields() {
           <p class="text-sm text-gray-400 font-semibold mb-3">Email Address</p>
           <div class="mb-3">
             <div class="flex flex-row items-center mb-1">
-              <EmailInput placeholder="Email" :v$="v$.email" v-model="email"/>
+              <AccountInput
+                  :faded-src="emailFaded"
+                  :active-src="emailActive"
+                  :solid-src="emailSolid"
+                  v-model="email"
+                  :v$="v$.email"
+                  placeholder="Email"
+                  alt="Email"/>
               <AccountNotSaved :show="email !== classroomPinia.leaderEmail"/>
             </div>
             <p v-if="response.email !== ''"  class="w-64 px-1 text-green-400 text-sm">{{ response.email }}</p>

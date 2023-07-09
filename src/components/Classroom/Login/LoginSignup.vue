@@ -1,7 +1,12 @@
 <script setup lang="ts">
-import TextInput from "../../InputFields/TextInput.vue";
 import GenericButton from "../../Buttons/GenericButton.vue";
-import EmailInput from "../../InputFields/EmailInput.vue";
+import AccountInput from "../../InputFields/AccountInput.vue";
+import emailFaded from '/src/assets/img/login/login-icon-email-fade.svg';
+import emailActive from '/src/assets/img/login/login-icon-email-active.svg';
+import emailSolid from '/src/assets/img/login/login-icon-email-solid.svg';
+import nameFaded from '/src/assets/img/login/login-icon-person-faded.svg';
+import nameActive from '/src/assets/img/login/login-icon-person-active.svg';
+import nameSolid from '/src/assets/img/login/login-icon-person-solid.svg';
 import { ref, computed } from "vue";
 import useVuelidate from "@vuelidate/core";
 import { required, email as emailRule, sameAs, helpers, minLength } from "@vuelidate/validators";
@@ -24,7 +29,7 @@ const rules = {
   password: {
     required: helpers.withMessage("Password is required", required),
     minLength: helpers.withMessage("Password must be at least 8 characters", minLength(8)),
-    specialCharacters: helpers.withMessage("Password must have a special character", helpers.regex(/^(?=.*[*.!@#$%^&(){}\[\]:;<>,?\/~_+\-=|]).*$/)),
+    specialCharacters: helpers.withMessage("Password must have a special character", helpers.regex(/^(?=.*[*.!@#$%^&(){}[\]:;<>,?/~_+\-=|]).*$/)),
     lowerCase: helpers.withMessage("Password must have a lowercase letter", helpers.regex(/^(?=.*[a-z]).*$/)),
     upperCase: helpers.withMessage("Password must have an uppercase letter", helpers.regex(/^(?=.*[A-Z]).*$/)),
     numbers: helpers.withMessage("Password must have at least one number", helpers.regex(/^(?=.*[0-9]).*$/))
@@ -96,8 +101,25 @@ async function validateInputs() {
 
     <form @submit.prevent class="pb-7">
       <div>
-        <TextInput class="mb-2 w-64" type="text" placeholder="Name" :v$="v$.name" v-model="name"/>
-        <EmailInput class="mb-2" placeholder="Email" :v$="v$.email" v-model="email"/>
+        <AccountInput
+            class="mb-2"
+            :faded-src="nameFaded"
+            :active-src="nameActive"
+            :solid-src="nameSolid"
+            v-model="name"
+            :v$="v$.name"
+            placeholder="Name"
+            alt="Name"/>
+
+        <AccountInput
+            class="mb-2"
+            :faded-src="emailFaded"
+            :active-src="emailActive"
+            :solid-src="emailSolid"
+            v-model="email"
+            :v$="v$.email"
+            placeholder="Email"
+            alt="Email"/>
         <PasswordInput class="mb-2" placeholder="Password" :v$="v$.password" v-model="password"/>
         <p class="text-red-400">{{ error }}</p>
       </div>

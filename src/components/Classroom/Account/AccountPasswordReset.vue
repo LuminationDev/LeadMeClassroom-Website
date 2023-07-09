@@ -2,8 +2,11 @@
 import {ref} from "vue";
 import {email as emailRule, helpers, required} from "@vuelidate/validators";
 import useVuelidate from "@vuelidate/core";
-import EmailInput from "@/components/InputFields/EmailInput.vue";
+import AccountInput from "@/components/InputFields/AccountInput.vue";
 import GenericButton from "@/components/Buttons/GenericButton.vue";
+import emailFaded from '/src/assets/img/login/login-icon-email-fade.svg';
+import emailActive from '/src/assets/img/login/login-icon-email-active.svg';
+import emailSolid from '/src/assets/img/login/login-icon-email-solid.svg';
 import { useClassroomStore } from "@/stores/classroomStore";
 
 defineEmits<{
@@ -62,7 +65,15 @@ function resetChanged() {
     <p class="text-sm text-gray-400 mb-3">Enter the email address associated with your account.</p>
 
     <!--Account email-->
-    <EmailInput v-model="email" :v$="v$.email" placeholder="Email"/>
+    <AccountInput
+        class="mb-2"
+        :faded-src="emailFaded"
+        :active-src="emailActive"
+        :solid-src="emailSolid"
+        v-model="email"
+        :v$="v$.email"
+        placeholder="Email"
+        alt="Email"/>
 
     <p class="w-64 px-1 text-red-800 text-sm mb-3">{{ error }}</p>
     <p class="w-64 px-1 text-green-400 text-sm mb-3">{{ response }}</p>

@@ -26,18 +26,12 @@ function handleInput(event: Event) {
 <template>
   <div>
     <div class="relative">
-      <img
-          class="absolute mt-3.5 left-3 w-5 h-5"
-          :class="{ 'invisible': modelValue.length !== 0 }"
-          src="src/assets/img/login/login-icon-person.svg"
-          alt="email icon">
-
       <input
           v-if="v$"
           class="w-full h-12 rounded-lg border-2 px-3 text-sm"
           :class="v$.$error ? 'border-red-800 focus:border-red-900' : ''"
           :type='type'
-          :placeholder='`       ${placeholder}`'
+          :placeholder='`${placeholder}`'
           :value="modelValue"
           @input="handleInput"
       />
