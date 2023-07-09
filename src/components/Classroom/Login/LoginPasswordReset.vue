@@ -1,5 +1,8 @@
 <script setup lang="ts">
-import EmailInput from "../../InputFields/EmailInput.vue";
+import AccountInput from "../../InputFields/AccountInput.vue";
+import emailFaded from '/src/assets/img/login/login-icon-email-fade.svg';
+import emailActive from '/src/assets/img/login/login-icon-email-active.svg';
+import emailSolid from '/src/assets/img/login/login-icon-email-solid.svg';
 import { ref } from "vue";
 import useVuelidate from "@vuelidate/core";
 import {required, email as emailRule, helpers} from "@vuelidate/validators";
@@ -63,7 +66,15 @@ async function validateAndSubmit() {
       @submit.prevent>
 
       <div class="mb-2">
-        <EmailInput v-model="email" :v$="v$.email" placeholder="Email" />
+        <AccountInput
+            class="mb-2"
+            :faded-src="emailFaded"
+            :active-src="emailActive"
+            :solid-src="emailSolid"
+            v-model="email"
+            :v$="v$.email"
+            placeholder="Email"
+            alt="Email"/>
         <p class="text-red-400">{{ error }}</p>
       </div>
 

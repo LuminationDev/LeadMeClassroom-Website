@@ -1,7 +1,10 @@
 <script setup lang="ts">
+import emailFaded from '/src/assets/img/login/login-icon-email-fade.svg';
+import emailActive from '/src/assets/img/login/login-icon-email-active.svg';
+import emailSolid from '/src/assets/img/login/login-icon-email-solid.svg';
 import PasswordInput from "../../InputFields/PasswordInput.vue";
 import GenericButton from "../../Buttons/GenericButton.vue";
-import EmailInput from "../../InputFields/EmailInput.vue";
+import AccountInput from "../../InputFields/AccountInput.vue";
 import { ref } from "vue";
 import {email as emailRule, helpers, required} from "@vuelidate/validators";
 import useVuelidate from "@vuelidate/core";
@@ -106,7 +109,14 @@ const emit = defineEmits<{
       <!-- todo <div class="mb-3" v-if="popupPinia.justCreatedAccount">Thanks for signing up, please verify your email and login to get started</div>-->
       <slot name="messages"></slot>
       <div class="mb-2">
-        <EmailInput v-model="email" :v$="v$.email" placeholder="Email" />
+        <AccountInput
+            :faded-src="emailFaded"
+            :active-src="emailActive"
+            :solid-src="emailSolid"
+            v-model="email"
+            :v$="v$.email"
+            placeholder="Email"
+            alt="Email"/>
       </div>
 
       <div class="mb-3">

@@ -1,8 +1,5 @@
 <script setup lang="ts">
 import {ref} from "vue";
-import emailFaded from '/src/assets/img/login/login-icon-email-fade.svg';
-import emailActive from '/src/assets/img/login/login-icon-email-active.svg';
-import emailSolid from '/src/assets/img/login/login-icon-email-solid.svg';
 import ImageState from "@/components/Images/ImageState.vue";
 
 const inputFocus = ref(false);
@@ -17,6 +14,22 @@ const props = defineProps({
   },
   v$: {
     type: Object,
+    required: true
+  },
+  fadedSrc: {
+    type: String,
+    required: true
+  },
+  activeSrc: {
+    type: String,
+    required: true
+  },
+  solidSrc: {
+    type: String,
+    required: true
+  },
+  alt: {
+    type: String,
     required: true
   }
 });
@@ -41,10 +54,10 @@ function handleInput(inputEvent: Event) {
             :faded="modelValue.length === 0 && !inputFocus"
             :active="inputFocus"
             :solid="modelValue.length > 0 && !inputFocus"
-            :faded-src="emailFaded"
-            :active-src="emailActive"
-            :solid-src="emailSolid"
-            :alt="'email icon'"/>
+            :faded-src="fadedSrc"
+            :active-src="activeSrc"
+            :solid-src="solidSrc"
+            :alt="alt"/>
 
         <input
             v-if="v$"
