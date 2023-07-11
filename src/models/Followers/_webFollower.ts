@@ -1,14 +1,12 @@
-import type { Follower, Tab } from "../index";
+import type { Tab } from "../index";
 import { v4 as uuidv4 } from 'uuid';
+import Follower from "@/models/Followers/_follower";
 
 /**
  * A class to describe the outline of a follower that is being attached
  * to the firebase leader.
  */
-class WebFollower implements Follower {
-    classCode: string;
-    name: string;
-    uniqueId: string;
+class WebFollower extends Follower {
     tabs: Tab[];
     webRTC: any;
     UUID: any;
@@ -22,9 +20,7 @@ class WebFollower implements Follower {
     disconnected: boolean = false;
 
     constructor(classCode = "", name = "", uniqueId = uuidv4()) {
-        this.classCode = classCode;
-        this.uniqueId = uniqueId;
-        this.name = name;
+        super(classCode, name, uniqueId, 'web')
         this.tabs = [];
         this.permission = null;
     }
@@ -51,12 +47,28 @@ class WebFollower implements Follower {
         }
     }
 
-    getClassCode = () => {
-        return this.classCode;
+    get activeTaskIconUrl(): string|null {
+        if(!this.tabs) {
+            return null
+        }
+
+        if(this.tabs.length === 0) {
+            return null
+        }
+
+        return this.tabs[0].getFavicon()
     }
 
-    getUniqueId = () => {
-        return this.uniqueId;
+    get activeTaskName(): string|null  {
+        if(!this.tabs) {
+            return 'No tabs open...'
+        }
+
+        if(this.tabs.length === 0) {
+            return 'No tabs open...'
+        }
+
+        return this.tabs[0].name
     }
 }
 
