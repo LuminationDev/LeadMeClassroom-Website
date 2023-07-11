@@ -54,7 +54,7 @@ const displayOption = computed(() => {
       {{displayOption}}
     </button>
 
-    <ul v-if="isOpen && options.length > 0" class="w-52 max-h-96 overflow-y-auto absolute z-10 mt-2 py-2 bg-white border border-gray-300 rounded-md shadow-sm">
+    <ul v-if="isOpen && options.length > 0" class="w-52 max-h-72 overflow-y-auto absolute z-10 mt-2 py-2 bg-white border border-gray-300 rounded-md shadow-sm">
       <li
           @click="selectOption('')"
           class="px-4 py-2 cursor-pointer hover:bg-gray-100">

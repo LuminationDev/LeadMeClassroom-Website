@@ -67,6 +67,7 @@ function handleFollowerSelection(UUID: string, value: boolean) {
   }
 }
 
+//TODO ADD THE ACTION FUNCTIONS TO THE ShareCustomURL component after new student cards are complete.
 async function submit() {
   if(!await validate()) {
     return;
@@ -86,6 +87,7 @@ async function submit() {
   closeModal();
 }
 
+//TODO ADD THE ACTION FUNCTIONS TO THE ShareCustomURL component after new student cards are complete.
 async function submitNewTask() {
   if(!await validate()) {
     return;
