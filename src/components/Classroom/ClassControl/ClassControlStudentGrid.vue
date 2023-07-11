@@ -3,9 +3,10 @@ import WebPlaceholder from "./GridItem/StudentPlaceholder.vue";
 import WebGridItem from "./GridItem/Web/WebGridItem.vue";
 import MobileGridItem from "./GridItem/Mobile/MobileGridItem.vue";
 import type { WebFollower, MobileFollower } from "../../../models";
-import { computed } from "vue";
+import {computed, ref, Ref} from "vue";
 import { useClassroomStore } from "@/stores/classroomStore";
 import {storeToRefs} from "pinia";
+import ClassControlStudentGridItem from "@/components/Classroom/ClassControl/ClassControlStudentGridItem.vue";
 const classroomPinia = useClassroomStore();
 const { webFollowers, mobileFollowers } = storeToRefs(classroomPinia)
 
@@ -37,6 +38,20 @@ const activeMobileFollowers = computed((): number => {
 
   return active.length;
 });
+
+const followersSelected: Ref<string[]> = ref([]);
+function handleFollowerSelection(UUID: string, value: boolean) {
+  let index = followersSelected.value.findIndex(element => element === UUID)
+  if (value) {
+    if (index === -1) {
+      followersSelected.value.splice(0, 0, UUID)
+    }
+  } else {
+    if (index !== -1) {
+      followersSelected.value.splice(index, 1)
+    }
+  }
+}
 </script>
 
 <template>
@@ -69,6 +84,14 @@ const activeMobileFollowers = computed((): number => {
             v-for="follower in sortedWebFollowers"
             :key="follower.getUniqueId()"
             :webFollower="follower"/>
+
+        <ClassControlStudentGridItem
+            class="mr-4 mt-4"
+            v-for="follower in sortedWebFollowers"
+            :key="follower.getUniqueId()"
+            :selected="followersSelected.includes(follower.getUniqueId())"
+            @selection-toggled="(value) => { handleFollowerSelection(follower.getUniqueId(), value) }"
+            :follower="follower"/>
       </div>
     </div>
 

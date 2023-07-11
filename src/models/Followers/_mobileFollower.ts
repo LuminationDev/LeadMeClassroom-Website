@@ -1,40 +1,36 @@
-import type { Follower, Task } from "../index";
+import type { Task } from "../index";
 import { Application, Video } from "../index";
 import { v4 as uuidv4 } from 'uuid';
 import * as REQUESTS from "../../constants/_requests";
-import { ref } from "vue";
-import type {Ref, UnwrapRef} from "vue";
+import Follower from "@/models/Followers/_follower";
+import {useClassroomStore} from "@/stores/classroomStore";
 
 /**
  * A class to describe the outline of a follower that is being attached
  * to the firebase leader.
  */
-class MobileFollower implements Follower {
-    classCode: string;
-    name: string;
-    uniqueId: string;
+class MobileFollower extends Follower {
     action: string = "none";
     source: string = "none";
     currentApplication: string = REQUESTS.MOBILE_PACKAGE;
     applications: Application[];
     videos: Video[];
     webRTC: any;
-    UUID: any;
     tasks: Task[];
     permission: string|null|undefined;
     muted: boolean|null|undefined;
     audible: boolean|null|undefined;
     disconnected: boolean = false;
     offTask: boolean|null|undefined;
+    classroomPinia: any;
 
     constructor(classCode = "", name = "", apps: any, videos: any, uniqueId = uuidv4()) {
-        this.classCode = classCode;
-        this.uniqueId = uniqueId;
-        this.name = name;
+        super(classCode, name, uniqueId, 'mobile');
         this.applications = this.followerApplicationsAdded(apps);
         this.videos = this.followerVideosAdded(videos);
         this.permission = null;
         this.tasks = [];
+        this.classroomPinia = useClassroomStore() // todo - I don't want this in here
     }
 
     followerApplicationsAdded(response: any) {
@@ -67,16 +63,17 @@ class MobileFollower implements Follower {
         return videos;
     }
 
-    getClassCode = () => {
-        return this.classCode;
-    }
-
-    getUniqueId = () => {
-        return this.uniqueId;
-    }
-
     clearTasks = () => {
         this.tasks = [];
+    }
+
+    get activeTaskIconUrl(): string|null {
+        return this.classroomPinia.firebase.getAppIcon(this.currentApplication)
+    }
+
+    get activeTaskName(): string|null {
+        const app = this.applications.find(res => res.id === this.currentApplication);
+        return app ? app.getName() : 'No active app...'
     }
 }
 
