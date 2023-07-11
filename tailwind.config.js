@@ -38,11 +38,13 @@ export default {
                 'modal-width': '80vw',
                 'modal-width-sm': '65vw',
                 'modal-width-xsm': '55vw',
-                'modal-width-xxsm': '40vw'
+                'modal-width-xxsm': '40vw',
+                'modal-width-set-xxsm': '38rem'
             },
             height: {
                 'student-options-small': '3.125rem',
                 'monitor-modal': '29rem',
+                'curated-content-insert': '40rem',
             }
         },
     },

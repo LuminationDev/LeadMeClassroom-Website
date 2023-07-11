@@ -364,3 +364,18 @@ gray-scrollbar::-webkit-scrollbar-thumb {
 .fade-leave-to {
     opacity: 0;
 }
+
+.fading-enter-active,
+.fading-leave-active {
+    transition: opacity 0.5s ease;
+}
+
+.fading-enter-to,
+.fading-leave-from {
+    opacity: 100%;
+}
+
+.fading-enter-from,
+.fading-leave-to {
+    opacity: 0;
+}
