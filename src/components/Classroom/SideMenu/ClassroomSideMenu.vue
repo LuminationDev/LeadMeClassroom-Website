@@ -47,9 +47,9 @@ async function generateSession() {
     <img class="w-8 h-8" src="/src/assets/icons/hamburger.svg" alt="Menu button"/>
   </div>
   <Transition name="fade">
-    <div v-if="showSidebar" class="lg:hidden absolute w-screen h-screen opacity-80 bg-gray-200 z-40" @click="() => { hidden = !hidden }"></div>
+    <div v-if="showSidebar" class="lg:hidden absolute w-screen h-screen opacity-80 bg-gray-200 z-20" @click="() => { hidden = !hidden }"></div>
   </Transition>
-  <div class="lg:block w-56 self-start h-screen lg:sticky fixed top-0 left-0 bg-navy-side-menu ease-in-out duration-300 z-40"
+  <div class="lg:block w-56 self-start h-screen lg:sticky fixed top-0 left-0 bg-navy-side-menu ease-in-out duration-300 z-20"
     :class="{ '-translate-x-full': !showSidebar, 'translate-x-0': showSidebar }">
     <div class="lg:hidden absolute right-2 top-6" @click="() => { hidden = !hidden }">
       <img class="w-8 h-8" src="/src/assets/icons/chevron_left.svg" alt="Menu button"/>

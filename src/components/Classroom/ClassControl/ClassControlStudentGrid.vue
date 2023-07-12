@@ -3,11 +3,14 @@ import WebPlaceholder from "./GridItem/StudentPlaceholder.vue";
 import WebGridItem from "./GridItem/Web/WebGridItem.vue";
 import MobileGridItem from "./GridItem/Mobile/MobileGridItem.vue";
 import type { WebFollower, MobileFollower } from "../../../models";
-import {computed, ref, Ref} from "vue";
-import { useClassroomStore } from "@/stores/classroomStore";
-import {storeToRefs} from "pinia";
+import { computed } from "vue";
+import { storeToRefs } from "pinia";
 import ClassControlStudentGridItem from "@/components/Classroom/ClassControl/ClassControlStudentGridItem.vue";
+import { useClassroomStore } from "@/stores/classroomStore";
+import { useActionStore } from "@/stores/actionStore";
+
 const classroomPinia = useClassroomStore();
+const actionPinia = useActionStore();
 const { webFollowers, mobileFollowers } = storeToRefs(classroomPinia)
 
 const sortedWebFollowers = computed((): Array<WebFollower> => {
@@ -38,20 +41,6 @@ const activeMobileFollowers = computed((): number => {
 
   return active.length;
 });
-
-const followersSelected: Ref<string[]> = ref([]);
-function handleFollowerSelection(UUID: string, value: boolean) {
-  let index = followersSelected.value.findIndex(element => element === UUID)
-  if (value) {
-    if (index === -1) {
-      followersSelected.value.splice(0, 0, UUID)
-    }
-  } else {
-    if (index !== -1) {
-      followersSelected.value.splice(index, 1)
-    }
-  }
-}
 </script>
 
 <template>
@@ -89,8 +78,8 @@ function handleFollowerSelection(UUID: string, value: boolean) {
             class="mr-4 mt-4"
             v-for="follower in sortedWebFollowers"
             :key="follower.getUniqueId()"
-            :selected="followersSelected.includes(follower.getUniqueId())"
-            @selection-toggled="(value) => { handleFollowerSelection(follower.getUniqueId(), value) }"
+            :selected="actionPinia.selectedFollowers.includes(follower)"
+            @selection-toggled="(value) => { actionPinia.handleFollowerSelection(follower, value) }"
             :follower="follower"/>
       </div>
     </div>
@@ -111,6 +100,14 @@ function handleFollowerSelection(UUID: string, value: boolean) {
             v-for="follower in sortedMobileFollowers"
             :key="follower.getUniqueId()"
             :mobileFollower="follower"/>
+
+        <ClassControlStudentGridItem
+            class="mr-4 mt-4"
+            v-for="follower in sortedMobileFollowers"
+            :key="follower.getUniqueId()"
+            :selected="actionPinia.selectedFollowers.includes(follower)"
+            @selection-toggled="(value) => { actionPinia.handleFollowerSelection(follower, value) }"
+            :follower="follower"/>
       </div>
     </div>
   </div>

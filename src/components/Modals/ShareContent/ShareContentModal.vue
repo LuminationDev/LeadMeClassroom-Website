@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import { useClassroomStore } from "@/stores/classroomStore";
+import { useActionStore } from "@/stores/actionStore";
 import Modal from "../Modal.vue";
 import shareContentIconUrl from '/src/assets/img/sideMenu/menu-icon-sharecontent.svg';
 import ShareVideoInsert from "@/components/Modals/ShareContent/ShareVideoInsert.vue";
@@ -13,9 +14,9 @@ import ShareCustomURL from "@/components/Modals/ShareContent/ShareCustomURL.vue"
 import SearchFilter from "@/components/Modals/ShareContent/SearchFilter.vue";
 
 const classroomPinia = useClassroomStore();
+const actionPinia = useActionStore();
 const panelName = 'shareContent';
 const viewDescription = ref('');
-const showModal = ref(false);
 const sharePanel = ref('menu');
 const searchQuery = ref("");
 const showFilter = ref(false);
@@ -27,7 +28,7 @@ const classCode = computed(() => {
 function openModal() {
   if(classCode.value) {
     classroomPinia.view = panelName
-    showModal.value = true
+    actionPinia.showModal = true
   }
 }
 
@@ -65,10 +66,13 @@ function back() {
  * back to the correct position.
  */
 function closeModal() {
-  showModal.value = false
-  sharePanel.value = 'menu';
+  actionPinia.showModal = false
   viewDescription.value = '';
   classroomPinia.view = 'classroom';
+
+  if(sharePanel.value === 'viewItem') {
+    sharePanel.value = 'curated';
+  }
 }
 </script>
 
@@ -100,7 +104,7 @@ function closeModal() {
 
   <!--Modal body using the Modal template, teleports the html to the bottom of the body tag-->
   <Teleport to="body">
-    <Modal :show="showModal" @close="closeModal">
+    <Modal class="z-40" :show="actionPinia.showModal" @close="closeModal">
       <template v-slot:header>
         <header :class="{
           'h-16 bg-gray-300 flex justify-between items-center rounded-t-lg': true,
@@ -135,7 +139,7 @@ function closeModal() {
       <template v-slot:content>
         <div v-if="sharePanel === 'menu'" class="w-modal-width-sm bg-gray-300 pb-3 px-3">
           <!--Show the url input screen-->
-          <ShareCustomURL />
+          <ShareCustomURL @close="closeModal" />
 
           <div class="flex mt-2 h-96">
             <!--Show the curated content screen-->
@@ -187,6 +191,7 @@ function closeModal() {
         </div>
 
         <ShareCuratedContentInsert v-else-if="sharePanel === 'curated' || sharePanel === 'viewItem'"
+          @close="closeModal"
           @back="sharePanel = 'menu'"
           @viewItem="updateViewItem"
           @closeFilter="showFilter = false"

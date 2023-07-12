@@ -24,7 +24,7 @@ const { getLocalStorage, setLocalStorage, removeLocalStorage } = useStorage();
  * When the classroom is first loaded or if the page is refreshed check to see if there was
  * an active class set the necessary details.
  */
-export const useClassroomStore = defineStore("dashboard", {
+export const useClassroomStore = defineStore("classroom", {
     state: () => {
         return {
             view: "classroom",

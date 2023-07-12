@@ -1,14 +1,11 @@
 <script setup lang="ts">
-import {computed, defineProps, ref} from 'vue'
+import { computed, defineProps } from 'vue'
 import type {PropType} from 'vue'
 import WebFollowerIcon from "@/assets/WebFollowerIcon.vue";
 import MobileFollowerIcon from "@/assets/MobileFollowerIcon.vue";
-import {Follower} from "@/models";
+import { Follower } from "@/models";
 import EllipsisIcon from "@/assets/EllipsisIcon.vue";
 import CheckboxInput from "@/components/InputFields/CheckboxInput.vue";
-import {useClassroomStore} from "@/stores/classroomStore";
-
-const classroomPinia = useClassroomStore();
 
 const emit = defineEmits<{
   (e: 'selectionToggled', value: boolean): void

@@ -1,4 +1,3 @@
-import type { Task } from "../index";
 import { Application, Video } from "../index";
 import { v4 as uuidv4 } from 'uuid';
 import * as REQUESTS from "../../constants/_requests";
@@ -16,7 +15,6 @@ class MobileFollower extends Follower {
     applications: Application[];
     videos: Video[];
     webRTC: any;
-    tasks: Task[];
     permission: string|null|undefined;
     muted: boolean|null|undefined;
     audible: boolean|null|undefined;
@@ -29,7 +27,7 @@ class MobileFollower extends Follower {
         this.applications = this.followerApplicationsAdded(apps);
         this.videos = this.followerVideosAdded(videos);
         this.permission = null;
-        this.tasks = [];
+        this.type = REQUESTS.MOBILE;
         this.classroomPinia = useClassroomStore() // todo - I don't want this in here
     }
 
@@ -61,10 +59,6 @@ class MobileFollower extends Follower {
         })
 
         return videos;
-    }
-
-    clearTasks = () => {
-        this.tasks = [];
     }
 
     get activeTaskIconUrl(): string|null {

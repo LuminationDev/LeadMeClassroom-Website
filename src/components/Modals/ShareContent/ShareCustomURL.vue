@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, nextTick } from "vue";
 import { helpers, required } from "@vuelidate/validators";
+import { useActionStore } from "@/stores/actionStore";
 import useVuelidate from "@vuelidate/core";
 import devicesIconUrl from '/src/assets/img/share-content-devices.svg';
 import fadedLinkIconUrl from '/src/assets/img/share-content-link-faded.svg';
@@ -9,6 +10,11 @@ import solidLinkIconUrl from '/src/assets/img/share-content-link-solid.svg';
 import selectIconUrl from '/src/assets/img/selection-icon-individual.svg';
 import allIconUrl from '/src/assets/img/selection-icon-all.svg';
 
+const emit = defineEmits<{
+  (e: 'close'): void
+}>()
+
+const actionPinia = useActionStore();
 const websiteLink = ref("");
 const inputFocus = ref(false);
 const urlInput = ref<HTMLInputElement | null>(null)
@@ -32,21 +38,33 @@ const showURLInput = () => {
   });
 }
 
-const selectIndividuals = () => {
-  console.log("Do something");
+const selectIndividuals = async () => {
+  if(!await validate()) {
+    return;
+  }
+
+  actionPinia.websiteURL = websiteLink.value;
+
+  //Close the modal
+  emit('close');
+
+  //Set up the action bar
+  actionPinia.selecting = true;
+  actionPinia.shareType = 'website';
 }
 
 const selectAll = () => {
-  console.log("Do something else");
+  console.log("Send straight to all.");
 }
 </script>
 
 <template>
   <!--URL 'button' that switches to the input-->
-  <div v-if="!inputFocus && websiteLink.length === 0" class="flex justify-between items-center
-              text-gray-400 text-lg
-              bg-white rounded-2xl p-1 h-16 cursor-pointer"
-       v-on:click="showURLInput">
+  <div v-if="!inputFocus && websiteLink.length === 0"
+    class="flex justify-between items-center
+      text-gray-400 text-lg
+      bg-white rounded-2xl p-1 h-16 cursor-pointer"
+    v-on:click="showURLInput">
 
     <!--Placeholder to keep the url text centered-->
     <div class="w-5 h-5 ml-5"></div>
@@ -61,18 +79,18 @@ const selectAll = () => {
 
   <!--URL input area with selection buttons-->
   <div v-else class="flex justify-between items-center
-       text-lg bg-white rounded-2xl p-1 h-16">
+     text-lg bg-white rounded-2xl p-1 h-16">
 
     <img class="w-5 h-5 ml-8" :src="inputFocus ? activeLinkIconUrl : solidLinkIconUrl" alt="Icon"/>
 
     <input
-        ref="urlInput"
-        class="h-11 ml-2 mr-6 flex-grow border-0 outline-0 bg-white text-base text-black rounded-lg"
-        type="text"
-        placeholder="Paste a URL..."
-        v-model="v$.websiteLink.$model"
-        @focusin="inputFocus = true"
-        @focusout="inputFocus = false"
+      ref="urlInput"
+      class="h-11 ml-2 mr-6 flex-grow border-0 outline-0 bg-white text-base text-black rounded-lg"
+      type="text"
+      placeholder="Paste a URL..."
+      v-model="v$.websiteLink.$model"
+      @focusin="inputFocus = true"
+      @focusout="inputFocus = false"
     />
 
     <div class="flex flex-row mr-8">

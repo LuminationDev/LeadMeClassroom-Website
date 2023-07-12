@@ -19,7 +19,7 @@ defineProps({
   >
     <div v-if="show" @mousedown="$emit('close')"
          class="fixed inset-0 bg-modal-site-background
-          grid place-items-center font-poppins z-30
+          grid place-items-center font-poppins z-10
           left-30 lg:pl-56">
       <div @mousedown.stop class="bg-panel-background overflow-hidden" :class="rounded ? 'rounded-lg' : ''">
         <slot name="header"></slot>
