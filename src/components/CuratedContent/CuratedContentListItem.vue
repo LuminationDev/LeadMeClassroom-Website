@@ -2,8 +2,9 @@
 import type { CuratedContentItem } from "@/models";
 import type { PropType } from "vue";
 import { computed } from "vue";
+import CheckboxInput from "@/components/InputFields/CheckboxInput.vue";
 
-defineEmits<{
+const emit = defineEmits<{
   (e: 'select'): void
   (e: 'viewDescription', value: string): void
 }>()
@@ -18,6 +19,10 @@ const props = defineProps({
     required: true
   }
 })
+
+const selectionToggled = () => {
+  emit('select');
+}
 
 /**
  * Make sure the Years are evenly spaces I.e. (5, 6, 7) not (5,6,7)
@@ -45,7 +50,7 @@ const yearSpace = computed(() => {
         >{{ contentItem.getTitle() }}</span>
 
         <!--Select Checkbox-->
-        <input type="checkbox" class="h-5 w-5 cursor-pointer form-checkbox" @change="$emit('select')" :checked="selected">
+        <CheckboxInput :checked="selected" @on-change="selectionToggled" />
       </div>
 
       <div class="flex flex-row">

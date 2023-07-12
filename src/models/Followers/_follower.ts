@@ -1,14 +1,18 @@
+import type { Task } from "@/models";
+
 export default abstract class Follower {
     classCode: string;
     name: string;
     uniqueId: string;
     type: string;
+    tasks: Task[];
 
     protected constructor(classCode: string, name: string, uniqueId: string, type: string) {
         this.classCode = classCode;
         this.name = name;
         this.uniqueId = uniqueId;
         this.type = type;
+        this.tasks = [];
     }
 
     abstract get activeTaskIconUrl(): string | null
@@ -21,5 +25,9 @@ export default abstract class Follower {
 
     getUniqueId = () => {
         return this.uniqueId;
+    }
+
+    clearTasks = () => {
+        this.tasks = [];
     }
 }

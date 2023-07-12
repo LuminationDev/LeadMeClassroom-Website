@@ -198,7 +198,7 @@ function clearFields() {
     </Transition>
 
     <Transition name="fade" mode="out-in">
-      <ActionBarBase v-if="changed" class="absolute bottom-56">
+      <ActionBarBase v-if="changed" class="absolute w-full bottom-56">
         <template v-slot:right>
           <div class="flex flex-row text-sm text-white items-center">
             <div class="mr-2">

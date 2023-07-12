@@ -1,6 +1,7 @@
 import type { Tab } from "../index";
 import { v4 as uuidv4 } from 'uuid';
 import Follower from "@/models/Followers/_follower";
+import * as REQUESTS from "@/constants/_requests";
 
 /**
  * A class to describe the outline of a follower that is being attached
@@ -23,6 +24,7 @@ class WebFollower extends Follower {
         super(classCode, name, uniqueId, 'web')
         this.tabs = [];
         this.permission = null;
+        this.type = REQUESTS.WEBSITE;
     }
 
     updateIndividualTab(id: string, newTab: Tab)

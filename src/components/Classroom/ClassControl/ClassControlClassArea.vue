@@ -27,10 +27,10 @@ const logout = () => {
       <!--Settings drop down-->
       <div class="flex flex-col">
         <Teleport to="body">
-          <img v-on:click="open = !open" class="w-9 cursor-pointer absolute right-5 lg:right-10 top-24 z-50" :src="settingsIconUrl" alt="Icon"/>
+          <img v-on:click="open = !open" class="w-9 cursor-pointer absolute right-5 lg:right-10 top-24 z-30" :src="settingsIconUrl" alt="Icon"/>
 
           <Transition name="fade" mode="out-in">
-            <div v-if="open" v-on:click="open = false" class="bg-transparent absolute h-screen w-screen top-0 left-0 z-40">
+            <div v-if="open" v-on:click="open = false" class="bg-transparent absolute h-screen w-screen top-0 left-0 z-20">
               <div class="w-44 h-28 flex flex-col absolute right-4 lg:right-9 top-36 bg-gray-200 rounded-lg">
                 <!--Gray tip-->
                 <div class="ml-36 pl-1 h-0 w-0 border-x-8 border-x-transparent border-b-[16px] border-b-gray-200 -mt-3.5"></div>
