@@ -2,6 +2,9 @@
 //as a callback between functions or classes. Typescript wraps the basic 'Function' in an eval() which is strictly
 //prohibiting within Chrome web extensions, using the types below overrides this issue.
 
+//Sending content callback
+export type UpdateFollowerTasksCallback = (uniqueId: string, tasks: string[], followerType: string) => void;
+
 //Assistant page callback
 export type assistantCallbackFunction = (data: any) => void;
 

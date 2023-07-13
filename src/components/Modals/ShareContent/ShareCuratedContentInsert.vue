@@ -1,18 +1,14 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
-import { CuratedContentItem, Task } from "@/models";
+import { CuratedContentItem } from "@/models";
 import { useClassroomStore } from "@/stores/classroomStore";
 import { useActionStore } from "@/stores/actionStore";
 import ContentFilter from "@/components/CuratedContent/ContentFilter.vue";
 import CuratedContentListItem from "@/components/CuratedContent/CuratedContentListItem.vue";
-import ActionBarBase from "@/components/ActionBar/ActionBarBase.vue";
-import selectIconUrl from '/src/assets/img/selection-icon-individual.svg';
-import allIconUrl from '/src/assets/img/selection-icon-all.svg';
 import CuratedContentDescription from "@/components/CuratedContent/CuratedContentDescription.vue";
+import ActionBarSelect from "@/components/ActionBar/ActionBarSelect.vue";
 
 const emit = defineEmits<{
-  (e: 'close'): void
-  (e: 'back'): void
   (e: 'viewItem', value: string): void
   (e: 'closeFilter'): void
 }>()
@@ -37,7 +33,6 @@ const actionPinia = useActionStore();
 const yearQuery = ref('R-12');
 const subjectQuery = ref("");
 const topicQuery = ref("");
-const error = ref();
 
 /**
  * Sort and filter the results as per the search, subject or topic queries.
@@ -111,25 +106,6 @@ const selectedItemDescription = computed((): CuratedContentItem | undefined => {
   return sortedCuratedContent.value.find(item => item.getTitle() === props.viewDescription!);
 });
 
-//Track the currently selected application
-const addOrRemoveItem = (contentItem: CuratedContentItem) => {
-  resetErrorMessage();
-
-  // Convert back to CuratedContentItem using type assertion
-  const curatedContentItem: CuratedContentItem = contentItem as CuratedContentItem;
-  const index = actionPinia.selectedItems.findIndex(app => app.getPackageName() === curatedContentItem.getLink());
-  if (index > -1) {
-    actionPinia.selectedItems.splice(index, 1);
-  } else {
-    const task = new Task(curatedContentItem.getTitle(), curatedContentItem.getLink(), curatedContentItem.getType());
-    actionPinia.selectedItems.push(task);
-  }
-}
-
-const resetErrorMessage = () => {
-  error.value = undefined;
-}
-
 const updateYear = (data: string) => {
   yearQuery.value = data;
 }
@@ -144,19 +120,6 @@ const updateTopic = (data: string) => {
 
 const viewItem = (data: string) => {
   emit('viewItem', data);
-}
-
-const selectIndividuals = () => {
-  //Close the modal
-  emit('close');
-
-  //Set up the action bar
-  actionPinia.selecting = true;
-  actionPinia.shareType = 'curated';
-}
-
-const selectAll = () => {
-  console.log("Send straight to all.");
 }
 </script>
 
@@ -193,45 +156,13 @@ const selectAll = () => {
             :key="index"
             :content-item="content"
             :selected="actionPinia.selectedItems.findIndex(item => item.getPackageName() === content.getLink()) !== -1"
-            @select="addOrRemoveItem(content)"
+            @select="actionPinia.addOrRemoveCuratedContentItem(content)"
             @viewDescription="viewItem"/>
       </div>
 
       <!--Action bar for selecting followers-->
-      <div class="mx-5 my-3">
-        <ActionBarBase class="h-12">
-          <template v-slot:right>
-            <div class="flex flex-row mr-8 items-center">
-              <div v-if="actionPinia.selectedItems.length === 0" class="text-white mr-2">
-                No videos selected
-              </div>
-
-              <div v-else class="text-white mr-2">
-                Share {{actionPinia.selectedItems.length}} Video<span v-if="actionPinia.selectedItems.length > 1">s</span> with
-              </div>
-
-              <div :class="{
-                'h-9 flex items-center pl-3 pr-4 rounded-3xl text-base text-white': true,
-                'cursor-pointer bg-blue-400 hover:bg-blue-300': actionPinia.selectedItems.length > 0,
-                'bg-blue-400 opacity-50': actionPinia.selectedItems.length === 0 }"
-                   v-on:click="selectIndividuals"
-              >
-                <img class="w-5 h-5 mr-2" :src="selectIconUrl" alt="Icon"/>
-                Select
-              </div>
-
-              <div :class="{
-                'h-9 flex items-center ml-2 pl-3 pr-4 rounded-3xl text-base text-white': true,
-                'cursor-pointer bg-blue-400 hover:bg-blue-300': actionPinia.selectedItems.length > 0,
-                'bg-blue-400 opacity-50': actionPinia.selectedItems.length === 0 }"
-                   v-on:click="selectAll"
-              >
-                <img class="w-5 h-5 mr-2" :src="allIconUrl" alt="Icon"/>
-                All
-              </div>
-            </div>
-          </template>
-        </ActionBarBase>
+      <div class="px-5 py-3">
+        <ActionBarSelect share-type="curated" />
       </div>
     </div>
   </div>
