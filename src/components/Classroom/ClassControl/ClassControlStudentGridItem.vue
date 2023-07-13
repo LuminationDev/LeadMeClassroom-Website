@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { computed, defineProps } from 'vue'
 import type {PropType} from 'vue'
-import WebFollowerIcon from "@/assets/WebFollowerIcon.vue";
-import MobileFollowerIcon from "@/assets/MobileFollowerIcon.vue";
+import WebFollowerIcon from "@/assets/vue/WebFollowerIcon.vue";
+import MobileFollowerIcon from "@/assets/vue/MobileFollowerIcon.vue";
 import { Follower } from "@/models";
-import EllipsisIcon from "@/assets/EllipsisIcon.vue";
+import EllipsisIcon from "@/assets/vue/EllipsisIcon.vue";
 import CheckboxInput from "@/components/InputFields/CheckboxInput.vue";
 
 const emit = defineEmits<{

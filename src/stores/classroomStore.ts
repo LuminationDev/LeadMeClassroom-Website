@@ -6,7 +6,7 @@ import { Leader, MobileFollower, Tab, WebFollower } from '../models';
 import { useWebRTCStore } from "./webRTCStore";
 import type { User } from "@firebase/auth";
 import { getAuth, sendPasswordResetEmail } from "@firebase/auth";
-import type { Application } from "@/models";
+import type { Application, Video } from "@/models";
 import { getCuratedContentData, toDataURL } from "@/controller/_dataRequests";
 import type { CuratedContentItem } from "@/models";
 import { cloneDeep } from "lodash";
@@ -512,13 +512,6 @@ export const useClassroomStore = defineStore("classroom", {
         },
 
         /**
-         * Update or create the task array within local storage.
-         */
-        async updateTasks(task: string, taskType: string) {
-            taskType === "web" ? this.webTasks.push(task) : this.mobileTasks.push(task);
-        },
-
-        /**
          * Clear the current tasks from the local storage
          */
         clearTasks() {
@@ -598,6 +591,17 @@ export const useClassroomStore = defineStore("classroom", {
             );
 
             return Array.from(uniqueApplications);
+        },
+
+        /**
+         * Return an array of all the unique videos stored on mobile followers devices.
+         */
+        collectUniqueVideos(): Video[] | undefined {
+            const uniqueVideos = new Set<Video>(
+                this.mobileFollowers.flatMap(follower => follower.videos)
+            );
+
+            return Array.from(uniqueVideos);
         },
 
         /**

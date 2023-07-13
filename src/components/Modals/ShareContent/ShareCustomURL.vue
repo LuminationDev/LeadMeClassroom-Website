@@ -9,12 +9,16 @@ import activeLinkIconUrl from '/src/assets/img/share-content-link-active.svg';
 import solidLinkIconUrl from '/src/assets/img/share-content-link-solid.svg';
 import selectIconUrl from '/src/assets/img/selection-icon-individual.svg';
 import allIconUrl from '/src/assets/img/selection-icon-all.svg';
+import {UpdateFollowerTasksCallback} from "@/constants/_functionTypes";
+import {useClassroomStore} from "@/stores/classroomStore";
 
 const emit = defineEmits<{
   (e: 'close'): void
 }>()
 
+const classroomPinia = useClassroomStore();
 const actionPinia = useActionStore();
+
 const websiteLink = ref("");
 const inputFocus = ref(false);
 const urlInput = ref<HTMLInputElement | null>(null)
@@ -54,7 +58,30 @@ const selectIndividuals = async () => {
 }
 
 const selectAll = () => {
-  console.log("Send straight to all.");
+  //Set up the action store
+  actionPinia.shareType = 'website';
+
+  //Select all users
+  classroomPinia.mobileFollowers.forEach(follower => {
+    actionPinia.handleFollowerSelection(follower, true);
+  });
+
+  classroomPinia.webFollowers.forEach(follower => {
+    actionPinia.handleFollowerSelection(follower, true);
+  });
+
+  //Change the side menu highlight
+  classroomPinia.view = "classroom";
+
+  //Close the modal
+  actionPinia.showModal = false;
+
+  //Send to all users
+  const updateFollowerTasksCallback: UpdateFollowerTasksCallback = (uniqueId, tasks, followerType) => {
+    classroomPinia.updateFollowerTasks(uniqueId, tasks, followerType);
+  };
+
+  actionPinia.shareContent(updateFollowerTasksCallback);
 }
 </script>
 
@@ -62,7 +89,7 @@ const selectAll = () => {
   <!--URL 'button' that switches to the input-->
   <div v-if="!inputFocus && websiteLink.length === 0"
     class="flex justify-between items-center
-      text-gray-400 text-lg
+      text-gray-400 text-lg hover:bg-slate-100
       bg-white rounded-2xl p-1 h-16 cursor-pointer"
     v-on:click="showURLInput">
 
