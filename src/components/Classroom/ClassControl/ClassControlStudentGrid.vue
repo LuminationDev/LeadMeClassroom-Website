@@ -5,7 +5,7 @@ import MobileGridItem from "./GridItem/Mobile/MobileGridItem.vue";
 import type { WebFollower, MobileFollower } from "../../../models";
 import { computed } from "vue";
 import { storeToRefs } from "pinia";
-import ClassControlStudentGridItem from "@/components/Classroom/ClassControl/ClassControlStudentGridItem.vue";
+import ClassControlStudentGridItem from "@/components/Classroom/ClassControl/GridItem/StudentGridItem.vue";
 import { useClassroomStore } from "@/stores/classroomStore";
 import { useActionStore } from "@/stores/actionStore";
 

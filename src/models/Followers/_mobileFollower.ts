@@ -18,16 +18,14 @@ class MobileFollower extends Follower {
     permission: string|null|undefined;
     muted: boolean|null|undefined;
     audible: boolean|null|undefined;
-    disconnected: boolean = false;
     offTask: boolean|null|undefined;
     classroomPinia: any;
 
     constructor(classCode = "", name = "", apps: any, videos: any, uniqueId = uuidv4()) {
-        super(classCode, name, uniqueId, 'mobile');
+        super(classCode, name, uniqueId, REQUESTS.MOBILE);
         this.applications = this.followerApplicationsAdded(apps);
         this.videos = this.followerVideosAdded(videos);
         this.permission = null;
-        this.type = REQUESTS.MOBILE;
         this.classroomPinia = useClassroomStore() // todo - I don't want this in here
     }
 

@@ -138,27 +138,43 @@ export const useClassroomStore = defineStore("classroom", {
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         /**
          * Find a follower based on their unique ID and the type of follower.
-         * @param ID
+         * @param UUID
          * @param followerType
          */
-        findFollowerObject(ID: string, followerType: string): WebFollower | MobileFollower | undefined {
+        findFollowerObject(UUID: string, followerType: string): WebFollower | MobileFollower | undefined {
             if (followerType === REQUESTS.WEB) {
-                return this.webFollowers.find(element => element.getUniqueId() === ID) as WebFollower;
+                return this.webFollowers.find(element => element.getUniqueId() === UUID) as WebFollower;
             } else {
                 // @ts-ignore
-                return this.mobileFollowers.find(element => element.getUniqueId() === ID) as MobileFollower;
+                return this.mobileFollowers.find(element => element.getUniqueId() === UUID) as MobileFollower;
             }
         },
 
         /**
          * Find a follower's index within the associated array.
-         * @param ID
+         * @param UUID
          * @param followerType
          */
-        findFollowerIndex(ID: string, followerType: string): number {
+        findFollowerIndex(UUID: string, followerType: string): number {
             return followerType === REQUESTS.WEB
-                ? this.webFollowers.findIndex(element => element.getUniqueId() === ID)
-                : this.mobileFollowers.findIndex(element => element.getUniqueId() === ID);
+                ? this.webFollowers.findIndex(element => element.getUniqueId() === UUID)
+                : this.mobileFollowers.findIndex(element => element.getUniqueId() === UUID);
+        },
+
+        /**
+         * Update a variable within a follower's data model with the supplied
+         * data.
+         * @param UUID
+         * @param type
+         * @param key
+         * @param value
+         */
+        updateFollowerData(UUID: string, type: string, key: string, value: any) {
+            const followerToUpdate = this.findFollowerObject(UUID, type);
+            if (followerToUpdate) {
+                // @ts-ignore
+                followerToUpdate[key as keyof typeof followerToUpdate] = value;
+            }
         },
 
         /**

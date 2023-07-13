@@ -18,13 +18,11 @@ class WebFollower extends Follower {
     muted: boolean|null|undefined;
     muteAll: boolean|null|undefined;
     offTask: boolean|null|undefined;
-    disconnected: boolean = false;
 
     constructor(classCode = "", name = "", uniqueId = uuidv4()) {
-        super(classCode, name, uniqueId, 'web')
+        super(classCode, name, uniqueId, REQUESTS.WEB)
         this.tabs = [];
         this.permission = null;
-        this.type = REQUESTS.WEBSITE;
     }
 
     updateIndividualTab(id: string, newTab: Tab)

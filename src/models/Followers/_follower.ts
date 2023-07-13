@@ -6,6 +6,8 @@ export default abstract class Follower {
     uniqueId: string;
     type: string;
     tasks: Task[];
+    locked: boolean;
+    disconnected: boolean = false;
 
     protected constructor(classCode: string, name: string, uniqueId: string, type: string) {
         this.classCode = classCode;
@@ -13,6 +15,7 @@ export default abstract class Follower {
         this.uniqueId = uniqueId;
         this.type = type;
         this.tasks = [];
+        this.locked = false;
     }
 
     abstract get activeTaskIconUrl(): string | null
