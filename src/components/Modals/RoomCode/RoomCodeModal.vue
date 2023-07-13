@@ -20,12 +20,18 @@ const checkPosition = (index: Number): String => {
 
 <template>
   <button
-      class="h-12 w-48 bg-blue-500
+      class="menu-item menu-item--room-code bg-blue-500 flex
         text-sm text-white font-poppins font-semibold
         rounded-md hover:bg-blue-300"
 
       v-on:click="showModal = true"
-  >Room Code: {{ classCode }}</button>
+  >
+    <span class="menu-item-text">Room Code: {{ classCode }}</span>
+    <img :class="{
+        'w-5 h-5 menu-item-icon menu-item-icon--room-code': true,
+        'contrast-50 brightness-75': !classCode
+      }" src="/src/assets/img/key.svg" alt="Room code icon"/>
+  </button>
 
   <Teleport to="body">
     <Transition

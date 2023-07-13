@@ -31,7 +31,7 @@ async function screenControl() {
   <!--Screen lock/unlock-->
   <button
       :class="{
-        'h-12 w-48 ml-4 pl-3 flex items-center rounded-lg font-light': true,
+        'w-full flex items-center rounded-lg font-light': true,
         'cursor-pointer': classCode,
         'cursor-default': !classCode,
         'hover:bg-white-menu-overlay': classCode,
@@ -39,9 +39,9 @@ async function screenControl() {
     :disabled="loading"
     v-on:click="screenControl();"
   >
-    <span v-if="loading" class="flex flex-row place-items-center">
-      <span class="lds-dual-ring-screen h-5 w-5 mr-3"></span>
-      <span :class="{
+    <span v-if="loading" class="flex flex-row menu-item">
+      <span class="lds-dual-ring-screen h-5 w-5 menu-item-icon menu-item-icon--spinner"></span>
+      <span class="menu-item-text" :class="{
         'text-base': true,
         'text-white': classCode,
         'text-gray-400': !classCode
@@ -50,24 +50,24 @@ async function screenControl() {
       </span>
     </span>
 
-    <span v-else class="flex flex-row place-items-center">
+    <div v-else class="flex flex-row justify-center w-full menu-item">
       <img v-if="locked" :class="{
-        'w-5 h-5 mr-3': true,
+        'w-5 h-5 menu-item-icon': true,
         'contrast-50 brightness-75': !classCode
       }" src="/src/assets/img/session-icon-unlock.svg" alt="Icon"/> <!--TODO get an unlock svg/ask matt what he wants here-->
 
       <img v-else :class="{
-        'w-5 h-5 mr-3': true,
+        'w-5 h-5 menu-item-icon': true,
         'contrast-50 brightness-75': !classCode
       }" :src="lockIconUrl" alt="Icon"/>
 
-      <span :class="{
+      <span class="menu-item-text" :class="{
         'text-base': true,
         'text-white': classCode,
         'text-gray-400': !classCode
       }">
         {{locked ? 'Unlock Screens' : 'Lock Screens'}}
       </span>
-    </span>
+    </div>
   </button>
 </template>
