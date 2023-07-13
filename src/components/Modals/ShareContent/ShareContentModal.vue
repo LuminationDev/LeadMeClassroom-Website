@@ -105,7 +105,7 @@ const closeModal = () => {
 <template>
   <!--Anchor button used to control the modal-->
   <button :class="{
-        'h-12 w-48 ml-4 pl-3 flex items-center rounded-lg font-light': true,
+        'flex menu-item rounded-lg font-light': true,
         'cursor-pointer': classCode,
         'cursor-default': !classCode,
         'bg-white-menu-overlay': classroomPinia.view === panelName && classCode,
@@ -115,11 +115,11 @@ const closeModal = () => {
     id="share_button"
   >
     <img :class="{
-        'w-5 h-5 mr-3': true,
+        'w-5 h-5 menu-item-icon': true,
         'contrast-50 brightness-75': !classCode
     }" :src="shareContentIconUrl" alt="Icon"/>
 
-    <span :class="{
+    <span class="menu-item-text" :class="{
       'text-base': true,
       'text-white': classCode,
       'text-gray-400': !classCode

@@ -10,7 +10,7 @@ import RoomCodeModal from "@/components/Modals/RoomCode/RoomCodeModal.vue";
 
 const classroomPinia = useClassroomStore();
 
-const hidden = ref(false)
+const expanded = ref(false)
 const screenSize = ref(window.innerWidth)
 
 onBeforeMount(() => {
@@ -25,8 +25,8 @@ const resizeHandler = (e: UIEvent) => {
   screenSize.value = (e?.currentTarget as Window)?.innerWidth
 }
 
-const showSidebar = computed(() => {
-  return hidden.value || screenSize.value > 1024
+const sidebarShouldBeExpanded = computed(() => {
+  return expanded.value || screenSize.value >= 1024
 })
 
 const classCode = computed(() => {
@@ -43,69 +43,103 @@ async function generateSession() {
 </script>
 
 <template>
-  <div class="lg:hidden absolute top-3 left-2" @click="() => { hidden = !hidden }">
-    <img class="w-8 h-8" src="/src/assets/icons/hamburger.svg" alt="Menu button"/>
-  </div>
   <Transition name="fade">
-    <div v-if="showSidebar" class="lg:hidden absolute w-screen h-screen opacity-80 bg-gray-200 z-20" @click="() => { hidden = !hidden }"></div>
+    <div v-if="sidebarShouldBeExpanded" class="lg:hidden absolute w-screen h-screen opacity-80 bg-gray-200 z-20 cursor-pointer" @click="() => { expanded = !expanded }"></div>
   </Transition>
-  <div class="lg:block w-56 self-start h-screen lg:sticky fixed top-0 left-0 bg-navy-side-menu ease-in-out duration-300 z-20"
-    :class="{ '-translate-x-full': !showSidebar, 'translate-x-0': showSidebar }">
-    <div class="lg:hidden absolute right-2 top-6" @click="() => { hidden = !hidden }">
-      <img class="w-8 h-8" src="/src/assets/icons/chevron_left.svg" alt="Menu button"/>
+  <div class="fixed top-0 left-0 lg:block lg:relative bg-navy-side-menu z-20 h-screen" :class="sidebarShouldBeExpanded ? 'sidebar-expanded' : 'sidebar-closed'">
+    <div class="lg:hidden absolute top-7 -right-4 cursor-pointer" @click="() => { expanded = !expanded }">
+      <img class="w-8 h-8"
+           :src="sidebarShouldBeExpanded ? '/src/assets/img/sidebar-close.svg' : '/src/assets/img/sidebar-open.svg'"
+           alt="Menu button"/>
     </div>
-    <div>
-      <img class="w-28 h-14 ml-6 pt-6 mb-4" src="/src/assets/img/icon-dashboard-logo.svg" alt="LeadMe Icon"/>
-      <hr class="mx-5 border border-gray-menu-separator">
+    <div class="flex justify-center items-center">
+      <img class="my-6"
+          :class="sidebarShouldBeExpanded ? 'w-28 h-10' : 'h-10 w-10'"
+           :src="sidebarShouldBeExpanded ? '/src/assets/img/icon-dashboard-logo.svg' : '/src/assets/img/icon-logo.svg'"
+           alt="LeadMe Icon"/>
     </div>
+    <hr class="mx-5 border border-gray-menu-separator">
 
     <!--Class Code-->
-    <div class="mt-5 flex justify-center">
-      <RoomCodeModal
-          v-if="classCode"
-          :class-code="classroomPinia.classCode"/>
+    <div class="flex flex-col justify-center px-4">
+      <div class="mt-5 flex justify-center">
+        <RoomCodeModal
+            v-if="classCode"
+            :class-code="classroomPinia.classCode"/>
 
-      <GenericButton
-          v-else
-          id="generate_class"
-          class="h-12 w-48 bg-violet-500
+        <GenericButton
+            v-else
+            id="generate_class"
+            class="h-12 w-48 bg-violet-500
           text-sm text-white font-poppins font-medium
           rounded-md"
-          :callback="generateSession"
-      >Start a Class</GenericButton>
-    </div>
+            :callback="generateSession"
+        >Start a Class</GenericButton>
+      </div>
 
-    <!--Content options-->
-    <div class="mt-8 child:mb-3">
+      <!--Content options-->
+      <div class="child:mb-3" :class="sidebarShouldBeExpanded ? 'mt-8' : 'mt-3'">
+        <ClassroomMenuItem
+            :icon="classroomIconUrl"
+            :enabled="classCode" view="/"
+            :panel="'classroom'"
+            v-on:click="classroomPinia.view = 'classroom'"
+        >Classroom</ClassroomMenuItem>
+
+        <ClassroomActions />
+      </div>
+
+      <!--End the active session and logout-->
       <ClassroomMenuItem
-          :icon="classroomIconUrl"
-          :enabled="classCode" view="/"
-          :panel="'classroom'"
-          v-on:click="classroomPinia.view = 'classroom'"
-      >Classroom</ClassroomMenuItem>
-
-      <ClassroomActions />
+          :icon="endClassIconUrl" class="fixed bottom-12"
+          :enabled="classCode"
+          :panel="''"
+          v-on:click="endSession()"
+          view="/"
+      >End Class</ClassroomMenuItem>
     </div>
-
-    <!--End the active session and logout-->
-    <ClassroomMenuItem
-        :icon="endClassIconUrl" class="fixed bottom-12"
-        :enabled="classCode"
-        :panel="''"
-        v-on:click="endSession()"
-        view="/"
-    >End Class</ClassroomMenuItem>
-  </div>
+    </div>
+  <div class="lg:hidden w-24 h-screen z-10"></div>
 </template>
 
-<style>
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.5s ease;
+<style lang="scss">
+.sidebar-expanded {
+  transition: 0.2s ease-in-out;
+  .menu-item {
+    max-width: 12rem;
+    .menu-item-text {
+      opacity: 1;
+      transition: opacity 0.3s ease-in-out;
+    }
+    .menu-item-icon {
+      &--room-code {
+        display: none;
+      }
+      @apply mr-3
+    }
+    &--room-code {
+      @apply justify-center
+    }
+    @apply justify-start w-full items-center px-4 h-12
+  }
+  @apply w-56
 }
-
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
+.sidebar-closed {
+  transition: 0.2s ease-in-out;
+  .menu-item {
+    .menu-item-text {
+      opacity: 0;
+      display: none;
+      transition: opacity 0.3s ease-in-out;
+    }
+    .menu-item-icon {
+      &--spinner {
+        @apply h-5 w-5
+      }
+      @apply mr-0 h-7 w-7
+    }
+    @apply justify-center w-full items-center px-4 h-16 w-16
+  }
+  @apply w-24
 }
 </style>
