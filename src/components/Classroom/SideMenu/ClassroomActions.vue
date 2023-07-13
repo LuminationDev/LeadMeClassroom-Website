@@ -21,6 +21,15 @@ async function screenControl() {
   loading.value = false;
   classroomPinia.requestAction({ type: REQUESTS.SCREENCONTROL, action: locked.value ? REQUESTS.BLOCK : REQUESTS.UNBLOCK }, REQUESTS.WEB);
   classroomPinia.requestAction({ type: REQUESTS.SCREENCONTROL, action: locked.value ? REQUESTS.BLOCK : REQUESTS.UNBLOCK }, REQUESTS.MOBILE);
+
+  //Update all followers
+  classroomPinia.webFollowers.forEach(follower => {
+    follower.locked = locked.value;
+  });
+
+  classroomPinia.mobileFollowers.forEach(follower => {
+    follower.locked = locked.value;
+  });
 }
 </script>
 
