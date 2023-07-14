@@ -15,7 +15,6 @@ class WebFollower extends Follower {
     collectingScreenshotFailed: boolean|null|undefined;
     monitoring: boolean|null|undefined;
     permission: string|null|undefined;
-    muted: boolean|null|undefined;
     muteAll: boolean|null|undefined;
     offTask: boolean|null|undefined;
 

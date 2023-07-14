@@ -2,18 +2,18 @@
 import {defineProps, ref} from "vue";
 import type {PropType} from "vue";
 import Modal from "./Modal.vue";
-import type WebFollower from "../../models/Followers/_webFollower";
 import * as REQUESTS from "../../constants/_requests";
 import {useClassroomStore} from "@/stores/classroomStore";
 import { useWebRTCStore } from "@/stores/webRTCStore";
 import Tooltip from "../Buttons/Tooltip.vue";
+import { Follower } from "@/models";
 
 const classroomPinia = useClassroomStore();
 const webRTCPinia = useWebRTCStore();
 
 const props = defineProps({
-  webFollower: {
-    type: Object as PropType<WebFollower>,
+  follower: {
+    type: Object as PropType<Follower>,
     required: true,
   }
 });
@@ -29,22 +29,22 @@ defineExpose({
  */
 function initiateMonitoring() {
   showModal.value = true
-  classroomPinia.requestIndividualAction(props.webFollower.getUniqueId(), { type: REQUESTS.MONITORSTARTED }, REQUESTS.WEB);
+  classroomPinia.requestIndividualAction(props.follower.getUniqueId(), { type: REQUESTS.MONITORSTARTED }, REQUESTS.WEB);
 }
 
 /**
  * Start or stop a monitoring session
  */
 function handleMonitorFollowerButton() {
-  if (props.webFollower.monitoring) {
+  if (props.follower.monitoring) {
     console.log("Sending webRTC permission message to firebase");
-    props.webFollower.monitoring = false;
-    props.webFollower.permission = null;
-    classroomPinia.requestIndividualAction(props.webFollower.getUniqueId(), { type: REQUESTS.MONITORENDED }, REQUESTS.WEB);
+    props.follower.monitoring = false;
+    props.follower.permission = null;
+    classroomPinia.requestIndividualAction(props.follower.getUniqueId(), { type: REQUESTS.MONITORENDED }, REQUESTS.WEB);
   } else {
-    props.webFollower.monitoring = true;
-    webRTCPinia.stopTracks(props.webFollower.getUniqueId()); //stop video call if exists
-    classroomPinia.requestIndividualAction(props.webFollower.getUniqueId(), { type: REQUESTS.MONITORPERMISSION }, REQUESTS.WEB);
+    props.follower.monitoring = true;
+    webRTCPinia.stopTracks(props.follower.getUniqueId()); //stop video call if exists
+    classroomPinia.requestIndividualAction(props.follower.getUniqueId(), { type: REQUESTS.MONITORPERMISSION }, REQUESTS.WEB);
   }
 }
 
@@ -53,9 +53,9 @@ function handleMonitorFollowerButton() {
  * monitoring field.
  */
 function cancelMonitor() {
-  props.webFollower.monitoring = false;
-  props.webFollower.permission = null;
-  classroomPinia.requestIndividualAction(props.webFollower.getUniqueId(), { type: REQUESTS.MONITORENDED }, REQUESTS.WEB);
+  props.follower.monitoring = false;
+  props.follower.permission = null;
+  classroomPinia.requestIndividualAction(props.follower.getUniqueId(), { type: REQUESTS.MONITORENDED }, REQUESTS.WEB);
 }
 
 /**
@@ -64,8 +64,8 @@ function cancelMonitor() {
 function closeModal() {
   cancelMonitor();
   showModal.value = false
-  props.webFollower.collectingScreenshotFailed = false
-  props.webFollower.imageBase64 = null
+  props.follower.collectingScreenshotFailed = false
+  props.follower.imageBase64 = null
 }
 </script>
 
@@ -85,7 +85,7 @@ function closeModal() {
         <header class="h-20 px-8 bg-white flex justify-between items-center rounded-t-lg">
           <div class="bg-white flex flex-col">
             <span class="text-lg font-semibold text-black">Screen Monitoring</span>
-            <p class="mt-1 text-sm text-zinc-700">{{ webFollower.name }}</p>
+            <p class="mt-1 text-sm text-zinc-700">{{ follower.name }}</p>
           </div>
 
           <img
@@ -100,58 +100,58 @@ function closeModal() {
       <template v-slot:content>
         <div class="w-auto inline-block max-h-monitor-modal mt-7 mx-9">
           <!--Screenshot content-->
-          <div v-if="!webFollower.monitoring" class="w-modal-width-xsm">
-            <div v-if="!webFollower.imageBase64 && !webFollower.collectingScreenshotFailed" class="flex flex-col items-center">
+          <div v-if="!follower.monitoring" class="w-modal-width-xsm">
+            <div v-if="!follower.imageBase64 && !follower.collectingScreenshotFailed" class="flex flex-col items-center">
               <p class="mt-20 lds-dual-ring-lg" />
               <p class="mb-6 mt-8 text-sm ">Collecting current screenshot...</p>
             </div>
-            <div v-else-if="webFollower.collectingScreenshotFailed" class="flex flex-col items-center text-center">
+            <div v-else-if="follower.collectingScreenshotFailed" class="flex flex-col items-center text-center">
               <img class="mt-20 w-32 xs:w-48" src="/src/assets/img/shocked_col.png" alt="Computer Icon"/>
               <p class="mb-6 mt-8 text-sm font-semibold">Screenshot could not be collected. This normally happens if the student is on a new empty tab. Try requesting live screen share.</p>
             </div>
 
-            <img v-else class="aspect-video" :id="`image_${webFollower.getUniqueId()}`" :src="webFollower.imageBase64 ?? undefined" alt="Follower Screen shot"/>
+            <img v-else class="aspect-video" :id="`image_${follower.getUniqueId()}`" :src="follower.imageBase64 ?? undefined" alt="Follower Screen shot"/>
           </div>
 
           <!--Monitoring and permission content-->
           <div v-else>
             <!--Waiting for permission-->
-            <div v-if="webFollower.permission !== 'granted'"
+            <div v-if="follower.permission !== 'granted'"
                  :class="{
                     'w-modal-width-xsm aspect-video bg-white flex flex-col justify-center items-center' : 'true',
-                    'hidden': webFollower.permission === 'granted'
+                    'hidden': follower.permission === 'granted'
             }">
 
-              <div v-if="webFollower.permission === null" class="flex flex-col items-center">
+              <div v-if="follower.permission === null" class="flex flex-col items-center">
                 <img class="mt-20 w-32 xs:w-48" src="/src/assets/img/happy_col.png" alt="Computer Icon"/>
                 <p class="mb-6 mt-8 text-sm">Waiting for student permission...</p>
               </div>
 
-              <div v-if="webFollower.permission === 'connecting'" class="flex flex-col items-center">
+              <div v-if="follower.permission === 'connecting'" class="flex flex-col items-center">
                 <p class="mt-20 lds-dual-ring-lg" />
                 <p class="mb-6 mt-8 text-sm">Connecting to student...</p>
               </div>
 
-              <div v-if="webFollower.permission === 'denied' || webFollower.permission === 'stopped'" class="flex flex-col items-center">
+              <div v-if="follower.permission === 'denied' || follower.permission === 'stopped'" class="flex flex-col items-center">
                 <img class="mt-20 w-32 xs:w-48" src="/src/assets/img/shocked_col.png" alt="Computer Icon"/>
                 <p class="mb-6 mt-8 text-sm font-semibold">
-                  {{ webFollower.permission === 'denied' ? 'Student has declined the permission...' : 'Student stopped sharing their screen...' }}
+                  {{ follower.permission === 'denied' ? 'Student has declined the permission...' : 'Student stopped sharing their screen...' }}
                 </p>
               </div>
 
               <button class="mb-28 w-36 h-11 flex-shrink-0 font-semibold text-sm text-white bg-blue-500 text-base rounded-3xl hover:bg-blue-400"
                       v-on:click="() => { cancelMonitor() }"
               >
-                {{ webFollower.permission === 'stopped' ? 'Return' : 'Cancel' }}
+                {{ follower.permission === 'stopped' ? 'Return' : 'Cancel' }}
               </button>
             </div>
 
             <!--Video content-->
             <div :class="{
-                      'hidden': webFollower.permission !== 'granted'
+                      'hidden': follower.permission !== 'granted'
                      }">
               <video class="w-modal-width-xsm aspect-video"
-                     :id="`video_${webFollower.getUniqueId()}`"
+                     :id="`video_${follower.getUniqueId()}`"
                      muted autoplay
               />
             </div>
@@ -164,13 +164,13 @@ function closeModal() {
           <button
               :class="{
                 'w-56 h-11 flex-shrink-0 text-white bg-blue-500 text-base rounded-lg hover:bg-blue-400': true,
-                'bg-blue-400': webFollower.permission !== 'granted' && webFollower.monitoring,
+                'bg-blue-400': follower.permission !== 'granted' && follower.monitoring,
               }"
-              :disabled="!!(webFollower.permission !== 'granted' && webFollower.monitoring)"
+              :disabled="!!(follower.permission !== 'granted' && follower.monitoring)"
               v-on:click="() => { handleMonitorFollowerButton() }"
-          >{{ webFollower.monitoring ? 'Stop screen share' : 'Request live screen share' }}</button>
+          >{{ follower.monitoring ? 'Stop screen share' : 'Request live screen share' }}</button>
 
-          <div v-show="webFollower.permission !== 'granted'" class="has-tooltip">
+          <div v-show="follower.permission !== 'granted'" class="has-tooltip">
             <Tooltip
                 :tip="'Student permission is required for real time screen monitoring'"
                 :toolTipMargin="'ml-2'" :arrowMargin="'ml-3.5'"

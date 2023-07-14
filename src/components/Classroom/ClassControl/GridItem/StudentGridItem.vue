@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {computed, defineProps, ref} from 'vue'
+import { defineProps, ref } from 'vue'
 import type { PropType } from 'vue'
 import * as REQUESTS from "@/constants/_requests";
 import WebFollowerIcon from "@/assets/vue/WebFollowerIcon.vue";
@@ -9,8 +9,9 @@ import EllipsisIcon from "@/assets/vue/EllipsisIcon.vue";
 import CheckboxInput from "@/components/InputFields/CheckboxInput.vue";
 import StudentGridItemSettings from "@/components/Classroom/ClassControl/GridItem/StudentGridItemSettings.vue";
 import StudentGridItemRemoval from "@/components/Classroom/ClassControl/GridItem/StudentGridItemRemoval.vue";
-import StudentGridItemNameChange from "@/components/Classroom/ClassControl/GridItem/StudentGridItemNameChange.vue";
 import StudentGridItemDisconnected from "@/components/Classroom/ClassControl/GridItem/StudentGridItemDisconnected.vue";
+import StudentDetailModal from "@/components/Modals/StudentDetails/StudentDetailModal.vue";
+import ScreenMonitorModal from "@/components/Modals/ScreenMonitorModal.vue";
 
 const emit = defineEmits<{
   (e: 'selectionToggled', value: boolean): void
@@ -36,17 +37,15 @@ const props = defineProps({
   }
 });
 
-const taskName = computed(() => {
-  return props.follower.activeTaskName
-})
-
-const iconUrl = computed(() => {
-  return props.follower.activeTaskIconUrl
-})
-
 const studentPanel = ref('main');
 const changePanel = (panel: string) => {
   studentPanel.value = panel;
+}
+
+//Reference to the screen monitor modal to open it externally
+const monitorRef = ref<InstanceType<typeof ScreenMonitorModal> | null>(null)
+function openMonitorModal() {
+  monitorRef.value?.initiateMonitoring();
 }
 </script>
 
@@ -80,10 +79,7 @@ const changePanel = (panel: string) => {
           'bg-blue-100': selected,
           'bg-white': !selected
         }">
-          <div class="flex flex-row items-center py-2 px-4 font-medium">
-            <img v-if="iconUrl" class="flex-shrink-0 w-4 h-4 mr-2" :src="iconUrl"  alt=""/>
-            <span class="overflow-ellipsis whitespace-nowrap overflow-hidden">{{ taskName }}</span>
-          </div>
+          <StudentDetailModal :follower="follower" @screenMonitor="openMonitorModal"/>
         </div>
         <div class="flex flex-row justify-end">
           <EllipsisIcon v-on:click="changePanel('settings')" class="h-5 cursor-pointer" :colour="selected ? '#3B82F6' : '#BDC3D6'"/>
@@ -93,12 +89,6 @@ const changePanel = (panel: string) => {
       <!--Settings panel-->
       <StudentGridItemSettings
           v-else-if="studentPanel === 'settings'"
-          :follower="follower"
-          @changePanel="changePanel"/>
-
-      <!--Name change panel-->
-      <StudentGridItemNameChange
-          v-else-if="studentPanel === 'name'"
           :follower="follower"
           @changePanel="changePanel"/>
 
@@ -112,6 +102,12 @@ const changePanel = (panel: string) => {
       <div v-else-if="studentPanel === 'overview'">
         OVERVIEW MODE
       </div>
+    </div>
+
+    <!--TODO HIDDEN FOR NOW - DO WE WANT TO OPEN IT DIRECTLY FROM THE CARD?-->
+    <div class="hidden">
+      <!--Screenshot and WebRTC modal-->
+      <ScreenMonitorModal ref="monitorRef" :follower="follower" />
     </div>
   </div>
 </template>

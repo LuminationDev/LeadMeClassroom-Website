@@ -32,7 +32,7 @@ export const UNBLOCK = "unblock";
 export const FORCEACTIVEAPP = "application";
 export const FORCEACTIVEVIDEOLINK = "video_link";
 export const FORCEACTIVEVIDEOLOCAL = "video_local";
-export const DEVICEAUDIO = "change_audio";
+export const DEVICEAUDIO = "device_audio";
 export const MUTE = "mute";
 export const UNMUTE = "unmute";
 

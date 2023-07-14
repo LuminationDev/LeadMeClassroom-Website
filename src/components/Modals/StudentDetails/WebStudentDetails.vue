@@ -1,7 +1,192 @@
 <script setup lang="ts">
+import { useClassroomStore } from "@/stores/classroomStore";
+import { computed, defineProps, onMounted, PropType, ref} from "vue";
+import { Follower, Tab } from "@/models";
+import * as REQUESTS from "@/constants/_requests";
+import Tooltip from "@/components/Buttons/Tooltip.vue";
+import TrashIcon from "@/assets/vue/TrashIcon.vue";
+import EyeMonitorIcon from "@/assets/vue/EyeMonitorIcon.vue";
+import PromoteIcon from "@/assets/vue/PromoteIcon.vue";
+import MuteIcon from "@/assets/vue/MuteIcon.vue";
+import UnmuteIcon from "@/assets/vue/UnmuteIcon.vue";
 
+const emit = defineEmits<{
+  (e: 'screenMonitor'): void
+  (e: 'close'): void
+}>()
+
+const props = defineProps({
+  follower: {
+    type: Object as PropType<Follower>,
+    required: true,
+  },
+});
+
+const classroomPinia = useClassroomStore();
+
+const viewScreen = () => {
+  //Close the Student Detail modal
+  emit('close');
+
+  //Open the screen monitor modal
+  emit('screenMonitor');
+}
+
+//Track the currently selected tab
+const selectedTabId = ref("0");
+const selectedTab = computed(() => {
+  if(props.follower.tabs.length === 0) {
+    selectedTabId.value = "-1";
+    return null;
+  }
+
+  let tab = props.follower.tabs.find(res => res.id === selectedTabId.value);
+
+  if(tab === undefined) {
+    selectedTabId.value = props.follower.tabs[0].id;
+    return props.follower.tabs[0];
+  } else {
+    return tab;
+  }
+})
+
+function deleteFollowerTab(tabId: string) {
+  classroomPinia.requestDeleteFollowerTab(props.follower.getUniqueId(), tabId)
+}
+
+function muteOrUnmuteTab(tabId: string, action: boolean) {
+  console.log('heard a mute request', action)
+  classroomPinia.requestUpdateMutingTab(props.follower.getUniqueId(), tabId, action)
+}
+
+const changeActiveTab = (tab: Tab) => {
+  classroomPinia.requestActiveMedia(
+      props.follower.getUniqueId(),
+      { type: REQUESTS.FORCEACTIVETAB, tab: tab},
+      REQUESTS.WEB
+  );
+}
+
+/**
+ * Check if the lastActivated website is within the tasks array. The task array is populated when a teacher pushes
+ * out a website.
+ * @param website A string representing the URL of the currently active website for a follower.
+ */
+const checkWebsite = (website: string) => {
+  let tasks = classroomPinia.webTasks;
+  if(tasks.length === 0) { return; }
+
+  let strict = true; //determine if website needs to be exact or just same hostname
+
+  const { hostname } = new URL(website); //Extract the hostname for non-strict monitoring
+  return !tasks.some((res) => (strict ? website.includes(res.toString()) : res.includes(hostname)));
+}
+
+onMounted(() => {
+  if(props.follower.tabs.length > 0) {
+    selectedTabId.value = props.follower.tabs[0].id;
+  }
+});
 </script>
 
 <template>
+  <div class="mx-4 flex flex-col">
+    <!--The assistant page is present but not counted (No Tabs)-->
+    <div v-if="follower.tabs.length === 0" class="py-1 flex flex-row w-full px-5 items-center justify-between">
+      <div class="w-full h-9 px-5 flex flex-row items-center overflow-ellipsis whitespace-nowrap">
+        <img class="flex-shrink-0 w-5 h-5 mr-2" src="/src/assets/img/icon-128.png" alt=""/>
+        <span class="flex-shrink overflow-ellipsis whitespace-nowrap overflow-hidden pr-10 mt-0.5">No open tabs...</span>
+      </div>
+    </div>
 
+    <!--Active Tab-->
+    <div v-else>
+      <div class="flex items-center bg-white h-12 rounded-2xl mb-4">
+        <div class="flex flex-row w-full pl-5 items-center justify-between">
+          <div :class="{
+                      'w-full h-9 px-5 flex flex-row items-center overflow-ellipsis whitespace-nowrap': true,
+                      'overflow-hidden rounded-2xl': true,
+                      }"
+          >
+            <img class="flex-shrink-0 w-5 h-5 mr-2 cursor-pointer" :src="follower.tabs[0].getFavicon()" alt=""/>
+            <span class="flex-shrink overflow-ellipsis whitespace-nowrap overflow-hidden pr-10 mt-0.5">{{ follower.tabs[0].getTabUrlWithoutHttp() }}</span>
+
+            <!--Monitor Icon-->
+            <div class="flex items-center flex-shrink-0 flex-[1_1_auto] justify-end">
+              <div class="flex flex-row items-center">
+                <div class="mr-2 text-sm text-gray-500 font-semibold">
+                  ACTIVE TAB
+                </div>
+
+                <EyeMonitorIcon v-on:click="viewScreen" class="h-6 cursor-pointer" :colour="'#959EAF'"/>
+              </div>
+            </div>
+
+            <Transition name="icon">
+              <div v-if="checkWebsite(follower.tabs[0].url) && !selectedTab?.closing" class="has-tooltip">
+                <Tooltip :tip="'Not in task list'" :toolTipMargin="'-ml-1'" :arrow-margin="'ml-1'" />
+                <img
+                    class="w-6 h-6 mr-2 cursor-pointer"
+                    src="/src/assets/img/student-icon-alert.svg"
+                    alt="alert icon"
+                />
+              </div>
+            </Transition>
+          </div>
+        </div>
+      </div>
+
+      <!--Tab list-->
+      <div class="bg-white rounded-2xl h-[28rem] overflow-y-auto">
+        <div class="py-4 px-10 text-sm text-gray-500 font-semibold">OPEN TABS</div>
+
+        <transition-group name="list-complete" tag="div">
+          <div v-for="(tab, index) in follower.tabs" :key="index" class="py-1" :id="tab.id">
+
+            <!--Individual tabs-->
+            <div class="flex flex-row w-full px-5 items-center justify-between">
+              <div :class="{
+                        'w-full h-9 px-5 flex flex-row items-center overflow-ellipsis whitespace-nowrap': true,
+                        'overflow-hidden rounded-2xl cursor-pointer': true,
+                        'hover:bg-opacity-50 hover:bg-gray-300': selectedTab?.id !== tab.id,
+                        'bg-blue-100': selectedTab?.id === tab.id,
+                        }"
+                   @click="selectedTabId = tab.id"
+              >
+                <img class="flex-shrink-0 w-5 h-5 mr-2 cursor-pointer" :src="tab.getFavicon()" alt=""/>
+                <span class="flex-shrink overflow-ellipsis whitespace-nowrap overflow-hidden pr-10 mt-0.5">{{ tab.getTabUrlWithoutHttp() }}</span>
+
+                <!--Action icons-->
+                <div class="flex flex-shrink-0 flex-[1_1_auto] justify-end">
+                  <div class="h-4 flex flex-row justify-center items-center">
+                    <Transition name="icon">
+                      <div v-if="tab.audible && !selectedTab?.closing" :class="{'pulse-icon': !tab.muted}">
+                        <div v-if="tab.muting" class="pt-1 mr-1 lds-dual-ring" />
+                        <MuteIcon v-else-if="tab.muted" v-on:click="muteOrUnmuteTab(tab.id, false)" :colour="'gray'"/>
+                        <UnmuteIcon v-else v-on:click="muteOrUnmuteTab(tab.id, true)" class="h-5" :colour="'#3B82F6'"/>
+                      </div>
+                    </Transition>
+
+                    <PromoteIcon v-if="selectedTabId === tab.id && follower.tabs[0].id !== tab.id" v-on:click="changeActiveTab(tab)" class="ml-1" :colour="'gray'"/>
+                    <TrashIcon v-if="selectedTabId === tab.id" v-on:click="deleteFollowerTab(tab.id)" class="ml-1" :colour="'gray'"/>
+                  </div>
+                </div>
+
+                <Transition name="icon">
+                  <div v-if="checkWebsite(tab.url) && !selectedTab?.closing" class="has-tooltip">
+                    <Tooltip :tip="'Not in task list'" :toolTipMargin="'-ml-1'" :arrow-margin="'ml-1'" />
+                    <img
+                        class="w-6 h-6 mr-2 cursor-pointer"
+                        src="/src/assets/img/student-icon-alert.svg"
+                        alt="alert icon"
+                    />
+                  </div>
+                </Transition>
+              </div>
+            </div>
+          </div>
+        </transition-group>
+      </div>
+    </div>
+  </div>
 </template>
