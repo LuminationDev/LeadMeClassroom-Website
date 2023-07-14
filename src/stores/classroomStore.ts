@@ -306,11 +306,18 @@ export const useClassroomStore = defineStore("classroom", {
             }
 
             //Send the command
-            this.requestIndividualAction(follower.getUniqueId(),{
-                type: follower.type === REQUESTS.WEB ? REQUESTS.MUTETAB : REQUESTS.DEVICEAUDIO,
-                tabs: 'multiTab',
-                action: mute ? REQUESTS.MUTETAB : REQUESTS.UNMUTETAB
-            }, follower.type);
+            if(follower.type === REQUESTS.WEB) {
+                this.requestIndividualAction(follower.getUniqueId(), {
+                    type: REQUESTS.MUTETAB,
+                    tabs: 'multiTab',
+                    action: mute ? REQUESTS.MUTETAB : REQUESTS.UNMUTETAB
+                }, follower.type);
+            } else {
+                this.requestIndividualAction(follower.getUniqueId(), {
+                    type: REQUESTS.DEVICEAUDIO,
+                    action: mute ? REQUESTS.MUTE : REQUESTS.UNMUTE
+                }, follower.type);
+            }
 
             //Change the local follower data
             this.updateFollowerData(
