@@ -2,13 +2,12 @@ import { defineStore } from "pinia";
 import { useStorage } from "@/hooks/useStorage";
 import * as REQUESTS from "../constants/_requests.js";
 import Firebase from '../controller/_firebase';
-import { Leader, MobileFollower, Tab, WebFollower } from '../models';
+import { Leader, MobileFollower, Tab, WebFollower } from '@/models';
 import { useWebRTCStore } from "./webRTCStore";
 import type { User } from "@firebase/auth";
 import { getAuth, sendPasswordResetEmail } from "@firebase/auth";
-import type { Application, Video } from "@/models";
+import type { Application, Video, Follower, CuratedContentItem } from "@/models";
 import { getCuratedContentData, toDataURL } from "@/controller/_dataRequests";
-import type { CuratedContentItem } from "@/models";
 import { cloneDeep } from "lodash";
 
 interface userDetails {
@@ -275,6 +274,59 @@ export const useClassroomStore = defineStore("classroom", {
             }
         },
 
+        /**
+         * Lock or unlock a users screen, a web user will have their current tabs blacked out by a div, any new tabs will
+         * immediately be blacked out as well. A mobile device will have the full screen blocked from use.
+         * @param follower A {@link Follower} object.
+         * @param lock A boolean of whether to lock the device or unlock.
+         */
+        lockScreens(follower: Follower, lock: boolean) {
+            this.requestIndividualAction(follower.getUniqueId(),{
+                type: REQUESTS.SCREENCONTROL,
+                action: lock ? REQUESTS.BLOCK : REQUESTS.UNBLOCK
+            }, follower.type);
+
+            //Change the local follower data
+            this.updateFollowerData(
+                follower.getUniqueId(),
+                follower.type,
+                'locked',
+                lock);
+        },
+
+        /**
+         * Mute or unmute the follower's device, a web user will have all tabs muted while a mobile user will have the device
+         * itself muted. Depending on the saved muted value on the follower model the command will send a mute or unmute command.
+         * @param follower A {@link Follower} object.
+         * @param mute A boolean of whether to mute the device or unmute.
+         */
+        muteSound(follower: Follower, mute: boolean | undefined | null) {
+            if(mute === null || mute === undefined) {
+                mute = true;
+            }
+
+            //Send the command
+            if(follower.type === REQUESTS.WEB) {
+                this.requestIndividualAction(follower.getUniqueId(), {
+                    type: REQUESTS.MUTETAB,
+                    tabs: 'multiTab',
+                    action: mute ? REQUESTS.MUTETAB : REQUESTS.UNMUTETAB
+                }, follower.type);
+            } else {
+                this.requestIndividualAction(follower.getUniqueId(), {
+                    type: REQUESTS.DEVICEAUDIO,
+                    action: mute ? REQUESTS.MUTE : REQUESTS.UNMUTE
+                }, follower.type);
+            }
+
+            //Change the local follower data
+            this.updateFollowerData(
+                follower.getUniqueId(),
+                follower.type,
+                'muted',
+                mute);
+        },
+
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         ////////////////////////////////////////////WEB FUNCTIONS///////////////////////////////////////////////////////
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -472,7 +524,7 @@ export const useClassroomStore = defineStore("classroom", {
             const follower = this.findFollowerObject(UUID, REQUESTS.WEB) as WebFollower;
 
             if (follower) {
-                const action = { type: newValue ? REQUESTS.MUTETAB : REQUESTS.UNMUTETAB, tabId };
+                const action = { type: REQUESTS.MUTETAB, action: newValue ? REQUESTS.MUTETAB : REQUESTS.UNMUTETAB, tabId };
                 console.log(action)
                 void this.firebase.requestIndividualAction(this.classCode, follower.getUniqueId(), action, REQUESTS.WEB);
                 const index = follower.tabs.findIndex(element => tabId === element.id)

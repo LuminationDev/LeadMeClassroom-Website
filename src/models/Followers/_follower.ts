@@ -8,6 +8,7 @@ export default abstract class Follower {
     tasks: Task[];
     locked: boolean;
     disconnected: boolean = false;
+    muted: boolean|null|undefined;
 
     protected constructor(classCode: string, name: string, uniqueId: string, type: string) {
         this.classCode = classCode;
