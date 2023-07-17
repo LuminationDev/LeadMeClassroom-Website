@@ -2,7 +2,7 @@
 import * as REQUESTS from "@/constants/_requests.js";
 import "../../../styles.css";
 import Modal from "../Modal.vue";
-import { computed, defineProps, ref } from "vue";
+import { computed, defineProps, nextTick, ref } from "vue";
 import type { PropType } from "vue";
 import type { Follower } from "@/models";
 import WebStudentDetails from "@/components/Modals/StudentDetails/WebStudentDetails.vue";
@@ -51,6 +51,14 @@ const closeModal = () => {
 
 const editName = ref(false);
 const name = ref('');
+const editInput = ref<HTMLInputElement | null>(null)
+const showEditInput = () => {
+  editName.value = true
+  nextTick(() => {
+    editInput.value!.focus();
+  });
+}
+
 const changeName = () => {
   if(name.value.length === 0) { return; }
   classroomPinia.renameFollower(name.value, props.follower.getUniqueId(), props.follower.type);
@@ -87,11 +95,11 @@ defineExpose({
           <div class="flex flex-row items-center">
             <div v-if="!editName" class="flex flex-row items-center">
               <span class="text-3xl font-medium text-black mr-3">{{ follower.name }}</span>
-              <EditIcon v-on:click="editName = !editName" class="cursor-pointer" :colour="'#667081'"/>
+              <EditIcon v-on:click="showEditInput" class="cursor-pointer" :colour="'#667081'"/>
             </div>
 
             <div v-else class="flex flex-row items-center">
-              <input class="text-3xl bg-zinc-200 border-2 border-b-black outline-0" :placeholder="follower.name" v-model="name"/>
+              <input ref="editInput" class="text-3xl bg-zinc-200 border-2 border-b-black outline-0" :placeholder="follower.name" v-model="name"/>
 
               <TickIcon v-on:click="changeName" class="cursor-pointer ml-2" :colour="'green'"/>
               <CrossIcon v-on:click="editName = false; name = ''" class="cursor-pointer w-4 h-4 ml-2" :colour="'gray'"/>
