@@ -54,6 +54,6 @@ const lockedText = computed(() => {
   </div>
 
   <div class="flex flex-row justify-end items-center h-5 mr-2">
-    <img v-on:click="$emit('changePanel', 'main')" class="cursor-pointer" src="src/assets/img/cross.svg" alt="cross"/>
+    <img v-on:click="$emit('changePanel', 'main')" class="cursor-pointer" src="/src/assets/img/cross.svg" alt="cross"/>
   </div>
 </template>

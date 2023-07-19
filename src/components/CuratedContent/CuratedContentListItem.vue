@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import type { CuratedContentItem } from "@/models";
 import type { PropType } from "vue";
-import { computed } from "vue";
+import {computed, onMounted, ref} from "vue";
 import CheckboxInput from "@/components/InputFields/CheckboxInput.vue";
-
+import { useClassroomStore } from "@/stores/classroomStore";
+const classroomPinia = useClassroomStore();
 const emit = defineEmits<{
   (e: 'select'): void
   (e: 'viewDescription', value: string): void
@@ -30,6 +31,15 @@ const selectionToggled = () => {
 const yearSpace = computed(() => {
   return props.contentItem.getYears().split(',').join(', ')
 });
+
+const imageLink = ref("")
+
+onMounted(() => {
+  classroomPinia.getCuratedContentImageUrl(props.contentItem.getLink()).then(result => {
+    imageLink.value = result
+  })
+})
+
 </script>
 
 <template>
@@ -56,7 +66,7 @@ const yearSpace = computed(() => {
       <div class="flex flex-row">
         <!--Thumbnail preview-->
         <div class="flex flex-col w-1/3">
-          <img class="h-32" src="src/assets/img/share-content-curated.svg" alt="Image"/>
+          <img class="h-32 rounded-xl mr-2 object-cover" :src="imageLink" alt="Image"/>
         </div>
 
         <div class="flex flex-col w-2/3">

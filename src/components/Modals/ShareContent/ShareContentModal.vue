@@ -142,7 +142,7 @@ const closeModal = () => {
             <p class="text-2xl font-medium">Share Content</p>
           </div>
           <div v-else class="flex flex-row">
-            <img src="src/assets/img/share-content-video.svg" alt="Video"/>
+            <img src="/src/assets/img/share-content-video.svg" alt="Video"/>
             <p class="ml-2 text-lg font-medium">{{viewDescription}}</p>
           </div>
 

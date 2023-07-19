@@ -5,6 +5,10 @@
   "compilerOptions": {
     "composite": true,
     "baseUrl": ".",
+    "lib": [
+      "ES2021.String",
+      "dom"
+    ],
     "paths": {
       "@/*": ["./src/*"],
       "vue-slider-component": ["./stubs/vue-slider-component.d.ts"]

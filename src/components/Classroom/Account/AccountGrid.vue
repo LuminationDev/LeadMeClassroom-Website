@@ -125,7 +125,7 @@ function clearFields() {
 
           <div class="mb-8">
             <div class="flex flex-row text-sm text-gray-400">
-              <img class="w-3.5 mr-1" src="src/assets/img/account-icon-alert.svg" alt="alert"/>
+              <img class="w-3.5 mr-1" src="/src/assets/img/account-icon-alert.svg" alt="alert"/>
               This name is display to your students.
             </div>
             <p v-if="response.displayName !== ''"  class="w-64 px-1 text-green-400 text-sm">{{ response.displayName }}</p>
@@ -162,7 +162,7 @@ function clearFields() {
 
   <!--      Todo add when we have full accounts and can check the timestamp of the password-->
   <!--      <div class="flex flex-row text-sm text-gray-400 mb-8">-->
-  <!--        <img class="w-3.5 mr-1" src="src/assets/img/account-icon-alert.svg" alt="alert"/>-->
+  <!--        <img class="w-3.5 mr-1" src="/src/assets/img/account-icon-alert.svg" alt="alert"/>-->
   <!--        Password was changed x month ago.-->
   <!--      </div>-->
 

@@ -45,6 +45,7 @@ class Firebase {
     private readonly mobileMessageRef = "mobileMessages";
     private readonly mobileFollowerRef = "mobileFollowers";
     private appIconsList: Array<AppIcon> = [];
+    private curatedContentUrls: any = {}
 
     constructor(callback: any = null) {
         this.callback = callback;
@@ -76,6 +77,33 @@ class Firebase {
                 })
             })
         })
+    }
+
+    async getCuratedContentImageUrl(url: string) {
+        const refString = 'preview_images/'  + url.replaceAll('/', '-') + '.jpg'
+        if (this.curatedContentUrls[refString]) {
+            return this.curatedContentUrls[refString]
+        }
+        const ref = storageRef(this.storage, refString)
+        const result = await getDownloadURL(ref).catch(async (error) => {
+            if (error.code.includes('storage/object-not-found')) {
+                const token = await getAuth().currentUser?.getIdToken()
+                fetch("https://us-central1-browserextension-bc94e.cloudfunctions.net/fetchPreviewImage", {
+                    method: "POST",
+                    body: JSON.stringify({
+                        url,
+                        token
+                    })
+                }).then(response => {
+                    getDownloadURL(ref).then((url) => {
+                        this.curatedContentUrls[refString] = url
+                        return Promise.resolve(url)
+                    })
+                })
+            }
+        })
+        this.curatedContentUrls[refString] = result
+        return result
     }
 
     /**
