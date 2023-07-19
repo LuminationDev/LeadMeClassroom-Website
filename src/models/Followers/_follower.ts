@@ -10,13 +10,15 @@ export default abstract class Follower {
     disconnected: boolean = false;
     muted: boolean|null|undefined;
 
-    protected constructor(classCode: string, name: string, uniqueId: string, type: string) {
+    protected constructor(classCode: string, name: string, uniqueId: string, type: string, locked: boolean = false, muted: boolean = false, tasks: Task[] = []) {
         this.classCode = classCode;
         this.name = name;
         this.uniqueId = uniqueId;
         this.type = type;
         this.tasks = [];
-        this.locked = false;
+        this.locked = locked;
+        this.muted = muted;
+        this.tasks = tasks;
     }
 
     abstract get activeTaskIconUrl(): string | null

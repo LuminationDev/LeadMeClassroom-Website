@@ -1,8 +1,8 @@
-import { Application, Video } from "../index";
+import { Application, Task, Video } from "../index";
 import { v4 as uuidv4 } from 'uuid';
 import * as REQUESTS from "../../constants/_requests";
 import Follower from "@/models/Followers/_follower";
-import {useClassroomStore} from "@/stores/classroomStore";
+import { useClassroomStore } from "@/stores/classroomStore";
 
 /**
  * A class to describe the outline of a follower that is being attached
@@ -20,8 +20,8 @@ class MobileFollower extends Follower {
     offTask: boolean|null|undefined;
     classroomPinia: any;
 
-    constructor(classCode = "", name = "", apps: any, videos: any, uniqueId = uuidv4()) {
-        super(classCode, name, uniqueId, REQUESTS.MOBILE);
+    constructor(classCode = "", name = "", apps: any, videos: any, locked: boolean = false, muted: boolean = false, tasks: Task[] = [], uniqueId = uuidv4()) {
+        super(classCode, name, uniqueId, REQUESTS.MOBILE, locked, muted, tasks);
         this.applications = this.followerApplicationsAdded(apps);
         this.videos = this.followerVideosAdded(videos);
         this.permission = null;

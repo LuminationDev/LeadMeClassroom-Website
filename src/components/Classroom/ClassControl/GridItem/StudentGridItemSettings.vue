@@ -26,7 +26,7 @@ const classroomPinia = useClassroomStore();
  * has been sent.
  */
 const lockUnlockScreen = () => {
-  classroomPinia.lockScreens(props.follower, props.follower.locked);
+  classroomPinia.lockScreens(props.follower, !props.follower.locked);
 }
 
 const lockedText = computed(() => {
