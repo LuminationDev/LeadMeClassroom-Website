@@ -339,7 +339,7 @@ export const useClassroomStore = defineStore("classroom", {
             const taskList: Task[] = [];
 
             //Need to convert any saved tasks to the Task class
-            if(snapshot.tasks !== null) {
+            if(snapshot.tasks !== null && snapshot.tasks !== undefined) {
                 snapshot.tasks.forEach((item: string) => {
                     const data = item.split("|");
                     if(data.length !== 3) { return; }
