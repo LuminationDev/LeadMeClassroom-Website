@@ -7,6 +7,10 @@
     "src/**/*.vue",
     "src/**/*.js"],
   "compilerOptions": {
+    "lib": [
+      "ES2021.String",
+      "dom"
+    ],
     "composite": true,
     "types": ["node"]
   }

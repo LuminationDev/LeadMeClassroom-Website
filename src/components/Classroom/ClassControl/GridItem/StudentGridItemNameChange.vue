@@ -36,6 +36,6 @@ const updateFollowerName = () => {
   </div>
 
   <div class="flex flex-row justify-end items-center h-5 mr-2">
-    <img v-on:click="$emit('changePanel', 'settings')" class="cursor-pointer" src="src/assets/img/cross.svg" alt="cross"/>
+    <img v-on:click="$emit('changePanel', 'settings')" class="cursor-pointer" src="/src/assets/img/cross.svg" alt="cross"/>
   </div>
 </template>

@@ -37,7 +37,7 @@ class CuratedContentItem {
         }
     }
 
-    getLink = () => {
+    getLink = (): string => {
         return this.link;
     }
 

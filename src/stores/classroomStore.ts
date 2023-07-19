@@ -177,6 +177,10 @@ export const useClassroomStore = defineStore("classroom", {
             }
         },
 
+        async getCuratedContentImageUrl(url: string) {
+            return await this.firebase.getCuratedContentImageUrl(url);
+        },
+
         /**
          * Rename a selected follower
          * @param newName

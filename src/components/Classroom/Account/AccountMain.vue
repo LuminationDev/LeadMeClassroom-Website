@@ -13,14 +13,14 @@ const classroomPinia = useClassroomStore();
       <router-link v-if="classroomPinia.accountView === 'main'" to="/">
         <img
           class="w-8 cursor-pointer"
-          src="src/assets/img/account-icon-exit.svg"
+          src="/src/assets/img/account-icon-exit.svg"
           alt="exit"/>
       </router-link>
 
       <div v-else>
         <img
           class="w-8 cursor-pointer"
-          src="src/assets/img/account-icon-exit.svg"
+          src="/src/assets/img/account-icon-exit.svg"
           alt="exit"
           v-on:click="classroomPinia.accountView = 'main'"/>
       </div>
