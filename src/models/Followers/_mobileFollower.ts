@@ -16,7 +16,6 @@ class MobileFollower extends Follower {
     videos: Video[];
     webRTC: any;
     permission: string|null|undefined;
-    muted: boolean|null|undefined;
     audible: boolean|null|undefined;
     offTask: boolean|null|undefined;
     classroomPinia: any;
@@ -66,6 +65,10 @@ class MobileFollower extends Follower {
     get activeTaskName(): string|null {
         const app = this.applications.find(res => res.id === this.currentApplication);
         return app ? app.getName() : 'No active app...'
+    }
+
+    get activeApplication(): Application|undefined {
+        return this.applications.find(res => res.id === this.currentApplication);
     }
 }
 

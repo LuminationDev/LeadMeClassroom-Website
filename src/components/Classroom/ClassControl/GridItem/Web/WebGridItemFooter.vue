@@ -108,7 +108,7 @@ function openDetailsModal() {
         <!--Tab screen-->
         <div v-else-if="controls" class="flex w-full">
           <!--Screenshot and WebRTC modal-->
-          <ScreenMonitorModal ref="monitorRef" :webFollower="webFollower" />
+<!--          <ScreenMonitorModal ref="monitorRef" :webFollower="webFollower" />-->
 
           <div class="h-10 mt-1 w-px bg-white"></div>
 
