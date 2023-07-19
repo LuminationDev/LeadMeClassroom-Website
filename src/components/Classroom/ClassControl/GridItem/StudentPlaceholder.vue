@@ -1,23 +1,18 @@
 <script setup lang="ts">
+import {computed} from "vue";
+import {useClassroomStore} from "@/stores/classroomStore";
+const classroomPinia = useClassroomStore();
 
+const classCode = computed(() => {
+  return classroomPinia.classCode !== ''
+})
 </script>
 
 <template>
-  <div class="w-48" id="student_placeholder">
-    <div class="h-28 flex flex-col justify-center items-center bg-gray-default border-2 border-gray-no-student rounded-t-sm text-gray-default-text text-lg">
-      <p>No active</p>
-      <p>students!</p>
-    </div>
-    <div class="h-12 bg-gray-no-student rounded-b-sm flex">
-      <button id="student_placeholder_view_button" class="w-full flex justify-center items-center cursor-default">
-        <img class="w-9 h-5" src="/src/assets/img/student-icon-eye.svg" alt="Icon"/>
-      </button>
-
-      <div class="h-10 mt-1 w-px bg-white"></div>
-
-      <button class="w-full flex justify-center items-center cursor-default">
-        <img class="w-5 h-3" src="/src/assets/img/student-icon-ham-menu.svg" alt="Icon"/>
-      </button>
+  <div class="w-64" id="student_placeholder">
+    <div class="h-36 w-full flex flex-col justify-center items-center bg-zinc-200 rounded-xl text-gray-400 text-lg text-center px-8">
+      <div class="mb-2">No active students!</div>
+      <div>{{ classCode ? 'Share room code with your class.' : 'Start a class and invite students.' }}</div>
     </div>
   </div>
 </template>
