@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {computed, reactive, ref} from "vue";
+import { computed, reactive, ref } from "vue";
 import useVuelidate from "@vuelidate/core";
 import { required, helpers, email as emailRule } from "@vuelidate/validators";
 import TextInput from "../../InputFields/TextInput.vue";
@@ -12,7 +12,7 @@ import emailFaded from '/src/assets/img/login/login-icon-email-fade.svg';
 import emailActive from '/src/assets/img/login/login-icon-email-active.svg';
 import emailSolid from '/src/assets/img/login/login-icon-email-solid.svg';
 import ActionBarBase from "@/components/ActionBar/ActionBarBase.vue";
-import AccountNotSaved from "@/components/Classroom/Account/AccountNotSaved.vue";
+import AccountChanged from "@/components/Classroom/Account/AccountChanged.vue";
 
 const classroomPinia = useClassroomStore();
 
@@ -96,6 +96,11 @@ async function validateAndSubmit() {
     error.marketing = result !== 'success' ? result : '';
     response.marketing = result === 'success' ? 'Successfully updated.' : '';
   }
+
+  //Remove the saved responses after 5 seconds (errors will stay)
+  setTimeout(() => {
+    Object.assign(response, initialObject);
+  }, 5000);
 }
 
 function changeView(view: string) {
@@ -120,7 +125,8 @@ function clearFields() {
           <p class="text-sm text-gray-400 font-semibold mb-3">Preferred Name</p>
           <div class="flex flex-row items-center mb-1">
             <TextInput v-model="name" :v$="v$.name" v-on:focusin="changed = false" class="w-64" type="text" placeholder="Display name"/>
-            <AccountNotSaved :show="name !== classroomPinia.leaderName"/>
+
+            <AccountChanged :changed="name !== classroomPinia.leaderName" :saved="response.displayName !== ''"/>
           </div>
 
           <div class="mb-8">
@@ -128,7 +134,6 @@ function clearFields() {
               <img class="w-3.5 mr-1" src="/src/assets/img/account-icon-alert.svg" alt="alert"/>
               This name is display to your students.
             </div>
-            <p v-if="response.displayName !== ''"  class="w-64 px-1 text-green-400 text-sm">{{ response.displayName }}</p>
             <p v-if="error.displayName !== ''" class="px-1 text-red-800 text-sm mb-3">{{ error.displayName }}</p>
           </div>
 
@@ -144,9 +149,9 @@ function clearFields() {
                   :v$="v$.email"
                   placeholder="Email"
                   alt="Email"/>
-              <AccountNotSaved :show="email !== classroomPinia.leaderEmail"/>
+
+              <AccountChanged :changed="email !== classroomPinia.leaderEmail" :saved="response.email !== ''"/>
             </div>
-            <p v-if="response.email !== ''"  class="w-64 px-1 text-green-400 text-sm">{{ response.email }}</p>
             <p v-if="error.email !== ''" class="px-1 text-red-800 text-sm mb-3">{{ error.email }}</p>
           </div>
         </div>
@@ -178,10 +183,8 @@ function clearFields() {
               </span>
             </label>
 
-            <AccountNotSaved :show="marketing !== classroomPinia.marketing"/>
+            <AccountChanged :changed="marketing !== classroomPinia.marketing" :saved="response.marketing !== ''"/>
           </div>
-
-          <p v-if="response.marketing !== ''" class="w-64 px-1 text-green-400 text-sm mb-3">{{ response.marketing }}</p>
           <p v-if="error.marketing !== ''" class="px-1 text-red-800 text-sm mb-3">{{ error.marketing }}</p>
         </div>
       </div>

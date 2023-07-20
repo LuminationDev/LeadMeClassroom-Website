@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import WebPlaceholder from "./GridItem/StudentPlaceholder.vue";
-import WebGridItem from "./GridItem/Web/WebGridItem.vue";
 import MobileGridItem from "./GridItem/Mobile/MobileGridItem.vue";
 import type { WebFollower, MobileFollower } from "../../../models";
 import { computed } from "vue";
