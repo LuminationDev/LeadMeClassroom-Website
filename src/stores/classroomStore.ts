@@ -2,7 +2,7 @@ import { defineStore } from "pinia";
 import { useStorage } from "@/hooks/useStorage";
 import * as REQUESTS from "../constants/_requests.js";
 import Firebase from '../controller/_firebase';
-import { Leader, MobileFollower, Tab, WebFollower } from '@/models';
+import {Leader, MobileFollower, Tab, Task, WebFollower} from '@/models';
 import { useWebRTCStore } from "./webRTCStore";
 import type { User } from "@firebase/auth";
 import { getAuth, sendPasswordResetEmail } from "@firebase/auth";
@@ -173,6 +173,7 @@ export const useClassroomStore = defineStore("classroom", {
             if (followerToUpdate) {
                 // @ts-ignore
                 followerToUpdate[key as keyof typeof followerToUpdate] = value;
+                this.firebase.updateFollower(this.classCode, UUID, {[key]: value}, followerToUpdate.type);
             }
         },
 
@@ -331,6 +332,24 @@ export const useClassroomStore = defineStore("classroom", {
                 mute);
         },
 
+        /**
+         * Convert the string received from firebase into an array of tasks to supply to a follower object.
+         */
+        convertSavedTaskList(snapshot: any): Task[] {
+            const taskList: Task[] = [];
+
+            //Need to convert any saved tasks to the Task class
+            if(snapshot.tasks !== null && snapshot.tasks !== undefined) {
+                snapshot.tasks.forEach((item: string) => {
+                    const data = item.split("|");
+                    if(data.length !== 3) { return; }
+                    taskList.push(new Task(data[0], data[1], data[2]));
+                });
+            }
+
+            return taskList;
+        },
+
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         ////////////////////////////////////////////WEB FUNCTIONS///////////////////////////////////////////////////////
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -389,9 +408,10 @@ export const useClassroomStore = defineStore("classroom", {
          * @param snapshot
          */
         webFollowerAdded(UUID: string, snapshot: any) {
-            const follower = new WebFollower(this.classCode, snapshot.name, UUID)
+            const taskList = this.convertSavedTaskList(snapshot);
+
+            const follower = new WebFollower(this.classCode, snapshot.name, snapshot.locked ?? false, snapshot.muted ?? false, taskList, UUID)
             follower.monitoring = false
-            follower.muted = false
             follower.muteAll = false
             follower.tabs = snapshot.tabs
             if (snapshot.screenshot) {
@@ -600,13 +620,15 @@ export const useClassroomStore = defineStore("classroom", {
          * @param snapshot
          */
         mobileFollowerAdded(UUID: string, snapshot: any) {
+            const taskList = this.convertSavedTaskList(snapshot);
+
             const appsWithoutImageData: Array<string> = []
             const follower = new MobileFollower(this.classCode, snapshot.name, snapshot.applications.map((element: Application) => {
                 if (!this.firebase.getAppIcon(element.packageName)) {
                     appsWithoutImageData.push(element.packageName)
                 }
                 return element
-            }), snapshot.videos, UUID)
+            }), snapshot.videos, snapshot.locked ?? false, snapshot.muted ?? false, taskList, UUID)
             if (appsWithoutImageData.length > 0) {
                 this.requestIndividualAction(follower.uniqueId, { type: REQUESTS.UPLOADICONS, action: appsWithoutImageData.join(":") }, REQUESTS.MOBILE)
             }

@@ -101,13 +101,14 @@ export const useActionStore = defineStore("action", {
                     this.sendWebsite(callback);
                     break;
 
-                case "curated":
-                    this.sendCuratedContent(callback);
-                    break;
-
                 case "video":
                 case "app":
-                    this.sendApplicationOrVideo(callback);
+                case "curated":
+                    this.sendTaskList(callback);
+                    break;
+
+                default:
+                    console.log("Unknown shareType: " + this.shareType);
                     break;
             }
 
@@ -127,7 +128,10 @@ export const useActionStore = defineStore("action", {
             return vimeoRegex.test(link);
         },
 
-        //TODO TASKS NOT SETUP FOR WEB USERS - MAY RESULT IN WEIRD STUFF
+        /**
+         * Send a website URL as a new task to update a followers allowed tasks.
+         * @param callback
+         */
         sendWebsite(callback: UpdateFollowerTasksCallback) {
             this.selectedFollowers.forEach(follower => {
                 let format = "Website";
@@ -138,31 +142,33 @@ export const useActionStore = defineStore("action", {
                     type = "Video";
                 }
 
-                follower.tasks = Array.from(new Set(follower.tasks.concat([new Task(format, this.websiteURL, type)])));
+                if (!follower.tasks.some(task => task.getPackageName() === this.websiteURL)) {
+                    follower.tasks.push(new Task(format, this.websiteURL, type));
+                }
                 callback(follower.getUniqueId(), follower.tasks.map(app => app.toStringEntry()), follower.type);
             });
         },
 
-        //TODO TASKS NOT SETUP FOR WEB USERS - MAY RESULT IN WEIRD STUFF
-        sendCuratedContent(callback: UpdateFollowerTasksCallback) {
+        /**
+         * Send a list of tasks to each of the selected followers. Apps and Videos can only be shared with mobile users.
+         * @param callback
+         */
+        sendTaskList(callback: UpdateFollowerTasksCallback) {
             this.selectedFollowers.forEach(follower => {
-                //Update the task list
-                follower.tasks = Array.from(new Set(follower.tasks.concat(this.selectedItems)));
-                callback(follower.getUniqueId(), follower.tasks.map(app => app.toStringEntry()), follower.type);
-            });
-        },
-
-        //TODO TASKS NOT SETUP FOR WEB USERS - MAY RESULT IN WEIRD STUFF
-        sendApplicationOrVideo(callback: UpdateFollowerTasksCallback) {
-            this.selectedFollowers.forEach(follower => {
-                //Only Mobile users can be shared a local file
-                if (follower.type === REQUESTS.WEB) {
+                //Only Mobile users can be shared a local file (app or video)
+                if (follower.type === REQUESTS.WEB && (this.shareType === 'app' || this.shareType === 'video')) {
                     return;
                 }
-                follower.tasks = Array.from(new Set(follower.tasks.concat(this.selectedItems)));
+
+                //Update the task list (only including unique tasks)
+                this.selectedItems.forEach(item => {
+                    if (!follower.tasks.some(task => task.getPackageName() === item.getPackageName())) {
+                        follower.tasks.push(item);
+                    }
+                });
                 callback(follower.getUniqueId(), follower.tasks.map(app => app.toStringEntry()), follower.type);
             });
-        }
+        },
     },
     getters: {
 

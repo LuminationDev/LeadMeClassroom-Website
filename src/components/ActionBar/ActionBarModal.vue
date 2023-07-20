@@ -68,7 +68,7 @@ const viewScreen = () => {
  * immediately be blacked out as well. A mobile device will have the full screen blocked from use.
  */
 const lockScreens = () => {
-  classroomPinia.lockScreens(props.follower, props.follower.locked);
+  classroomPinia.lockScreens(props.follower, !props.follower.locked);
 }
 
 /**
@@ -76,7 +76,7 @@ const lockScreens = () => {
  * itself muted. Depending on the saved muted value on the follower model the command will send a mute or unmute command.
  */
 const muteSound = () => {
-  classroomPinia.muteSound(props.follower, props.follower.muted);
+  classroomPinia.muteSound(props.follower, !props.follower.muted);
 }
 
 /**

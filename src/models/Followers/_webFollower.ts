@@ -2,6 +2,7 @@ import type { Tab } from "../index";
 import { v4 as uuidv4 } from 'uuid';
 import Follower from "@/models/Followers/_follower";
 import * as REQUESTS from "@/constants/_requests";
+import type { Task } from "../index";
 
 /**
  * A class to describe the outline of a follower that is being attached
@@ -18,8 +19,8 @@ class WebFollower extends Follower {
     muteAll: boolean|null|undefined;
     offTask: boolean|null|undefined;
 
-    constructor(classCode = "", name = "", uniqueId = uuidv4()) {
-        super(classCode, name, uniqueId, REQUESTS.WEB)
+    constructor(classCode = "", name = "", locked: boolean = false, muted: boolean = false, tasks: Task[] = [], uniqueId = uuidv4()) {
+        super(classCode, name, uniqueId, REQUESTS.WEB, locked, muted, tasks)
         this.tabs = [];
         this.permission = null;
     }
