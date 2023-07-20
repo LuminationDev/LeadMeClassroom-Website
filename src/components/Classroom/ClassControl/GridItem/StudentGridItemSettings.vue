@@ -10,6 +10,7 @@ import UnlockIcon from "@/assets/vue/UnlockIcon.vue";
 
 defineEmits<{
     (e: 'changePanel', value: string): void
+    (e: 'screenMonitor'): void
 }>();
 
 const props = defineProps({
@@ -36,7 +37,7 @@ const lockedText = computed(() => {
 
 <template>
   <div class="flex flex-col h-24">
-    <div v-if="follower.type === REQUESTS.WEB" class="flex flex-row h-7 items-center hover:bg-white cursor-pointer rounded-xl px-1 mb-2">
+    <div v-if="follower.type === REQUESTS.WEB" @click="$emit('screenMonitor')" class="flex flex-row h-7 items-center hover:bg-white cursor-pointer rounded-xl px-1 mb-2">
       <EyeIcon class="h-5" :colour="'black'"/>
       <span class="ml-2 font-semibold text-sm">View Screen</span>
     </div>
