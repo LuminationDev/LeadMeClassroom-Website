@@ -66,7 +66,8 @@ onMounted(() => {
       <div class="flex flex-row">
         <!--Thumbnail preview-->
         <div class="flex flex-col w-1/3">
-          <img class="h-32 rounded-xl mr-2 object-cover" :src="imageLink" alt="Image"/>
+          <img v-if="imageLink && imageLink !== ''" class="h-32 rounded-xl mr-2 object-cover" :src="imageLink" alt="Image"/>
+          <div v-else class="h-32 rounded-xl mr-2 c-animated-background"/>
         </div>
 
         <div class="flex flex-col w-2/3">
@@ -124,3 +125,17 @@ onMounted(() => {
     </div>
   </div>
 </template>
+
+<style>
+@keyframes placeHolderShimmer {
+  0%   { background-position:  100%; }
+  100% { background-position: -100%; }
+}
+
+.c-animated-background {
+  animation: 3s linear infinite placeHolderShimmer;
+  background: linear-gradient(to right, #e2e8f0 0%, #cbd5e1 8%, #e2e8f0 16%, #e2e8f0 50%, #cbd5e1 58%, #e2e8f0 66%);
+  background-size: 200%;
+  height: 100%;
+}
+</style>

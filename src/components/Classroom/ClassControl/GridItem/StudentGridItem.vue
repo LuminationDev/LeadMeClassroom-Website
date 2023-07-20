@@ -12,6 +12,7 @@ import StudentGridItemRemoval from "@/components/Classroom/ClassControl/GridItem
 import StudentGridItemDisconnected from "@/components/Classroom/ClassControl/GridItem/StudentGridItemDisconnected.vue";
 import StudentDetailModal from "@/components/Modals/StudentDetails/StudentDetailModal.vue";
 import ScreenMonitorModal from "@/components/Modals/ScreenMonitorModal.vue";
+import MobileStudentDetailModal from "@/components/Modals/MobileStudentDetailModal.vue";
 
 const emit = defineEmits<{
   (e: 'selectionToggled', value: boolean): void
@@ -47,6 +48,12 @@ const monitorRef = ref<InstanceType<typeof ScreenMonitorModal> | null>(null)
 function openMonitorModal() {
   monitorRef.value?.initiateMonitoring();
 }
+
+const studentDetailModal = ref<InstanceType<typeof StudentDetailModal> | null>(null)
+
+function openModal() {
+  studentDetailModal.value?.openModal()
+}
 </script>
 
 <template>
@@ -65,24 +72,24 @@ function openMonitorModal() {
 
       <!--Front of card-->
       <div v-else-if="studentPanel === 'main'">
-        <div class="flex flex-row justify-between">
+        <div class="flex flex-row justify-between" @click="openModal">
           <span class="text-lg font-medium" :class="{
           'text-blue-500': selected
         }">{{ follower.name }}</span>
           <div class="flex flex-row">
             <WebFollowerIcon v-if="follower.type === REQUESTS.WEB" class="h-6 w-6 mr-2" :colour="selected ? '#3B82F6' : '#BDC3D6'" />
             <MobileFollowerIcon v-else-if="follower.type === REQUESTS.MOBILE" class="h-6 w-6 mr-2" :colour="selected ? '#3B82F6' : '#BDC3D6'" />
-            <CheckboxInput :checked="selected" @on-change="selectionToggled" />
+            <CheckboxInput :checked="selected" @on-change="selectionToggled" @click.stop />
           </div>
         </div>
         <div class="rounded-full text-gray-500 mt-4 mb-3" :class="{
           'bg-blue-100': selected,
           'bg-white': !selected
         }">
-          <StudentDetailModal :follower="follower" @screenMonitor="openMonitorModal"/>
+          <StudentDetailModal ref="studentDetailModal" :follower="follower" @screenMonitor="openMonitorModal"/>
         </div>
         <div class="flex flex-row justify-end">
-          <EllipsisIcon v-on:click="changePanel('settings')" class="h-5 cursor-pointer" :colour="selected ? '#3B82F6' : '#BDC3D6'"/>
+          <EllipsisIcon v-on:click.stop="changePanel('settings')" class="h-5 cursor-pointer" :colour="selected ? '#3B82F6' : '#BDC3D6'"/>
         </div>
       </div>
 
@@ -90,6 +97,7 @@ function openMonitorModal() {
       <StudentGridItemSettings
           v-else-if="studentPanel === 'settings'"
           :follower="follower"
+          @screenMonitor="openMonitorModal"
           @changePanel="changePanel"/>
 
       <!--Confirm removal panel-->

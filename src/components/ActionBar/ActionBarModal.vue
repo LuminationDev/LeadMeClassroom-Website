@@ -68,7 +68,7 @@ const viewScreen = () => {
  * immediately be blacked out as well. A mobile device will have the full screen blocked from use.
  */
 const lockScreens = () => {
-  classroomPinia.lockScreens(props.follower, props.follower.locked);
+  classroomPinia.lockScreens(props.follower, !props.follower.locked);
 }
 
 /**
