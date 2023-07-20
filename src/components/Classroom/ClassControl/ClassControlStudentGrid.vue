@@ -44,11 +44,10 @@ const activeMobileFollowers = computed((): number => {
 </script>
 
 <template>
-  <div class="mt-14 ml-10">
+  <div class="mt-14 ml-3 lg:ml-10">
     <!--No active students-->
     <div v-if="webFollowers.length === 0 && mobileFollowers.length === 0">
       <p class="text-base text-black">
-        Active Students
         <span v-if="activeWebFollowers !== 0">
           ({{ activeWebFollowers }})
         </span>
@@ -67,15 +66,8 @@ const activeMobileFollowers = computed((): number => {
       </p>
 
       <div id="studentGrid" class="flex flex-row flex-wrap">
-        <!--Student Web Grid Item (Active student)-->
-        <WebGridItem
-            class="mr-4 mt-4"
-            v-for="follower in sortedWebFollowers"
-            :key="follower.getUniqueId()"
-            :webFollower="follower"/>
-
         <ClassControlStudentGridItem
-            class="mr-4 mt-4"
+            class="mr-0 md:mr-4 mt-4"
             v-for="follower in sortedWebFollowers"
             :key="follower.getUniqueId()"
             :selected="actionPinia.selectedFollowers.includes(follower)"

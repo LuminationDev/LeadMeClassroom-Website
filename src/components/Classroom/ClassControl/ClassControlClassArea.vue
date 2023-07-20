@@ -18,16 +18,16 @@ const logout = () => {
 </script>
 
 <template>
-  <div class="mt-20 px-5 lg:px-10 sticky top-0 w-full py-4 bg-panel-background">
+  <div class="mt-20 px-3 lg:px-5 lg:px-10 sticky top-0 w-full py-4 bg-panel-background">
     <div class="flex flex-row justify-between items-center">
-      <p class="text-3xl font-medium" v-if="classroomPinia.user">{{
+      <p class="text-3xl lg:ml-5 font-medium" v-if="classroomPinia.user">{{
           classroomPinia.user?.displayName
         }}'{{ classroomPinia?.user?.displayName?.endsWith('s') ? '' : 's' }} Class</p>
 
       <!--Settings drop down-->
       <div class="flex flex-col">
         <Teleport to="body">
-          <img v-on:click="open = !open" class="w-9 cursor-pointer absolute right-5 lg:right-10 top-24 z-30" :src="settingsIconUrl" alt="Icon"/>
+          <img v-on:click="open = !open" class="w-9 cursor-pointer absolute right-5 lg:right-10 top-10 sm:top-24 z-30" :src="settingsIconUrl" alt="Icon"/>
 
           <Transition name="fade" mode="out-in">
             <div v-if="open" v-on:click="open = false" class="bg-transparent absolute h-screen w-screen top-0 left-0 z-20">
