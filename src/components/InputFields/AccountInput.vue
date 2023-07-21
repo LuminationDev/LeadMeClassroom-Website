@@ -1,6 +1,9 @@
 <script setup lang="ts">
-import {ref} from "vue";
-import ImageState from "@/components/Images/ImageState.vue";
+import { ref } from "vue";
+import PasswordIcon from "@/assets/vue/Login/PasswordIcon.vue";
+import PersonIcon from "@/assets/vue/Login/PersonIcon.vue";
+import EmailIcon from "@/assets/vue/Login/EmailIcon.vue";
+import { computed } from "vue";
 
 const inputFocus = ref(false);
 const props = defineProps({
@@ -16,22 +19,10 @@ const props = defineProps({
     type: Object,
     required: true
   },
-  fadedSrc: {
+  type: {
     type: String,
     required: true
   },
-  activeSrc: {
-    type: String,
-    required: true
-  },
-  solidSrc: {
-    type: String,
-    required: true
-  },
-  alt: {
-    type: String,
-    required: true
-  }
 });
 const emit = defineEmits(['update:modelValue'])
 
@@ -43,21 +34,29 @@ function handleInput(inputEvent: Event) {
     props.v$.$touch()
   }
 }
+
+const state = computed(() => {
+  if (props.modelValue.length === 0 && !inputFocus.value) {
+    return '#959EAF';
+  } else if (inputFocus.value) {
+    return '#3B82F6';
+  } else if (props.modelValue.length > 0 && !inputFocus.value) {
+    return 'black';
+  }
+
+  return '#959EAF';
+})
 </script>
 
 <template>
   <div>
     <div class="flex flex-row">
       <div class="relative">
-        <ImageState
-            class="absolute mt-3.5 left-3 w-5 h-5"
-            :faded="modelValue.length === 0 && !inputFocus"
-            :active="inputFocus"
-            :solid="modelValue.length > 0 && !inputFocus"
-            :faded-src="fadedSrc"
-            :active-src="activeSrc"
-            :solid-src="solidSrc"
-            :alt="alt"/>
+        <div class="absolute mt-3.5 left-3">
+          <EmailIcon v-if="type === 'email'" class="w-5 h-5" :colour="state"/>
+          <PasswordIcon v-if="type === 'password'" class="w-5 h-5" :colour="state"/>
+          <PersonIcon v-if="type === 'name'" class="w-5 h-5" :colour="state"/>
+        </div>
 
         <input
             v-if="v$"

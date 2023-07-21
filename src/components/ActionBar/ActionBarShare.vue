@@ -19,20 +19,6 @@ const goBack = () => {
   actionPinia.showModal = true;
 }
 
-const selectAll = () => {
-  //Select all users
-  classroomPinia.mobileFollowers.forEach(follower => {
-    actionPinia.handleFollowerSelection(follower, true);
-  });
-
-  //Web users cannot handle local videos or apps
-  if(actionPinia.shareType !== "video" && actionPinia.shareType !== "app") {
-    classroomPinia.webFollowers.forEach(follower => {
-      actionPinia.handleFollowerSelection(follower, true);
-    });
-  }
-}
-
 const shareContent = () => {
   const updateFollowerTasksCallback: UpdateFollowerTasksCallback = (uniqueId, tasks, followerType) => {
     classroomPinia.updateFollowerTasks(uniqueId, tasks, followerType);
@@ -69,15 +55,6 @@ const shareText = computed(() => {
 
 <template>
   <ActionBarBase>
-    <template v-slot:left>
-      <div class="h-9 flex items-center pl-3 pr-4 rounded-3xl text-base
-        text-white cursor-pointer bg-blue-400 hover:bg-blue-300"
-        v-on:click="selectAll"
-      >
-        Select All
-      </div>
-    </template>
-
     <template v-slot:right>
       <div class="flex flex-row items-center">
         <div class="text-white mr-2">

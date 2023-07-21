@@ -1,12 +1,6 @@
 <script setup lang="ts">
 import GenericButton from "../../Buttons/GenericButton.vue";
 import AccountInput from "../../InputFields/AccountInput.vue";
-import emailFaded from '/src/assets/img/login/login-icon-email-fade.svg';
-import emailActive from '/src/assets/img/login/login-icon-email-active.svg';
-import emailSolid from '/src/assets/img/login/login-icon-email-solid.svg';
-import nameFaded from '/src/assets/img/login/login-icon-person-faded.svg';
-import nameActive from '/src/assets/img/login/login-icon-person-active.svg';
-import nameSolid from '/src/assets/img/login/login-icon-person-solid.svg';
 import { ref, computed } from "vue";
 import useVuelidate from "@vuelidate/core";
 import { required, email as emailRule, sameAs, helpers, minLength } from "@vuelidate/validators";
@@ -103,23 +97,17 @@ async function validateInputs() {
       <div>
         <AccountInput
             class="mb-2"
-            :faded-src="nameFaded"
-            :active-src="nameActive"
-            :solid-src="nameSolid"
             v-model="name"
             :v$="v$.name"
             placeholder="Name"
-            alt="Name"/>
+            type="name"/>
 
         <AccountInput
             class="mb-2"
-            :faded-src="emailFaded"
-            :active-src="emailActive"
-            :solid-src="emailSolid"
             v-model="email"
             :v$="v$.email"
             placeholder="Email"
-            alt="Email"/>
+            type="email"/>
         <PasswordInput class="mb-2" placeholder="Password" :v$="v$.password" v-model="password"/>
         <p class="text-red-400">{{ error }}</p>
       </div>

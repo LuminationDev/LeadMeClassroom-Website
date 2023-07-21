@@ -1,12 +1,9 @@
 <script setup lang="ts">
-import { ref } from "vue";
-import passwordFaded from '/src/assets/img/login/login-icon-password-fade.svg';
-import passwordActive from '/src/assets/img/login/login-icon-password-active.svg';
-import passwordSolid from '/src/assets/img/login/login-icon-password-solid.svg';
-import ImageState from "@/components/Images/ImageState.vue";
+import {computed, ref} from "vue";
+import PasswordIcon from "@/assets/vue/Login/PasswordIcon.vue";
 
 const inputFocus = ref(false);
-defineProps({
+const props = defineProps({
   placeholder: {
     type: String,
     required: true,
@@ -32,21 +29,27 @@ const showPassword = ref(false)
 function handleInput(event: Event) {
   emit('update:modelValue', (event.target as HTMLInputElement).value)
 }
+
+const state = computed(() => {
+  if (props.modelValue.length === 0 && !inputFocus.value) {
+    return '#959EAF';
+  } else if (inputFocus.value) {
+    return '#3B82F6';
+  } else if (props.modelValue.length > 0 && !inputFocus.value) {
+    return 'black';
+  }
+
+  return '#959EAF';
+})
 </script>
 
 <template>
   <div>
     <div class="flex flex-row">
       <div class="relative">
-        <ImageState
-            class="absolute mt-3.5 left-3 w-5 h-5"
-            :faded="modelValue.length === 0 && !inputFocus"
-            :active="inputFocus"
-            :solid="modelValue.length > 0 && !inputFocus"
-            :faded-src="passwordFaded"
-            :active-src="passwordActive"
-            :solid-src="passwordSolid"
-            :alt="'password icon'"/>
+        <div class="absolute mt-3.5 left-3">
+          <PasswordIcon class="w-5 h-5" :colour="state"/>
+        </div>
 
         <input
             v-if="v$"

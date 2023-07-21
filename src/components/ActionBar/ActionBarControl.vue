@@ -10,6 +10,8 @@ import { computed } from "vue";
 import RemoveIcon from "@/assets/vue/RemoveIcon.vue";
 import UnmuteIcon from "@/assets/vue/UnmuteIcon.vue";
 import MuteIcon from "@/assets/vue/MuteIcon.vue";
+import ActionBarItem from "@/components/ActionBar/ActionBarItem.vue";
+import CircleCrossIcon from "@/assets/vue/CircleCrossIcon.vue";
 
 const classroomPinia = useClassroomStore();
 const actionPinia = useActionStore();
@@ -76,17 +78,6 @@ const removeUser = () => {
   });
 }
 
-const selectAll = () => {
-  //Select all users
-  classroomPinia.mobileFollowers.forEach(follower => {
-    actionPinia.handleFollowerSelection(follower, true);
-  });
-
-  classroomPinia.webFollowers.forEach(follower => {
-    actionPinia.handleFollowerSelection(follower, true);
-  });
-}
-
 const cancel = () => {
   //Open the share content model
   actionPinia.selectedFollowers = [];
@@ -97,70 +88,35 @@ const cancel = () => {
   <ActionBarBase>
     <template v-slot:left>
       <div class="flex flex-row [&>*]:mr-2">
-        <div class="h-9 flex items-center pl-3 pr-4 rounded-3xl text-base
-          text-white cursor-pointer bg-blue-400 hover:bg-blue-300"
-          v-on:click="shareContent"
-        >
-          <img class="w-5 h-5 mr-1" :src="shareContentIconUrl" alt="Icon"/>
-          Share Content
-        </div>
+        <ActionBarItem v-on:click="shareContent" :text="'Share Content'">
+          <img class="w-5 h-5 2xl:mr-1" :src="shareContentIconUrl" alt="Icon"/>
+        </ActionBarItem>
 
-        <div class="h-9 flex items-center pl-3 pr-4 rounded-3xl text-base
-          text-white cursor-pointer bg-blue-400 hover:bg-blue-300"
-             v-on:click="clearTaskList"
-        >
-          <img class="w-5 h-5 mr-2" :src="selectIconUrl" alt="Icon"/>
-          Clear Tasks
-        </div>
+        <ActionBarItem v-on:click="clearTaskList" :text="'Clear Tasks'">
+          <img class="w-5 h-5 2xl:mr-2" :src="selectIconUrl" alt="Icon"/>
+        </ActionBarItem>
 
-        <div class="h-9 flex items-center pl-3 pr-4 rounded-3xl text-base
-          text-white cursor-pointer bg-blue-400 hover:bg-blue-300"
-             v-on:click="lockScreens"
-        >
+        <ActionBarItem v-on:click="lockScreens" :text="lockedText">
           <UnlockIcon v-if="calcLock" class="h-5" :colour="'white'"/>
           <LockIcon v-else class="h-5" :colour="'white'"/>
-          <span class="ml-1">{{lockedText}}</span>
-        </div>
+        </ActionBarItem>
 
-        <div class="h-9 flex items-center pl-3 pr-4 rounded-3xl text-base
-          text-white cursor-pointer bg-blue-400 hover:bg-blue-300"
-             v-on:click="muteSound"
-        >
+        <ActionBarItem v-on:click="muteSound" :text="soundText">
           <UnmuteIcon v-if="calcSound" class="h-5" :colour="'white'"/>
           <MuteIcon v-else class="h-5" :colour="'white'"/>
-          <span class="ml-1">{{soundText}}</span>
-        </div>
+        </ActionBarItem>
 
-        <div class="h-9 flex items-center pl-3 pr-4 rounded-3xl text-base
-          text-white cursor-pointer bg-blue-400 hover:bg-blue-300"
-             v-on:click="removeUser"
-        >
+        <ActionBarItem v-on:click="removeUser" :text="actionPinia.selectedItems.length > 1 ? 'Remove Users' : 'Remove User'">
           <RemoveIcon :colour="'white'"/>
-          <span class="ml-1">Remove User<span v-if="actionPinia.selectedItems.length > 1">s</span></span>
-        </div>
+        </ActionBarItem>
       </div>
     </template>
 
     <template v-slot:right>
-      <div class="flex flex-row items-center">
-        <div class="text-white mr-2">
-          {{actionPinia.selectedFollowers.length}} Selected
-        </div>
-
-        <div class="h-9 flex items-center pl-3 pr-4 rounded-3xl text-base
-        text-white cursor-pointer bg-blue-400 hover:bg-blue-300"
-             v-on:click="selectAll"
-        >
-          Select All
-        </div>
-
-        <div class="h-9 flex items-center ml-2 pl-3 pr-4 rounded-3xl text-base
-          text-white cursor-pointer bg-gray-400 hover:bg-gray-300"
-          v-on:click="cancel"
-        >
-          Cancel
-        </div>
-      </div>
+      <ActionBarItem v-on:click="cancel" :text="'Cancel'"
+                     class="bg-gray-400 hover:bg-gray-300">
+        <CircleCrossIcon :colour="'white'"/>
+      </ActionBarItem>
     </template>
   </ActionBarBase>
 </template>

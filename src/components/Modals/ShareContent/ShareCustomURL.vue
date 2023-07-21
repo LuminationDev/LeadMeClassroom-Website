@@ -4,13 +4,11 @@ import { helpers, required } from "@vuelidate/validators";
 import { useActionStore } from "@/stores/actionStore";
 import useVuelidate from "@vuelidate/core";
 import devicesIconUrl from '/src/assets/img/share-content-devices.svg';
-import fadedLinkIconUrl from '/src/assets/img/share-content-link-faded.svg';
-import activeLinkIconUrl from '/src/assets/img/share-content-link-active.svg';
-import solidLinkIconUrl from '/src/assets/img/share-content-link-solid.svg';
 import selectIconUrl from '/src/assets/img/selection-icon-individual.svg';
 import allIconUrl from '/src/assets/img/selection-icon-all.svg';
-import {UpdateFollowerTasksCallback} from "@/constants/_functionTypes";
-import {useClassroomStore} from "@/stores/classroomStore";
+import LinkIcon from "@/assets/vue/Content/LinkIcon.vue";
+import { UpdateFollowerTasksCallback } from "@/constants/_functionTypes";
+import { useClassroomStore } from "@/stores/classroomStore";
 
 const emit = defineEmits<{
   (e: 'close'): void
@@ -97,7 +95,7 @@ const selectAll = () => {
     <div class="w-5 h-5 ml-5"></div>
 
     <div class="flex justify-center items-center">
-      <img class="w-5 h-5 mr-3" :src="fadedLinkIconUrl" alt="Icon"/>
+      <LinkIcon class="w-5 h-5 mr-3" :colour="'#959EAF'" />
       Share a Custom URL
     </div>
 
@@ -108,7 +106,7 @@ const selectAll = () => {
   <div v-else class="flex justify-between items-center
      text-lg bg-white rounded-2xl p-1 h-16">
 
-    <img class="w-5 h-5 ml-8" :src="inputFocus ? activeLinkIconUrl : solidLinkIconUrl" alt="Icon"/>
+    <LinkIcon class="w-5 h-5 ml-8" :colour="inputFocus ? '#3B82F6' : 'black'" />
 
     <input
       ref="urlInput"
