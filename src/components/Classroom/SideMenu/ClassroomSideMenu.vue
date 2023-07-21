@@ -10,8 +10,8 @@ import RoomCodeModal from "@/components/Modals/RoomCode/RoomCodeModal.vue";
 
 const classroomPinia = useClassroomStore();
 
-const expanded = ref(false)
 const screenSize = ref(window.innerWidth)
+const expanded = ref(screenSize.value >= 1280)
 
 onBeforeMount(() => {
   window.addEventListener('resize', resizeHandler)
@@ -23,10 +23,15 @@ onBeforeUnmount(() => {
 
 const resizeHandler = (e: UIEvent) => {
   screenSize.value = (e?.currentTarget as Window)?.innerWidth
+  if (screenSize.value >= 1280) {
+    expanded.value = true
+  } else {
+    expanded.value = false
+  }
 }
 
 const sidebarShouldBeExpanded = computed(() => {
-  return expanded.value || screenSize.value >= 1024
+  return expanded.value
 })
 
 const classCode = computed(() => {
@@ -40,20 +45,27 @@ async function endSession() {
 async function generateSession() {
   await classroomPinia.generateSession();
 }
+
+const hover = ref(false)
 </script>
 
 <template>
   <Transition name="fade">
-    <div v-if="sidebarShouldBeExpanded" class="lg:hidden absolute w-screen h-screen opacity-80 bg-gray-200 z-20 cursor-pointer" @click="() => { expanded = !expanded }"></div>
+    <div v-if="sidebarShouldBeExpanded" class="xl:hidden absolute w-screen h-screen opacity-80 bg-gray-200 z-20 cursor-pointer" @click="() => { expanded = !expanded }"></div>
   </Transition>
-  <div class="fixed top-0 left-0 lg:block lg:relative bg-navy-side-menu z-20 h-screen" :class="sidebarShouldBeExpanded ? 'sidebar-expanded' : 'sidebar-closed'">
-    <div class="lg:hidden absolute top-7 -right-4 cursor-pointer" @click="() => { expanded = !expanded }">
+  <div class="fixed top-0 left-0 xl:block xl:relative bg-navy-side-menu z-20 h-screen corner" :class="sidebarShouldBeExpanded ? 'sidebar-expanded' : 'sidebar-closed'" @mouseover="hover = true" @mouseleave="hover = false">
+    <div class="xl:hidden absolute top-10 -right-4 cursor-pointer" @click="() => { expanded = !expanded }">
+      <img class="w-8 h-8"
+           :src="sidebarShouldBeExpanded ? '/src/assets/img/sidebar-close.svg' : '/src/assets/img/sidebar-open.svg'"
+           alt="Menu button"/>
+    </div>
+    <div v-if="hover || !sidebarShouldBeExpanded" class="absolute top-10 -right-4 cursor-pointer" @click="() => { expanded = !expanded }">
       <img class="w-8 h-8"
            :src="sidebarShouldBeExpanded ? '/src/assets/img/sidebar-close.svg' : '/src/assets/img/sidebar-open.svg'"
            alt="Menu button"/>
     </div>
     <div class="flex justify-center items-center">
-      <img class="my-6"
+      <img class="mt-10 mb-6"
           :class="sidebarShouldBeExpanded ? 'w-28 h-10' : 'h-10 w-10'"
            :src="sidebarShouldBeExpanded ? '/src/assets/img/icon-dashboard-logo.svg' : '/src/assets/img/icon-logo.svg'"
            alt="LeadMe Icon"/>
@@ -99,17 +111,25 @@ async function generateSession() {
       >End Class</ClassroomMenuItem>
     </div>
     </div>
-  <div class="lg:hidden w-24 h-screen z-10"></div>
+  <div class="xl:hidden w-24 h-screen z-10"></div>
 </template>
 
 <style lang="scss">
 .sidebar-expanded {
   transition: 0.2s ease-in-out;
+  &::before {
+    left:13.96rem;
+    transition: all 0.2s ease-in-out;
+  }
   .menu-item {
     max-width: 12rem;
     .menu-item-text {
       opacity: 1;
-      transition: opacity 0.3s ease-in-out;
+      animation: animate 0.2s linear forwards;
+      &--room-code {
+        @apply text-center
+      }
+      @apply text-start whitespace-nowrap overflow-hidden
     }
     .menu-item-icon {
       &--room-code {
@@ -126,11 +146,14 @@ async function generateSession() {
 }
 .sidebar-closed {
   transition: 0.2s ease-in-out;
+  &::before {
+    left:5.96rem;
+    transition: all 0.2s ease-in-out;
+  }
   .menu-item {
     .menu-item-text {
       opacity: 0;
       display: none;
-      transition: opacity 0.3s ease-in-out;
     }
     .menu-item-icon {
       &--spinner {
@@ -141,5 +164,23 @@ async function generateSession() {
     @apply justify-center w-full items-center px-4 h-16 w-16
   }
   @apply w-24
+}
+.corner::before {
+  content: "";
+  position: absolute;
+  background-color: transparent;
+  height: 25px;
+  width: 15px;
+  top: 1.5rem;
+  border-top-left-radius: 15px;
+  box-shadow: 0 -15px 0 0 #182B50;
+}
+@keyframes animate {
+  0% {
+    width: 0;
+  }
+  100% {
+    width: 100%;
+  }
 }
 </style>

@@ -26,7 +26,7 @@ const checkPosition = (index: Number): String => {
 
       v-on:click="showModal = true"
   >
-    <span class="menu-item-text">Room Code: {{ classCode }}</span>
+    <span class="menu-item-text menu-item-text--room-code">Room Code: {{ classCode }}</span>
     <img :class="{
         'w-5 h-5 menu-item-icon menu-item-icon--room-code': true,
         'contrast-50 brightness-75': !classCode

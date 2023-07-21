@@ -36,11 +36,10 @@ onBeforeMount(() => {
     <ClassroomSideMenu v-if="emailVerified" />
 
     <div class="flex flex-grow flex-col h-screen">
-      <div class="flex flex-grow flex-col h-screen">
-        <!--MainArea-->
-        <div class="flex flex-col flex-grow bg-panel-background font-poppins overflow-hidden">
-          <router-view />
-        </div>
+      <!--MainArea-->
+      <div class="bg-navy-side-menu h-6 w-full z-30"></div>
+      <div class="flex flex-col flex-grow bg-panel-background font-poppins overflow-hidden rounded-tl-xl">
+        <router-view />
       </div>
     </div>
   </div>
