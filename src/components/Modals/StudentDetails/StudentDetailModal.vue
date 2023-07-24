@@ -91,7 +91,7 @@ defineExpose({
   <Teleport to="body">
     <Modal :show="showModal" @close="closeModal">
       <template v-slot:header>
-        <header class="h-20 px-8 w-modal-width-sm bg-zinc-200 flex justify-between items-center rounded-t-lg">
+        <header class="h-20 px-8 bg-zinc-200 flex justify-between items-center rounded-t-lg">
           <div class="flex flex-row items-center">
             <div v-if="!editName" class="flex flex-row items-center">
               <span class="text-3xl font-medium text-black mr-3">{{ follower.name }}</span>

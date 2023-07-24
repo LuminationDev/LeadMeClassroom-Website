@@ -12,6 +12,7 @@ import MuteIcon from "@/assets/vue/MuteIcon.vue";
 import UnmuteIcon from "@/assets/vue/UnmuteIcon.vue";
 import EyeIcon from "@/assets/vue/EyeIcon.vue";
 import RemoveIcon from "@/assets/vue/RemoveIcon.vue";
+import ActionBarItem from "@/components/ActionBar/ActionBarItem.vue";
 
 const emit = defineEmits<{
   (e: 'screenMonitor'): void
@@ -106,63 +107,36 @@ const soundText = computed(() => {
   <ActionBarBase>
     <template v-slot:left>
       <div class="flex flex-row [&>*]:mr-2">
-        <div class="h-9 flex items-center pl-3 pr-4 rounded-3xl text-base
-          text-white cursor-pointer bg-blue-400 hover:bg-blue-300"
-          v-on:click="shareContent"
-        >
+        <ActionBarItem v-on:click="shareContent" :text="'Share Content'">
           <img class="w-5 h-5 mr-1" :src="shareContentIconUrl" alt="Icon"/>
-          Share Content
-        </div>
+        </ActionBarItem>
 
-        <div v-if="follower.type === REQUESTS.WEB" class="h-9 flex items-center pl-3 pr-4 rounded-3xl text-base
-          text-white cursor-pointer bg-blue-400 hover:bg-blue-300"
-             v-on:click="viewScreen"
-        >
+        <ActionBarItem v-if="follower.type === REQUESTS.WEB" v-on:click="viewScreen" :text="'View Screen'">
           <EyeIcon :colour="'white'"/>
-          <span class="ml-1">View Screen</span>
-        </div>
+        </ActionBarItem>
 
-        <div v-if="follower.type === REQUESTS.MOBILE" class="h-9 flex items-center pl-3 pr-4 rounded-3xl text-base
-          text-white cursor-pointer bg-blue-400 hover:bg-blue-300"
-             v-on:click="returnHome"
-        >
+        <ActionBarItem v-if="follower.type === REQUESTS.MOBILE" v-on:click="returnHome" :text="'Return Home'">
           <img class="w-5 h-5" src="src/assets/img/media-application.svg" alt="Icon"/>
-          <span class="ml-1">Return Home</span>
-        </div>
+        </ActionBarItem>
 
-        <div class="h-9 flex items-center pl-3 pr-4 rounded-3xl text-base
-          text-white cursor-pointer bg-blue-400 hover:bg-blue-300"
-             v-on:click="lockScreens"
-        >
-          <div  class="flex flex-row items-center">
-            <UnlockIcon v-if="follower.locked" class="h-5" :colour="'white'"/>
-            <LockIcon v-else class="h-5" :colour="'white'"/>
-            <span class="ml-1">{{lockedText}}</span>
-          </div>
-        </div>
+        <ActionBarItem v-on:click="lockScreens" :text="lockedText">
+          <UnlockIcon v-if="follower.locked" class="h-5" :colour="'white'"/>
+          <LockIcon v-else class="h-5" :colour="'white'"/>
+        </ActionBarItem>
 
-        <div class="h-9 flex items-center pl-3 pr-4 rounded-3xl text-base
-          text-white cursor-pointer bg-blue-400 hover:bg-blue-300"
-             v-on:click="muteSound"
-        >
+        <ActionBarItem v-on:click="muteSound" :text="soundText">
           <UnmuteIcon v-if="follower.muted" class="h-5" :colour="'white'"/>
           <MuteIcon v-else class="h-5" :colour="'white'"/>
-          <span class="ml-1">{{soundText}}</span>
-        </div>
+        </ActionBarItem>
       </div>
     </template>
 
     <template v-slot:right>
       <div class="flex flex-row items-center">
-        <div class="h-9 flex items-center pl-3 pr-4 rounded-3xl text-base
-          text-white cursor-pointer bg-gray-400 hover:bg-gray-300"
-             v-on:click="removeUser"
-        >
+        <ActionBarItem v-on:click="removeUser" :text="actionPinia.selectedItems.length > 1 ? 'Remove Users' : 'Remove User'"
+                       class="bg-gray-400 hover:bg-gray-300">
           <RemoveIcon :colour="'white'"/>
-          <div class="ml-1">
-            Remove User<span v-if="actionPinia.selectedItems.length > 1">s</span>
-          </div>
-        </div>
+        </ActionBarItem>
       </div>
     </template>
   </ActionBarBase>

@@ -36,7 +36,7 @@ const calculateMissing = (packageName: string) => {
 </script>
 
 <template>
-  <div class="w-modal-width-sm bg-gray-300">
+  <div class="bg-gray-300">
     <div class="flex flex-col h-96 mx-5 pt-2 overflow-y-auto bg-white rounded-lg">
       <div v-for="(application, index) in classroomPinia.collectUniqueApplications()" :key="index" class="py-1" :id="application.id">
 

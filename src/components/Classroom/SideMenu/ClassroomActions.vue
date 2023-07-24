@@ -4,8 +4,10 @@ import {computed, ref} from "vue";
 import {useClassroomStore} from "@/stores/classroomStore";
 import ShareContentModal from "@/components/Modals/ShareContent/ShareContentModal.vue";
 import * as REQUESTS from "@/constants/_requests";
+import { storeToRefs } from "pinia";
 
 const classroomPinia = useClassroomStore();
+const { webFollowers, mobileFollowers } = storeToRefs(classroomPinia);
 
 const classCode = computed(() => {
   return classroomPinia.classCode !== ''
@@ -15,6 +17,10 @@ const classCode = computed(() => {
 const loading = ref(false);
 const locked = ref(false);
 async function screenControl() {
+  if (webFollowers.value.length === 0 && mobileFollowers.value.length === 0) {
+    return;
+  }
+
   loading.value = true;
   await new Promise(res => setTimeout(res, 500));
   locked.value = !locked.value;

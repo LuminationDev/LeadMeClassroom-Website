@@ -1,14 +1,10 @@
 <script setup lang="ts">
 import AccountInput from "../../InputFields/AccountInput.vue";
-import emailFaded from '/src/assets/img/login/login-icon-email-fade.svg';
-import emailActive from '/src/assets/img/login/login-icon-email-active.svg';
-import emailSolid from '/src/assets/img/login/login-icon-email-solid.svg';
 import { ref } from "vue";
 import useVuelidate from "@vuelidate/core";
-import {required, email as emailRule, helpers} from "@vuelidate/validators";
-
+import { required, email as emailRule, helpers } from "@vuelidate/validators";
 import GenericButton from "../../Buttons/GenericButton.vue";
-import {getAuth, sendPasswordResetEmail} from "@firebase/auth";
+import { getAuth, sendPasswordResetEmail } from "@firebase/auth";
 
 const emit = defineEmits<{
   (e: 'changeView', newView: string): void
@@ -68,13 +64,10 @@ async function validateAndSubmit() {
       <div class="mb-2">
         <AccountInput
             class="mb-2"
-            :faded-src="emailFaded"
-            :active-src="emailActive"
-            :solid-src="emailSolid"
             v-model="email"
             :v$="v$.email"
             placeholder="Email"
-            alt="Email"/>
+            type="email"/>
         <p class="text-red-400">{{ error }}</p>
       </div>
 

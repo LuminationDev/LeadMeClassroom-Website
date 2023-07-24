@@ -21,10 +21,6 @@ const props = defineProps({
   showFilter: {
     type: Boolean,
     require: true
-  },
-  viewDescription: {
-    type: String,
-    require: true
   }
 })
 
@@ -103,7 +99,7 @@ const topicList = computed(() => {
 });
 
 const selectedItemDescription = computed((): CuratedContentItem | undefined => {
-  return sortedCuratedContent.value.find(item => item.getTitle() === props.viewDescription!);
+  return sortedCuratedContent.value.find(item => item.getTitle() === actionPinia.viewDescription!);
 });
 
 const updateYear = (data: string) => {
@@ -125,7 +121,7 @@ const viewItem = (data: string) => {
 
 <template>
   <!--List of curated content-->
-  <div v-if="viewDescription === ''" class="w-modal-width h-curated-content-insert bg-gray-300">
+  <div v-if="actionPinia.viewDescription === ''" class="h-curated-content-insert bg-gray-300">
     <div class="flex flex-col h-curated-content-insert">
       <!--Show the filter area-->
       <div class="relative">
@@ -168,5 +164,5 @@ const viewItem = (data: string) => {
   </div>
 
   <!--Individual curated content item-->
-  <CuratedContentDescription class="w-modal-width-set-xxsm" v-else :contentItem="selectedItemDescription" />
+  <CuratedContentDescription v-else :contentItem="selectedItemDescription" />
 </template>

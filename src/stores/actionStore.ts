@@ -19,7 +19,7 @@ export const useActionStore = defineStore("action", {
             selecting: <boolean>false, //Whether the user is selecting users
             shareType: <string>'', //Determines the request type to send to firebase
             websiteURL: <string>'', //A common storage place for the latest URL to be sent to the users
-            showModal: <boolean>false //Central location to open/close the content modal
+            showModal: <boolean>false, //Central location to open/close the content modal
         }
     },
     actions: {

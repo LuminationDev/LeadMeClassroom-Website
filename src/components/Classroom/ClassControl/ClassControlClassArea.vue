@@ -1,19 +1,50 @@
 <script setup lang="ts">
-import { ref } from "vue";
-import settingsIconUrl from '/src/assets/img/settings-icon-cog.svg';
-import accountIconUrl from '/src/assets/img/sideMenu/menu-icon-account.svg';
-import logoutIconUrl from '/src/assets/img/sideMenu/menu-icon-logout.svg';
+import { computed } from "vue";
 import { useClassroomStore } from "@/stores/classroomStore";
-import { usePopupStore} from "@/stores/popupStore";
+import { useActionStore } from "@/stores/actionStore";
+import {storeToRefs} from "pinia";
 
 const classroomPinia = useClassroomStore();
-const popupPinia = usePopupStore();
-const open = ref(false);
+const actionPinia = useActionStore();
+const { webFollowers, mobileFollowers } = storeToRefs(classroomPinia)
 
-const logout = () => {
-  classroomPinia.endSession();
-  popupPinia.handleLogoutClick();
-  location.reload();
+
+const activeWebFollowers = computed((): number => {
+  const active = webFollowers.value.filter(follower => {
+    return !follower.disconnected
+  })
+
+  return active.length;
+});
+
+const activeMobileFollowers = computed((): number => {
+  const active = mobileFollowers.value.filter(follower => {
+    return !follower.disconnected
+  })
+
+  return active.length;
+});
+
+const calcStudent = computed(() => {
+  if (actionPinia.selectedFollowers.length > 0) {
+    return `${actionPinia.selectedFollowers.length} Selected`
+  } else {
+    return `${activeMobileFollowers.value + activeWebFollowers.value} Students`;
+  }
+});
+
+const selectAll = () => {
+  //Select all users
+  classroomPinia.mobileFollowers.forEach(follower => {
+    actionPinia.handleFollowerSelection(follower, true);
+  });
+
+  //Web users cannot handle local videos or apps
+  if(actionPinia.shareType !== "video" && actionPinia.shareType !== "app") {
+    classroomPinia.webFollowers.forEach(follower => {
+      actionPinia.handleFollowerSelection(follower, true);
+    });
+  }
 }
 </script>
 
@@ -24,42 +55,22 @@ const logout = () => {
           classroomPinia.user?.displayName
         }}'{{ classroomPinia?.user?.displayName?.endsWith('s') ? '' : 's' }} Class</p>
 
-      <!--Settings drop down-->
-      <div class="flex flex-col">
-        <Teleport to="body">
-          <img v-on:click="open = !open" class="w-9 cursor-pointer absolute right-5 lg:right-10 top-10 sm:top-24 z-30" :src="settingsIconUrl" alt="Icon"/>
 
-          <Transition name="fade" mode="out-in">
-            <div v-if="open" v-on:click="open = false" class="bg-transparent absolute h-screen w-screen top-0 left-0 z-20">
-              <div class="w-44 h-28 flex flex-col absolute right-4 lg:right-9 top-36 bg-gray-200 rounded-lg">
-                <!--Gray tip-->
-                <div class="ml-36 pl-1 h-0 w-0 border-x-8 border-x-transparent border-b-[16px] border-b-gray-200 -mt-3.5"></div>
+      <div class="flex flex-row mr-16">
+        <Transition name="fade">
+          <div v-if="actionPinia.selectedFollowers.length > 0" v-on:click="selectAll" class="flex items-center justify-center w-auto mr-4 text-blue-500 cursor-pointer">
+            Select All
+          </div>
+        </Transition>
 
-                <div class="ml-2 mt-2.5">
-                  <!--Navigate to the account page-->
-                  <router-link class="w-40 h-10 flex flex-row
-                    items-center rounded-lg bg-white text-lg
-                    font-semibold hover:bg-gray-300" to="/account"
-                    v-on:click="classroomPinia.view = 'settings'">
-                    <img class="w-6 h-6 mx-3" :src="accountIconUrl" alt="Icon"/>
-
-                    Settings
-                  </router-link>
-
-                  <!--End the active session and logout-->
-                  <div class="w-40 h-10 mt-2.5 flex flex-row
-                    items-center rounded-lg bg-white text-lg
-                    font-semibold text-red-600 cursor-pointer
-                    hover:bg-gray-300"
-                    v-on:click="logout">
-                    <img class="w-6 h-6 mx-3" :src="logoutIconUrl" alt="Icon"/>
-                    Log Out
-                  </div>
-                </div>
-              </div>
-            </div>
-          </Transition>
-        </Teleport>
+        <div class="flex items-center justify-center h-8 w-60 rounded-2xl"
+            :class="{
+              'bg-blue-200 text-blue-500': actionPinia.selectedFollowers.length > 0,
+              'bg-white border border-1 border-gray-300 text-gray-500': actionPinia.selectedFollowers.length === 0
+            }"
+        >
+          {{calcStudent}}
+        </div>
       </div>
     </div>
   </div>

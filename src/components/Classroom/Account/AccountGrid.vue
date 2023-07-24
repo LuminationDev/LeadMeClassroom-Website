@@ -2,19 +2,19 @@
 import { computed, reactive, ref } from "vue";
 import useVuelidate from "@vuelidate/core";
 import { required, helpers, email as emailRule } from "@vuelidate/validators";
+import logoutIconUrl from '/src/assets/img/sideMenu/menu-icon-logout.svg';
 import TextInput from "../../InputFields/TextInput.vue";
 import AccountPasswordReset from "@/components/Classroom/Account/AccountPasswordReset.vue";
 import AccountPasswordChange from "@/components/Classroom/Account/AccountPasswordChange.vue";
 import GenericButton from "../../Buttons/GenericButton.vue";
-import { useClassroomStore } from "@/stores/classroomStore";
 import AccountInput from "@/components/InputFields/AccountInput.vue";
-import emailFaded from '/src/assets/img/login/login-icon-email-fade.svg';
-import emailActive from '/src/assets/img/login/login-icon-email-active.svg';
-import emailSolid from '/src/assets/img/login/login-icon-email-solid.svg';
 import ActionBarBase from "@/components/ActionBar/ActionBarBase.vue";
 import AccountChanged from "@/components/Classroom/Account/AccountChanged.vue";
+import { useClassroomStore } from "@/stores/classroomStore";
+import { usePopupStore } from "@/stores/popupStore";
 
 const classroomPinia = useClassroomStore();
+const popupPinia = usePopupStore();
 
 const initialObject = {
   displayName: "",
@@ -113,6 +113,12 @@ function clearFields() {
   Object.assign(error, initialObject);
   v$.value.$reset();
 }
+
+const logout = () => {
+  classroomPinia.endSession();
+  popupPinia.handleLogoutClick();
+  location.reload();
+}
 </script>
 
 <template>
@@ -142,13 +148,10 @@ function clearFields() {
           <div class="mb-3">
             <div class="flex flex-row items-center mb-1">
               <AccountInput
-                  :faded-src="emailFaded"
-                  :active-src="emailActive"
-                  :solid-src="emailSolid"
                   v-model="email"
                   :v$="v$.email"
                   placeholder="Email"
-                  alt="Email"/>
+                  type="email"/>
 
               <AccountChanged :changed="email !== classroomPinia.leaderEmail" :saved="response.email !== ''"/>
             </div>
@@ -172,7 +175,7 @@ function clearFields() {
   <!--      </div>-->
 
         <!--Marketing area-->
-        <div class="mb-5">
+        <div class="mb-6">
           <p class="text-sm text-gray-400 font-semibold mb-3">News & Updates</p>
 
           <div class="flex flex-row items-center">
@@ -186,6 +189,17 @@ function clearFields() {
             <AccountChanged :changed="marketing !== classroomPinia.marketing" :saved="response.marketing !== ''"/>
           </div>
           <p v-if="error.marketing !== ''" class="px-1 text-red-800 text-sm mb-3">{{ error.marketing }}</p>
+        </div>
+
+        <!--Logout area-->
+        <p class="text-sm text-gray-400 font-semibold mb-3">Account</p>
+        <div class="w-64 h-11 mt-2.5 flex flex-row
+                      items-center justify-center rounded-lg bg-gray-200 text-sm
+                      font-semibold text-red-600 cursor-pointer
+                      hover:bg-gray-300"
+             v-on:click="logout">
+          <img class="w-5 h-5 mr-3" :src="logoutIconUrl" alt="Icon"/>
+          Log Out
         </div>
       </div>
 

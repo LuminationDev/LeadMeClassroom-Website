@@ -7,8 +7,10 @@ import endClassIconUrl from '/src/assets/img/sideMenu/menu-icon-endclass.svg';
 import GenericButton from "@/components/Buttons/GenericButton.vue";
 import ClassroomActions from "@/components/Classroom/SideMenu/ClassroomActions.vue";
 import RoomCodeModal from "@/components/Modals/RoomCode/RoomCodeModal.vue";
+import {useActionStore} from "@/stores/actionStore";
 
 const classroomPinia = useClassroomStore();
+const actionPinia = useActionStore();
 
 const screenSize = ref(window.innerWidth)
 const expanded = ref(screenSize.value >= 1280)
@@ -39,6 +41,7 @@ const classCode = computed(() => {
 })
 
 async function endSession() {
+  actionPinia.selectedFollowers = [];
   await classroomPinia.endSession();
 }
 
@@ -83,8 +86,8 @@ const hover = ref(false)
             v-else
             id="generate_class"
             class="h-12 w-48 bg-violet-500
-          text-sm text-white font-poppins font-medium
-          rounded-md"
+            text-sm text-white font-poppins font-medium
+            rounded-md"
             :callback="generateSession"
         >Start a Class</GenericButton>
       </div>
@@ -93,7 +96,7 @@ const hover = ref(false)
       <div class="child:mb-3" :class="sidebarShouldBeExpanded ? 'mt-8' : 'mt-3'">
         <ClassroomMenuItem
             :icon="classroomIconUrl"
-            :enabled="classCode" view="/"
+            :enabled="true" view="/"
             :panel="'classroom'"
             v-on:click="classroomPinia.view = 'classroom'"
         >Classroom</ClassroomMenuItem>
@@ -102,15 +105,26 @@ const hover = ref(false)
       </div>
 
       <!--End the active session and logout-->
-      <ClassroomMenuItem
-          :icon="endClassIconUrl" class="fixed bottom-12"
-          :enabled="classCode"
-          :panel="''"
-          v-on:click="endSession()"
-          view="/"
-      >End Class</ClassroomMenuItem>
+      <div class="fixed bottom-12 w-full">
+        <ClassroomMenuItem class="mb-3"
+            :icon="'/src/assets/img/settings-icon-cog-white.svg'"
+            :enabled="true"
+            :panel="'account'"
+            v-on:click="classroomPinia.view = 'account'"
+            view="/account"
+        >Settings</ClassroomMenuItem>
+
+        <ClassroomMenuItem
+            :icon="endClassIconUrl"
+            :enabled="classCode"
+            :panel="''"
+            v-on:click="endSession()"
+            view="/"
+        >End Class</ClassroomMenuItem>
+      </div>
     </div>
-    </div>
+  </div>
+
   <div class="xl:hidden w-24 h-screen z-10"></div>
 </template>
 

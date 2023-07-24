@@ -1,22 +1,16 @@
 <script setup lang="ts">
-import emailFaded from '/src/assets/img/login/login-icon-email-fade.svg';
-import emailActive from '/src/assets/img/login/login-icon-email-active.svg';
-import emailSolid from '/src/assets/img/login/login-icon-email-solid.svg';
 import PasswordInput from "../../InputFields/PasswordInput.vue";
 import GenericButton from "../../Buttons/GenericButton.vue";
 import AccountInput from "../../InputFields/AccountInput.vue";
 import { ref } from "vue";
-import {email as emailRule, helpers, required} from "@vuelidate/validators";
+import { email as emailRule, helpers, required } from "@vuelidate/validators";
 import useVuelidate from "@vuelidate/core";
-
-import {getAuth, signInWithEmailAndPassword} from "@firebase/auth";
-import {useRouter} from "vue-router";
-import {useClassroomStore} from "@/stores/classroomStore";
+import { getAuth, signInWithEmailAndPassword } from "@firebase/auth";
+import { useRouter } from "vue-router";
+import { useClassroomStore } from "@/stores/classroomStore";
 
 const classroomPinia = useClassroomStore();
-
 const router = useRouter()
-
 const email = ref("")
 const password = ref("")
 const error = ref("")
@@ -110,13 +104,10 @@ const emit = defineEmits<{
       <slot name="messages"></slot>
       <div class="mb-2">
         <AccountInput
-            :faded-src="emailFaded"
-            :active-src="emailActive"
-            :solid-src="emailSolid"
             v-model="email"
             :v$="v$.email"
             placeholder="Email"
-            alt="Email"/>
+            type="email"/>
       </div>
 
       <div class="mb-3">

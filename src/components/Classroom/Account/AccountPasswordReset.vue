@@ -4,9 +4,6 @@ import {email as emailRule, helpers, required} from "@vuelidate/validators";
 import useVuelidate from "@vuelidate/core";
 import AccountInput from "@/components/InputFields/AccountInput.vue";
 import GenericButton from "@/components/Buttons/GenericButton.vue";
-import emailFaded from '/src/assets/img/login/login-icon-email-fade.svg';
-import emailActive from '/src/assets/img/login/login-icon-email-active.svg';
-import emailSolid from '/src/assets/img/login/login-icon-email-solid.svg';
 import { useClassroomStore } from "@/stores/classroomStore";
 
 defineEmits<{
@@ -67,13 +64,10 @@ function resetChanged() {
     <!--Account email-->
     <AccountInput
         class="mb-2"
-        :faded-src="emailFaded"
-        :active-src="emailActive"
-        :solid-src="emailSolid"
         v-model="email"
         :v$="v$.email"
         placeholder="Email"
-        alt="Email"/>
+        type="email"/>
 
     <p class="w-64 px-1 text-red-800 text-sm mb-3">{{ error }}</p>
     <p class="w-64 px-1 text-green-400 text-sm mb-3">{{ response }}</p>

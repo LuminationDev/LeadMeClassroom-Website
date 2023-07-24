@@ -18,7 +18,7 @@ import AlertIcon from "@/assets/vue/AlertIcon.vue";
 const classroomPinia = useClassroomStore();
 const actionPinia = useActionStore();
 const panelName = 'shareContent';
-const viewDescription = ref('');
+// const viewDescription = ref('');
 const sharePanel = ref('menu');
 const searchQuery = ref("");
 const showFilter = ref(false);
@@ -62,7 +62,7 @@ const changePanel = (panel: string) => {
  * @param data
  */
 const updateViewItem = (data: string) => {
-  viewDescription.value = data;
+  actionPinia.viewDescription = data;
   sharePanel.value = 'viewItem';
 }
 
@@ -78,7 +78,7 @@ const back = () => {
       sharePanel.value = 'menu';
       break;
     case 'viewItem':
-      viewDescription.value = '';
+      actionPinia.viewDescription = '';
       sharePanel.value = 'curated';
       break;
     default:
@@ -93,7 +93,7 @@ const back = () => {
  */
 const closeModal = () => {
   actionPinia.showModal = false
-  viewDescription.value = '';
+  actionPinia.viewDescription= '';
   classroomPinia.view = 'classroom';
 
   if(sharePanel.value === 'viewItem') {
@@ -134,16 +134,16 @@ const closeModal = () => {
       <template v-slot:header>
         <header :class="{
           'h-16 bg-gray-300 flex justify-between items-center rounded-t-lg': true,
-          'w-modal-width-sm px-8': sharePanel !== 'curated' && sharePanel !== 'viewItem',
-          'w-modal-width px-8': sharePanel === 'curated',
+          'px-4': sharePanel !== 'curated' && sharePanel !== 'viewItem',
+          'px-5': sharePanel === 'curated',
           'w-modal-width-set-xxsm px-4': sharePanel === 'viewItem'
         }">
-          <div v-if="viewDescription === ''">
+          <div v-if="actionPinia.viewDescription === ''">
             <p class="text-2xl font-medium">Share Content</p>
           </div>
           <div v-else class="flex flex-row">
             <img src="/src/assets/img/share-content-video.svg" alt="Video"/>
-            <p class="ml-2 text-lg font-medium">{{viewDescription}}</p>
+            <p class="ml-2 text-lg font-medium">{{actionPinia.viewDescription}}</p>
           </div>
 
           <div class="flex flex-row items-center">
@@ -171,7 +171,7 @@ const closeModal = () => {
       </template>
 
       <template v-slot:content>
-        <div v-if="sharePanel === 'menu'" class="w-modal-width-sm bg-gray-300 pb-3 px-3">
+        <div v-if="sharePanel === 'menu'" class="bg-gray-300 pb-3 px-3">
           <!--Show the url input screen-->
           <ShareCustomURL @close="closeModal" />
 
@@ -248,8 +248,7 @@ const closeModal = () => {
           @viewItem="updateViewItem"
           @closeFilter="showFilter = false"
           :search-query="searchQuery"
-          :show-filter="showFilter"
-          :view-description="viewDescription"/>
+          :show-filter="showFilter"/>
 
         <ShareVideoInsert v-else-if="sharePanel === 'video'"/>
 
