@@ -148,8 +148,10 @@ const closeModal = () => {
 
           <div class="flex flex-row items-center">
             <!--Search and Filter content-->
-            <SearchFilter v-if="sharePanel === 'curated'"
+            <SearchFilter v-if="sharePanel !== 'menu' && sharePanel !== 'viewItem'"
+                          :placeholder="'Search titles'"
                           :show-filter="showFilter"
+                          :enable-filter="sharePanel === 'curated'"
                           @changeFilter="showFilter = !showFilter"
                           v-model="searchQuery"/>
 
@@ -250,9 +252,8 @@ const closeModal = () => {
           :search-query="searchQuery"
           :show-filter="showFilter"/>
 
-        <ShareVideoInsert v-else-if="sharePanel === 'video'"/>
-
-        <ShareApplicationInsert v-else-if="sharePanel === 'app'"/>
+        <ShareVideoInsert v-else-if="sharePanel === 'video'" :search-query="searchQuery"/>
+        <ShareApplicationInsert v-else-if="sharePanel === 'app'" :search-query="searchQuery"/>
       </template>
     </Modal>
   </Teleport>

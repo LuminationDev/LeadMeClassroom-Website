@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import {computed, defineProps, PropType, ref} from "vue";
-import {Application, MobileFollower} from "@/models";
+import { computed, defineProps, PropType, ref } from "vue";
+import { Application, MobileFollower } from "@/models";
 import Tooltip from "@/components/Buttons/Tooltip.vue";
 import { useClassroomStore } from "@/stores/classroomStore";
 import * as REQUESTS from "@/constants/_requests";
@@ -13,10 +13,24 @@ const props = defineProps({
     type: Object as PropType<MobileFollower>,
     required: true,
   },
+  searchQuery: {
+    type: String,
+    default: ''
+  }
+});
+
+const filteredApplications = computed(() => {
+  if (props.searchQuery?.trim() === '') {
+    return props.follower.applications;
+  }
+
+  return props.follower.applications.filter((item: Application) => {
+    return item.name.toLowerCase().includes(props.searchQuery?.toLowerCase())
+  });
 });
 
 const activeApplication = computed(() => {
-  return props.follower.activeApplication
+  return props.follower.activeApplication;
 });
 
 //Track the currently selected application
@@ -129,7 +143,7 @@ const checkMedia = (packageName: string) => {
         <div class="py-4 px-10 text-sm text-gray-500 font-semibold">APPLICATIONS</div>
 
         <transition-group name="list-complete" tag="div">
-          <div v-for="(application, index) in follower.applications" :key="index" class="py-1" :id="application.id">
+          <div v-for="(application, index) in filteredApplications" :key="index" class="py-1" :id="application.id">
 
             <!--Individual applications-->
             <div class="flex flex-row w-full px-5 items-center justify-between">

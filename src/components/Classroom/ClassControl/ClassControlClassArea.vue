@@ -58,7 +58,7 @@ const selectAll = () => {
 
       <div class="flex flex-row mr-16">
         <Transition name="fade">
-          <div v-if="actionPinia.selectedFollowers.length > 0" v-on:click="selectAll" class="flex items-center justify-center w-auto mr-4 text-blue-500 cursor-pointer">
+          <div v-if="actionPinia.selectedFollowers.length > 0 && calcStudent > 1" v-on:click="selectAll" class="flex items-center justify-center w-auto mr-4 text-blue-500 cursor-pointer">
             Select All
           </div>
         </Transition>
