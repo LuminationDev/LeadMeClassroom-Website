@@ -109,7 +109,7 @@ const hover = ref(false)
       </div>
 
       <!--End the active session and logout-->
-      <div class="fixed bottom-12 w-full">
+      <div class="fixed bottom-12 w-48">
         <ClassroomMenuItem class="mb-3"
             :icon="'/src/assets/img/settings-icon-cog-white.svg'"
             :enabled="true"

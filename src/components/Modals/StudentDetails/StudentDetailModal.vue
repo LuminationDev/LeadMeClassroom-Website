@@ -14,6 +14,7 @@ import ActionBarModal from "@/components/ActionBar/ActionBarModal.vue";
 import { useClassroomStore } from "@/stores/classroomStore";
 import TickIcon from "@/assets/vue/TickIcon.vue";
 import CrossIcon from "@/assets/vue/CrossIcon.vue";
+import SearchFilter from "@/components/Modals/ShareContent/SearchFilter.vue";
 
 const classroomPinia = useClassroomStore();
 
@@ -36,6 +37,7 @@ const iconUrl = computed(() => {
   return props.follower.activeTaskIconUrl
 });
 
+const searchQuery = ref("");
 const showModal = ref(false);
 
 /**
@@ -107,6 +109,11 @@ defineExpose({
           </div>
 
           <div class="flex flex-row items-center">
+            <SearchFilter
+                :show-filter="false"
+                :enable-filter="false"
+                v-model="searchQuery"
+                :placeholder="follower.type === REQUESTS.WEB ? 'Search tabs' : 'Search applications'"/>
             <WebFollowerIcon v-if="follower.type === REQUESTS.WEB" :colour="'#BDC3D6'"/>
             <MobileFollowerIcon v-else :colour="'#BDC3D6'"/>
 
@@ -123,10 +130,11 @@ defineExpose({
         <div class="bg-zinc-200 h-[32rem]">
           <WebStudentDetails v-if="follower.type === REQUESTS.WEB"
              :follower="follower"
+             :search-query="searchQuery"
              @screenMonitor="$emit('screenMonitor')"
              @close="closeModal"/>
 
-          <MobileStudentDetails v-else :follower="follower"/>
+          <MobileStudentDetails v-else :follower="follower" :search-query="searchQuery"/>
         </div>
       </template>
 

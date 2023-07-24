@@ -7,6 +7,14 @@ defineProps({
   showFilter: {
     type: Boolean,
     require: true
+  },
+  enableFilter: {
+    type: Boolean,
+    default: true
+  },
+  placeholder: {
+    type: String,
+    require: true
   }
 })
 
@@ -29,7 +37,7 @@ function handleInput(event: Event) {
           id="searchInput"
           :value="modelValue"
           @input="handleInput"
-          placeholder="Search titles"
+          :placeholder="placeholder"
           class="h-10 w-72 pr-6 pl-10 rounded-3xl outline-0 text-black text-sm bg-gray-100"/>
 
       <img
@@ -42,7 +50,7 @@ function handleInput(event: Event) {
     </div>
 
     <!--Show the filter menu-->
-    <button v-on:click="$emit('changeFilter')">
+    <button v-if="enableFilter" v-on:click="$emit('changeFilter')">
       <img src="/src/assets/icons/filter.svg" alt="Filter">
     </button>
   </div>

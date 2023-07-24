@@ -134,7 +134,7 @@ function openModal() {
     <!--TODO HIDDEN FOR NOW - DO WE WANT TO OPEN IT DIRECTLY FROM THE CARD?-->
     <div class="hidden">
       <!--Screenshot and WebRTC modal-->
-      <ScreenMonitorModal ref="monitorRef" :follower="follower" />
+      <ScreenMonitorModal ref="monitorRef" :follower="follower" @studentDetail="openModal"/>
     </div>
   </div>
 </template>
