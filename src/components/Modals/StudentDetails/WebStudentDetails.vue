@@ -15,14 +15,28 @@ const emit = defineEmits<{
   (e: 'close'): void
 }>()
 
+const classroomPinia = useClassroomStore();
+
 const props = defineProps({
   follower: {
     type: Object as PropType<Follower>,
     required: true,
   },
+  searchQuery: {
+    type: String,
+    default: ''
+  }
 });
 
-const classroomPinia = useClassroomStore();
+const filteredTabs = computed(() => {
+  if (props.searchQuery?.trim() === '') {
+    return props.follower.tabs;
+  }
+
+  return props.follower.tabs.filter((item: Tab) => {
+    return item.url.toLowerCase().includes(props.searchQuery?.toLowerCase())
+  });
+});
 
 const viewScreen = () => {
   //Close the Student Detail modal
@@ -141,7 +155,7 @@ onMounted(() => {
         <div class="py-4 px-10 text-sm text-gray-500 font-semibold">OPEN TABS</div>
 
         <transition-group name="list-complete" tag="div">
-          <div v-for="(tab, index) in follower.tabs" :key="index" class="py-1" :id="tab.id">
+          <div v-for="(tab, index) in filteredTabs" :key="index" class="py-1" :id="tab.id">
 
             <!--Individual tabs-->
             <div class="flex flex-row w-full px-5 items-center justify-between">

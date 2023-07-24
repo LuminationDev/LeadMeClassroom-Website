@@ -8,6 +8,10 @@ import { useWebRTCStore } from "@/stores/webRTCStore";
 import Tooltip from "../Buttons/Tooltip.vue";
 import { Follower } from "@/models";
 
+const emit = defineEmits<{
+  (e: 'studentDetail'): void
+}>()
+
 const classroomPinia = useClassroomStore();
 const webRTCPinia = useWebRTCStore();
 
@@ -67,6 +71,14 @@ function closeModal() {
   props.follower.collectingScreenshotFailed = false
   props.follower.imageBase64 = null
 }
+
+/**
+ * Re-open the student details modal.
+ */
+function reopenDetails() {
+  emit('studentDetail');
+  closeModal();
+}
 </script>
 
 <template>
@@ -89,18 +101,18 @@ function closeModal() {
           </div>
 
           <img
-              v-on:click="closeModal();"
+              v-on:click="reopenDetails"
               class="w-4 h-4 cursor-pointer"
-              src="/src/assets/img/onboarding/close.svg"
+              src="/src/assets/img/options-back.svg"
               alt="Close Icon"
           />
         </header>
       </template>
 
       <template v-slot:content>
-        <div class="w-auto inline-block max-h-monitor-modal mt-7 mx-9">
+        <div class="w-auto inline-block max-h-monitor-modal w-full mt-7 px-9">
           <!--Screenshot content-->
-          <div v-if="!follower.monitoring" class="w-modal-width-xsm">
+          <div v-if="!follower.monitoring" class="w-full">
             <div v-if="!follower.imageBase64 && !follower.collectingScreenshotFailed" class="flex flex-col items-center">
               <p class="mt-20 lds-dual-ring-lg" />
               <p class="mb-6 mt-8 text-sm ">Collecting current screenshot...</p>
