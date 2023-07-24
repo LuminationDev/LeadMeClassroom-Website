@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { defineProps, ref } from 'vue'
+import {computed, defineProps, ref} from 'vue'
 import type { PropType } from 'vue'
 import * as REQUESTS from "@/constants/_requests";
 import WebFollowerIcon from "@/assets/vue/WebFollowerIcon.vue";
@@ -12,7 +12,7 @@ import StudentGridItemRemoval from "@/components/Classroom/ClassControl/GridItem
 import StudentGridItemDisconnected from "@/components/Classroom/ClassControl/GridItem/StudentGridItemDisconnected.vue";
 import StudentDetailModal from "@/components/Modals/StudentDetails/StudentDetailModal.vue";
 import ScreenMonitorModal from "@/components/Modals/ScreenMonitorModal.vue";
-import MobileStudentDetailModal from "@/components/Modals/MobileStudentDetailModal.vue";
+import EyeSlashIcon from "@/assets/vue/Login/EyeSlashIcon.vue";
 
 const emit = defineEmits<{
   (e: 'selectionToggled', value: boolean): void
@@ -51,24 +51,36 @@ function openMonitorModal() {
 
 const studentDetailModal = ref<InstanceType<typeof StudentDetailModal> | null>(null)
 
+const colourState = computed(() => {
+  if(props.selected) {
+    return '#3B82F6';
+  } else if (!props.selected && !props.follower.locked) {
+    return '#BDC3D6';
+  } else if (!props.selected && props.follower.locked) {
+    return '#374151';
+  }
+
+  return '#BDC3D6';
+})
+
 function openModal() {
   studentDetailModal.value?.openModal()
 }
 </script>
 
 <template>
-  <div class="w-64 transition-all duration-500 ease-in-out">
+  <div class="w-64 transition-all duration-500 ease-in-out relative">
     <div class="h-36 flex flex-col rounded-lg pt-4 pl-4 pr-4 pb-2"
       :class="{
-        'bg-zinc-200 border-2 border-solid border-zinc-200': !selected,
-        'border-2 border-solid border-blue-500 bg-blue-200': selected
+        'bg-zinc-200 border-2 border-solid border-zinc-200 hover:bg-gray-200': !selected && !follower.locked,
+        'bg-blue-200 border-2 border-solid border-blue-500': selected,
+        'bg-zinc-500 opacity-80 border-2 border-solid border-zinc-600': !selected && follower.locked
       }">
 
       <!--Disconnected panel-->
       <StudentGridItemDisconnected
           v-if="follower.disconnected"
-          :follower="follower"
-      />
+          :follower="follower"/>
 
       <!--Front of card-->
       <div v-else-if="studentPanel === 'main'">
@@ -77,19 +89,26 @@ function openModal() {
           'text-blue-500': selected
         }">{{ follower.name }}</span>
           <div class="flex flex-row">
-            <WebFollowerIcon v-if="follower.type === REQUESTS.WEB" class="h-6 w-6 mr-2" :colour="selected ? '#3B82F6' : '#BDC3D6'" />
-            <MobileFollowerIcon v-else-if="follower.type === REQUESTS.MOBILE" class="h-6 w-6 mr-2" :colour="selected ? '#3B82F6' : '#BDC3D6'" />
+            <WebFollowerIcon v-if="follower.type === REQUESTS.WEB" class="h-6 w-6 mr-2" :colour="colourState" />
+            <MobileFollowerIcon v-else-if="follower.type === REQUESTS.MOBILE" class="h-6 w-6 mr-2" :colour="colourState" />
             <CheckboxInput :checked="selected" @on-change="selectionToggled" @click.stop />
           </div>
         </div>
-        <div class="rounded-full text-gray-500 mt-4 mb-3" :class="{
+
+        <!--Open student details-->
+        <div class="rounded-full text-gray-500 mt-4 mb-3 relative" :class="{
           'bg-blue-100': selected,
-          'bg-white': !selected
+          'bg-white': !selected && !follower.locked,
+          'bg-neutral-400 opacity-40': follower.locked
         }">
           <StudentDetailModal ref="studentDetailModal" :follower="follower" @screenMonitor="openMonitorModal"/>
+
+          <!--Display locked icon-->
+          <EyeSlashIcon v-if="follower.locked" class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-16 h-16" :colour="'black'"/>
         </div>
+
         <div class="flex flex-row justify-end">
-          <EllipsisIcon v-on:click.stop="changePanel('settings')" class="h-5 cursor-pointer" :colour="selected ? '#3B82F6' : '#BDC3D6'"/>
+          <EllipsisIcon v-on:click.stop="changePanel('settings')" class="h-5 cursor-pointer" :colour="colourState"/>
         </div>
       </div>
 
