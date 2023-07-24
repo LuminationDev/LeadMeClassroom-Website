@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, defineProps, PropType, ref } from "vue";
-import { Application, Follower } from "@/models";
+import { Application, MobileFollower } from "@/models";
 import Tooltip from "@/components/Buttons/Tooltip.vue";
 import { useClassroomStore } from "@/stores/classroomStore";
 import * as REQUESTS from "@/constants/_requests";
@@ -10,7 +10,7 @@ const classroomPinia = useClassroomStore();
 
 const props = defineProps({
   follower: {
-    type: Object as PropType<Follower>,
+    type: Object as PropType<MobileFollower>,
     required: true,
   },
   searchQuery: {
@@ -103,8 +103,8 @@ const checkMedia = (packageName: string) => {
                       'overflow-hidden rounded-lg': true,
                       }"
           >
-            <img class="flex-shrink-0 w-5 h-5 mr-2 cursor-pointer" :src="classroomPinia.firebase.getAppIcon(activeApplication.packageName) ?? undefined" alt=""/>
-            <span class="flex-shrink overflow-ellipsis whitespace-nowrap overflow-hidden pr-10 mt-0.5">{{ activeApplication.getName() }}</span>
+            <img v-if="activeApplication" class="flex-shrink-0 w-5 h-5 mr-2 cursor-pointer" :src="classroomPinia.firebase.getAppIcon(activeApplication.packageName) ?? undefined" alt=""/>
+            <span v-if="activeApplication" class="flex-shrink overflow-ellipsis whitespace-nowrap overflow-hidden pr-10 mt-0.5">{{ activeApplication.getName() }}</span>
 
             <!--Audible icons-->
             <div class="flex flex-shrink-0 flex-[1_1_auto] justify-end">
@@ -114,7 +114,7 @@ const checkMedia = (packageName: string) => {
 
               <div class="h-4 mr-4 flex flex-row justify-center">
                 <Transition name="icon">
-                  <div v-if="activeApplication.audible" class="pulse-icon">
+                  <div v-if="activeApplication && activeApplication.audible" class="pulse-icon">
                     <div v-if="activeApplication.muting" class="lds-dual-ring" />
                     <img v-else-if="activeApplication.muted" src="/src/assets/img/studentDetails/student-icon-sound-disabled.svg"  alt=""/>
                     <img v-else src="/src/assets/img/studentDetails/student-icon-sound.svg"  alt=""/>
@@ -125,7 +125,7 @@ const checkMedia = (packageName: string) => {
 
             <!--Alert for off task-->
             <Transition name="icon">
-              <div v-if="checkMedia(activeApplication.id)" class="has-tooltip">
+              <div v-if="activeApplication && checkMedia(activeApplication.id)" class="has-tooltip">
                 <Tooltip :tip="'Not in task list'" :toolTipMargin="'-ml-1'" :arrow-margin="'ml-1'" />
                 <img
                     class="w-6 h-6 mr-2 cursor-pointer"
@@ -169,7 +169,7 @@ const checkMedia = (packageName: string) => {
                       </div>
                     </Transition>
 
-                    <PromoteIcon v-if="selectedApplicationId === application.id && activeApplication.id !== application.id"
+                    <PromoteIcon v-if="selectedApplicationId === application.id && (!activeApplication || activeApplication.id !== application.id)"
                                  v-on:click="changeActiveApplication(application)"
                                  class="ml-1"
                                  :colour="'gray'"/>
