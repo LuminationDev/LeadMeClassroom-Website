@@ -7,7 +7,7 @@ import endClassIconUrl from '/src/assets/img/sideMenu/menu-icon-endclass.svg';
 import GenericButton from "@/components/Buttons/GenericButton.vue";
 import ClassroomActions from "@/components/Classroom/SideMenu/ClassroomActions.vue";
 import RoomCodeModal from "@/components/Modals/RoomCode/RoomCodeModal.vue";
-import {useActionStore} from "@/stores/actionStore";
+import { useActionStore } from "@/stores/actionStore";
 
 const classroomPinia = useClassroomStore();
 const actionPinia = useActionStore();
@@ -41,6 +41,10 @@ const classCode = computed(() => {
 })
 
 async function endSession() {
+  if (!classCode.value) {
+    return;
+  }
+
   actionPinia.selectedFollowers = [];
   await classroomPinia.endSession();
 }

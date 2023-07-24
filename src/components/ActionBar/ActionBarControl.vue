@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import ActionBarBase from "@/components/ActionBar/ActionBarBase.vue";
-import selectIconUrl from '/src/assets/img/selection-icon-individual.svg';
 import shareContentIconUrl from '/src/assets/img/sideMenu/menu-icon-sharecontent.svg';
 import { useClassroomStore } from "@/stores/classroomStore";
 import { useActionStore } from "@/stores/actionStore";
@@ -12,6 +11,7 @@ import UnmuteIcon from "@/assets/vue/UnmuteIcon.vue";
 import MuteIcon from "@/assets/vue/MuteIcon.vue";
 import ActionBarItem from "@/components/ActionBar/ActionBarItem.vue";
 import CircleCrossIcon from "@/assets/vue/CircleCrossIcon.vue";
+import ClearIcon from "@/assets/vue/Content/ClearIcon.vue";
 
 const classroomPinia = useClassroomStore();
 const actionPinia = useActionStore();
@@ -62,8 +62,6 @@ const muteSound = () => {
   //Stop the value from changing while in the forEach loop
   const finalSound= calcSound.value;
 
-  console.log(finalSound);
-
   actionPinia.selectedFollowers.forEach(follower => {
     classroomPinia.muteSound(follower, finalSound);
   });
@@ -93,7 +91,7 @@ const cancel = () => {
         </ActionBarItem>
 
         <ActionBarItem v-on:click="clearTaskList" :text="'Clear Tasks'">
-          <img class="w-5 h-5 2xl:mr-2" :src="selectIconUrl" alt="Icon"/>
+          <ClearIcon class="w-5 h-5 2xl:mr-2" :colour="'white'"/>
         </ActionBarItem>
 
         <ActionBarItem v-on:click="lockScreens" :text="lockedText">
