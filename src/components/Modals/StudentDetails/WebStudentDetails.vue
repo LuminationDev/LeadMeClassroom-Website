@@ -38,6 +38,10 @@ const filteredTabs = computed(() => {
   });
 });
 
+const orderedItems = computed(() => {
+  return [...filteredTabs.value].sort((a, b) => b.lastActivated - a.lastActivated);
+});
+
 const viewScreen = () => {
   //Close the Student Detail modal
   emit('close');
@@ -122,8 +126,8 @@ onMounted(() => {
                       'overflow-hidden rounded-2xl': true,
                       }"
           >
-            <img class="flex-shrink-0 w-5 h-5 mr-2 cursor-pointer" :src="follower.tabs[0].getFavicon()" alt=""/>
-            <span class="flex-shrink overflow-ellipsis whitespace-nowrap overflow-hidden pr-10 mt-0.5">{{ follower.tabs[0].getTabUrlWithoutHttp() }}</span>
+            <img class="flex-shrink-0 w-5 h-5 mr-2 cursor-pointer" :src="orderedItems[0].getFavicon()" alt=""/>
+            <span class="flex-shrink overflow-ellipsis whitespace-nowrap overflow-hidden pr-10 mt-0.5">{{ orderedItems[0].getTabUrlWithoutHttp() }}</span>
 
             <!--Monitor Icon-->
             <div class="flex items-center flex-shrink-0 flex-[1_1_auto] justify-end">
@@ -137,7 +141,7 @@ onMounted(() => {
             </div>
 
             <Transition name="icon">
-              <div v-if="checkWebsite(follower.tabs[0].url) && !selectedTab?.closing" class="has-tooltip">
+              <div v-if="checkWebsite(orderedItems[0].url) && !selectedTab?.closing" class="has-tooltip">
                 <Tooltip :tip="'Not in task list'" :toolTipMargin="'-ml-1'" :arrow-margin="'ml-1'" />
                 <img
                     class="w-6 h-6 mr-2 cursor-pointer"
@@ -151,11 +155,11 @@ onMounted(() => {
       </div>
 
       <!--Tab list-->
-      <div class="bg-white rounded-2xl h-[28rem] overflow-y-auto">
+      <div class="bg-white rounded-2xl h-[28rem] overflow-y-auto overflow-x-hidden">
         <div class="py-4 px-10 text-sm text-gray-500 font-semibold">OPEN TABS</div>
 
-        <transition-group name="list-complete" tag="div">
-          <div v-for="(tab, index) in filteredTabs" :key="index" class="py-1" :id="tab.id">
+        <transition-group name="list" tag="div">
+          <div v-for="(tab) in orderedItems" :key="tab.id" class="py-1" :id="tab.id">
 
             <!--Individual tabs-->
             <div class="flex flex-row w-full px-5 items-center justify-between">
@@ -181,7 +185,7 @@ onMounted(() => {
                       </div>
                     </Transition>
 
-                    <PromoteIcon v-if="selectedTabId === tab.id && follower.tabs[0].id !== tab.id" v-on:click="changeActiveTab(tab)" class="ml-1" :colour="'gray'"/>
+                    <PromoteIcon v-if="selectedTabId === tab.id && orderedItems[0].id !== tab.id" v-on:click="changeActiveTab(tab)" class="ml-1" :colour="'gray'"/>
                     <TrashIcon v-if="selectedTabId === tab.id" v-on:click="deleteFollowerTab(tab.id)" class="ml-1" :colour="'gray'"/>
                   </div>
                 </div>

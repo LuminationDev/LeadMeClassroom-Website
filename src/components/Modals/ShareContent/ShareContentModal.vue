@@ -71,6 +71,8 @@ const updateViewItem = (data: string) => {
  * the modal entirely.
  */
 const back = () => {
+  searchQuery.value = '';
+
   switch(sharePanel.value) {
     case 'video':
     case 'app':

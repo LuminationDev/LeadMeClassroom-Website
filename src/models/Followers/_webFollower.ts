@@ -11,7 +11,6 @@ import type { Task } from "../index";
 class WebFollower extends Follower {
     tabs: Tab[];
     webRTC: any;
-    UUID: any;
     imageBase64: string|null|undefined;
     collectingScreenshotFailed: boolean|null|undefined;
     monitoring: boolean|null|undefined;

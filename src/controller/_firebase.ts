@@ -94,7 +94,7 @@ class Firebase {
                         url,
                         token
                     })
-                }).then(response => {
+                }).then(() => {
                     getDownloadURL(ref).then((url) => {
                         this.curatedContentUrls[refString] = url
                         return Promise.resolve(url)

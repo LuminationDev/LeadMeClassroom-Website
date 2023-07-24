@@ -14,7 +14,6 @@ class MobileFollower extends Follower {
     currentApplication: string = REQUESTS.MOBILE_PACKAGE;
     applications: Application[];
     videos: Video[];
-    webRTC: any;
     permission: string|null|undefined;
     audible: boolean|null|undefined;
     offTask: boolean|null|undefined;
