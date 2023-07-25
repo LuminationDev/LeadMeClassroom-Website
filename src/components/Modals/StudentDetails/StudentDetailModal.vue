@@ -2,21 +2,23 @@
 import * as REQUESTS from "@/constants/_requests.js";
 import "../../../styles.css";
 import Modal from "../Modal.vue";
-import { computed, defineProps, nextTick, ref } from "vue";
-import type { PropType } from "vue";
-import type { Follower } from "@/models";
 import WebStudentDetails from "@/components/Modals/StudentDetails/WebStudentDetails.vue";
 import MobileStudentDetails from "@/components/Modals/StudentDetails/MobileStudentDetails.vue";
 import WebFollowerIcon from "@/assets/vue/WebFollowerIcon.vue";
 import MobileFollowerIcon from "@/assets/vue/MobileFollowerIcon.vue";
 import EditIcon from "@/assets/vue/EditIcon.vue";
 import ActionBarModal from "@/components/ActionBar/ActionBarModal.vue";
-import { useClassroomStore } from "@/stores/classroomStore";
 import TickIcon from "@/assets/vue/TickIcon.vue";
 import CrossIcon from "@/assets/vue/CrossIcon.vue";
 import SearchFilter from "@/components/Modals/ShareContent/SearchFilter.vue";
+import { computed, defineProps, nextTick, ref, watch } from "vue";
+import type { PropType } from "vue";
+import type { Follower } from "@/models";
+import { useClassroomStore } from "@/stores/classroomStore";
+import { useActionStore } from "@/stores/actionStore";
 
 const classroomPinia = useClassroomStore();
+const actionPinia = useActionStore();
 
 defineEmits<{
   (e: 'screenMonitor'): void
@@ -39,6 +41,15 @@ const iconUrl = computed(() => {
 
 const searchQuery = ref("");
 const showModal = ref(false);
+
+/**
+ * Track the share content modal, if this is open the details modal should close.
+ */
+watch(() => actionPinia.showModal, (newValue) => {
+  if(newValue) {
+    showModal.value = false;
+  }
+});
 
 /**
  * A generic function that can be exposed to the another component.

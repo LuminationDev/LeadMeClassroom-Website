@@ -58,7 +58,7 @@ const selectedApplication = computed(() => {
  * Collect the currently active application, if it is the LeadMe VR player display the source if there is one.
  */
 const activeApplicationName = computed(() => {
-  const app = activeApplication.value.getName();
+  const app = activeApplication.value?.getName();
 
   if(app === "LeadMe VR") {
     return `${app} - ${props.follower.source ?? "Nothing playing"}`;

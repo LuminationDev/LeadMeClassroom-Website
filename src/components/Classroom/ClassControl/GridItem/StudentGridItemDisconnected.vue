@@ -22,12 +22,12 @@ const props = defineProps({
 });
 
 const classroomPinia = useClassroomStore();
-
 const hover = ref(false);
 
 const removeFollower = () => {
   setTimeout(() => {
-    classroomPinia.removeFollower(props.follower.getUniqueId(), props.follower.type)
+    classroomPinia.removeFollower(props.follower.getUniqueId(), props.follower.type);
+    classroomPinia.removeFollowerData(props.follower.getUniqueId(), props.follower.type);
   }, 500)
 }
 </script>

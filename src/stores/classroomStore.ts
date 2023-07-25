@@ -177,6 +177,15 @@ export const useClassroomStore = defineStore("classroom", {
             }
         },
 
+        /**
+         * Completely remove a particular follower's data from the firebase database.
+         * @param UUID
+         * @param type
+         */
+        removeFollowerData(UUID: string, type: string) {
+            this.firebase.removeFollower(this.classCode, UUID, type);
+        },
+
         async getCuratedContentImageUrl(url: string) {
             return await this.firebase.getCuratedContentImageUrl(url);
         },
@@ -623,12 +632,18 @@ export const useClassroomStore = defineStore("classroom", {
             const taskList = this.convertSavedTaskList(snapshot);
 
             const appsWithoutImageData: Array<string> = []
-            const follower = new MobileFollower(this.classCode, snapshot.name, snapshot.applications.map((element: Application) => {
-                if (!this.firebase.getAppIcon(element.packageName)) {
-                    appsWithoutImageData.push(element.packageName)
-                }
-                return element
-            }), snapshot.videos, snapshot.locked ?? false, snapshot.muted ?? false, taskList, UUID)
+            const applications: Array<Application> = []
+
+            if(snapshot.applications !== undefined) {
+                snapshot.applications.map((element: Application) => {
+                    if (!this.firebase.getAppIcon(element.packageName)) {
+                        appsWithoutImageData.push(element.packageName)
+                    }
+                    applications.push(element);
+                })
+            }
+
+            const follower = new MobileFollower(this.classCode, snapshot.name, applications, snapshot.videos, snapshot.locked ?? false, snapshot.muted ?? false, taskList, UUID)
             if (appsWithoutImageData.length > 0) {
                 this.requestIndividualAction(follower.uniqueId, { type: REQUESTS.UPLOADICONS, action: appsWithoutImageData.join(":") }, REQUESTS.MOBILE)
             }

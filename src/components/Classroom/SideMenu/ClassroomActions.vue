@@ -10,14 +10,14 @@ const classroomPinia = useClassroomStore();
 const { webFollowers, mobileFollowers } = storeToRefs(classroomPinia);
 
 const classCode = computed(() => {
-  return classroomPinia.classCode !== ''
+  return classroomPinia.classCode !== '' && classroomPinia.view === 'classroom'
 })
 
 // Screen control area
 const loading = ref(false);
 const locked = ref(false);
 async function screenControl() {
-  if (webFollowers.value.length === 0 && mobileFollowers.value.length === 0) {
+  if ((webFollowers.value.length === 0 && mobileFollowers.value.length === 0) || classroomPinia.view !== 'classroom') {
     return;
   }
 
