@@ -55,7 +55,9 @@ class WebFollower extends Follower {
             return null
         }
 
-        return this.tabs[0].getFavicon()
+        return [...this.tabs]
+            .sort((a: Tab, b: Tab) => (b.lastActivated ?? 0) - (a.lastActivated ?? 0))[0]
+            ?.getFavicon();
     }
 
     get activeTaskName(): string|null  {
@@ -67,7 +69,9 @@ class WebFollower extends Follower {
             return 'No tabs open...'
         }
 
-        return this.tabs[0].name
+        return [...this.tabs]
+            .sort((a: Tab, b: Tab) => (b.lastActivated ?? 0) - (a.lastActivated ?? 0))[0]
+            ?.getCleanTabName();
     }
 }
 

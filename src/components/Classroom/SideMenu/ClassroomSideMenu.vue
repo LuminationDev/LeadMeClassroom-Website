@@ -3,14 +3,12 @@ import ClassroomMenuItem from "./ClassroomMenuItem.vue";
 import { useClassroomStore } from "@/stores/classroomStore";
 import { computed, onBeforeMount, onBeforeUnmount, ref } from "vue";
 import classroomIconUrl from '/src/assets/img/sideMenu/menu-icon-classroom.svg';
-import endClassIconUrl from '/src/assets/img/sideMenu/menu-icon-endclass.svg';
 import GenericButton from "@/components/Buttons/GenericButton.vue";
 import ClassroomActions from "@/components/Classroom/SideMenu/ClassroomActions.vue";
 import RoomCodeModal from "@/components/Modals/RoomCode/RoomCodeModal.vue";
-import { useActionStore } from "@/stores/actionStore";
+import EndClassConfirmation from "@/components/Modals/Confirmation/EndClassConfirmation.vue";
 
 const classroomPinia = useClassroomStore();
-const actionPinia = useActionStore();
 
 const screenSize = ref(window.innerWidth)
 const expanded = ref(screenSize.value >= 1280)
@@ -25,11 +23,7 @@ onBeforeUnmount(() => {
 
 const resizeHandler = (e: UIEvent) => {
   screenSize.value = (e?.currentTarget as Window)?.innerWidth
-  if (screenSize.value >= 1280) {
-    expanded.value = true
-  } else {
-    expanded.value = false
-  }
+  expanded.value = screenSize.value >= 1280;
 }
 
 const sidebarShouldBeExpanded = computed(() => {
@@ -39,15 +33,6 @@ const sidebarShouldBeExpanded = computed(() => {
 const classCode = computed(() => {
   return classroomPinia.classCode !== ''
 })
-
-async function endSession() {
-  if (!classCode.value) {
-    return;
-  }
-
-  actionPinia.selectedFollowers = [];
-  await classroomPinia.endSession();
-}
 
 async function generateSession() {
   await classroomPinia.generateSession();
@@ -118,13 +103,7 @@ const hover = ref(false)
             view="/account"
         >Settings</ClassroomMenuItem>
 
-        <ClassroomMenuItem
-            :icon="endClassIconUrl"
-            :enabled="classCode"
-            :panel="''"
-            v-on:click="endSession()"
-            view="/"
-        >End Class</ClassroomMenuItem>
+        <EndClassConfirmation />
       </div>
     </div>
   </div>

@@ -55,6 +55,19 @@ const selectedApplication = computed(() => {
 });
 
 /**
+ * Collect the currently active application, if it is the LeadMe VR player display the source if there is one.
+ */
+const activeApplicationName = computed(() => {
+  const app = activeApplication.value.getName();
+
+  if(app === "LeadMe VR") {
+    return `${app} - ${props.follower.source ?? "Nothing playing"}`;
+  }
+
+  return app;
+})
+
+/**
  * Change the currently active application to the supplied one. This will open it on the follower's device or bring it
  * back to the foreground.
  * @param application An {@link Application} containing the package name required for opening.
@@ -104,7 +117,7 @@ const checkMedia = (packageName: string) => {
                       }"
           >
             <img v-if="activeApplication" class="flex-shrink-0 w-5 h-5 mr-2 cursor-pointer" :src="classroomPinia.firebase.getAppIcon(activeApplication.packageName) ?? undefined" alt=""/>
-            <span v-if="activeApplication" class="flex-shrink overflow-ellipsis whitespace-nowrap overflow-hidden pr-10 mt-0.5">{{ activeApplication.getName() }}</span>
+            <span v-if="activeApplication" class="flex-shrink overflow-ellipsis whitespace-nowrap overflow-hidden pr-10 mt-0.5">{{ activeApplicationName }}</span>
 
             <!--Audible icons-->
             <div class="flex flex-shrink-0 flex-[1_1_auto] justify-end">
