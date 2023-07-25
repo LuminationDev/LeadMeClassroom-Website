@@ -13,6 +13,7 @@ import ActionBarItem from "@/components/ActionBar/ActionBarItem.vue";
 import CircleCrossIcon from "@/assets/vue/CircleCrossIcon.vue";
 import ClearIcon from "@/assets/vue/Content/ClearIcon.vue";
 import ActionBarItemReverse from "@/components/ActionBar/ActionBarItemReverse.vue";
+import ShareContentIcon from "@/assets/vue/ShareContentIcon.vue";
 
 const classroomPinia = useClassroomStore();
 const actionPinia = useActionStore();
@@ -88,11 +89,11 @@ const cancel = () => {
     <template v-slot:left>
       <div class="flex flex-row [&>*]:mr-2">
         <ActionBarItem v-on:click="shareContent" :text="'Share Content'">
-          <img class="w-5 h-5 2xl:mr-1" :src="shareContentIconUrl" alt="Icon"/>
+          <ShareContentIcon class="h-5" :colour="'white'"/>
         </ActionBarItem>
 
         <ActionBarItem v-on:click="clearTaskList" :text="'Clear Tasks'">
-          <ClearIcon class="w-5 h-5 2xl:mr-2" :colour="'white'"/>
+          <ClearIcon class="h-5" :colour="'white'"/>
         </ActionBarItem>
 
         <ActionBarItem v-on:click="lockScreens" :text="lockedText">

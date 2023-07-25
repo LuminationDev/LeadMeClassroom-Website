@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import {computed, ref} from 'vue';
 
 defineProps({
   text: {
@@ -21,8 +21,8 @@ const pressed = ref(false);
         'button-expanded': pressed
       }"
    >
-    <div class="flex flex-row items-center h-full button-item">
-      <div class="mx-3 button-icon">
+    <div class="flex flex-row items-center h-full button-item mx-3">
+      <div class="button-icon">
         <slot></slot>
       </div>
       <div class="button-text">
@@ -43,7 +43,7 @@ const pressed = ref(false);
   .button-text {
     opacity: 1;
     animation: animate .2s linear forwards;
-    @apply text-start whitespace-nowrap overflow-hidden -ml-1 mr-3
+    @apply text-start whitespace-nowrap overflow-hidden ml-2
   }
   width: 100%;
 }
