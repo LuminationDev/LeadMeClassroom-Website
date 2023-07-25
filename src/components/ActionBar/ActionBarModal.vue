@@ -13,6 +13,8 @@ import UnmuteIcon from "@/assets/vue/UnmuteIcon.vue";
 import EyeIcon from "@/assets/vue/EyeIcon.vue";
 import RemoveIcon from "@/assets/vue/RemoveIcon.vue";
 import ActionBarItem from "@/components/ActionBar/ActionBarItem.vue";
+import ActionBarItemReverse from "@/components/ActionBar/ActionBarItemReverse.vue";
+import ShareContentIcon from "@/assets/vue/ShareContentIcon.vue";
 
 const emit = defineEmits<{
   (e: 'screenMonitor'): void
@@ -108,7 +110,7 @@ const soundText = computed(() => {
     <template v-slot:left>
       <div class="flex flex-row [&>*]:mr-2">
         <ActionBarItem v-on:click="shareContent" :text="'Share Content'">
-          <img class="w-5 h-5 mr-1" :src="shareContentIconUrl" alt="Icon"/>
+          <ShareContentIcon class="h-5" :colour="'white'"/>
         </ActionBarItem>
 
         <ActionBarItem v-if="follower.type === REQUESTS.WEB" v-on:click="viewScreen" :text="'View Screen'">
@@ -116,7 +118,7 @@ const soundText = computed(() => {
         </ActionBarItem>
 
         <ActionBarItem v-if="follower.type === REQUESTS.MOBILE" v-on:click="returnHome" :text="'Return Home'">
-          <img class="w-5 h-5" src="src/assets/img/media-application.svg" alt="Icon"/>
+          <img class="h-5" src="src/assets/img/media-application.svg" alt="Icon"/>
         </ActionBarItem>
 
         <ActionBarItem v-on:click="lockScreens" :text="lockedText">
@@ -133,10 +135,9 @@ const soundText = computed(() => {
 
     <template v-slot:right>
       <div class="flex flex-row items-center">
-        <ActionBarItem v-on:click="removeUser" :text="actionPinia.selectedItems.length > 1 ? 'Remove Users' : 'Remove User'"
-                       class="bg-gray-400 hover:bg-gray-300">
+        <ActionBarItemReverse v-on:click="removeUser" :text="actionPinia.selectedItems.length > 1 ? 'Remove Users' : 'Remove User'">
           <RemoveIcon :colour="'white'"/>
-        </ActionBarItem>
+        </ActionBarItemReverse>
       </div>
     </template>
   </ActionBarBase>
