@@ -288,10 +288,12 @@ gray-scrollbar::-webkit-scrollbar-thumb {
     }
 }
 
-.list-complete-move, /* apply transition to moving elements */
+.list-complete-move {
+    transition: all 0.5s ease;
+}
 .list-complete-enter-active,
 .list-complete-leave-active {
-    transition: all 0.7s ease;
+    transition: none;
 }
 
 .list-complete-enter-from,
