@@ -34,6 +34,32 @@ class Tab {
         }
         return this.favicon
     }
+
+    getCleanTabName(): string {
+        // Regular expression to match parentheses and their contents
+        const regex = /\s?\(\d+\)\s?/g;
+
+        // Replace all occurrences of the matched pattern with an empty string
+        return this.name.replace(regex, '');
+    }
+
+    getDomainFromLink(): string | null {
+        try {
+            const url = new URL(this.url);
+
+            let hostname = url.hostname;
+
+            // Remove "www." from the start of the domain name if it exists
+            if (hostname.startsWith('www.')) {
+                hostname = hostname.slice(4);
+            }
+
+            return hostname;
+        } catch (error) {
+            console.error('Error parsing the URL:', error);
+            return null;
+        }
+    }
 }
 
 export default Tab;

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {useActionStore} from "@/stores/actionStore";
+import { useActionStore } from "@/stores/actionStore";
 
 const actionPinia = useActionStore();
 

@@ -119,38 +119,44 @@ onMounted(() => {
 
     <!--Active Tab-->
     <div v-else>
-      <div class="flex items-center bg-white h-12 rounded-2xl mb-4">
-        <div class="flex flex-row w-full pl-5 items-center justify-between">
-          <div :class="{
-                      'w-full h-9 px-5 flex flex-row items-center overflow-ellipsis whitespace-nowrap': true,
-                      'overflow-hidden rounded-2xl': true,
-                      }"
-          >
+      <div class="flex items-center bg-white h-12 pl-5 rounded-2xl mb-4">
+        <div class="h-9 px-5 flex flex-row items-center whitespace-nowrap overflow-hidden rounded-2xl">
+
+          <div class="flex overflow-hidden items-center">
             <img class="flex-shrink-0 w-5 h-5 mr-2 cursor-pointer" :src="orderedItems[0].getFavicon()" alt=""/>
-            <span class="flex-shrink overflow-ellipsis whitespace-nowrap overflow-hidden pr-10 mt-0.5">{{ orderedItems[0].getTabUrlWithoutHttp() }}</span>
 
-            <!--Monitor Icon-->
-            <div class="flex items-center flex-shrink-0 flex-[1_1_auto] justify-end">
-              <div class="flex flex-row items-center">
-                <div class="mr-2 text-sm text-gray-500 font-semibold">
-                  ACTIVE TAB
-                </div>
-
-                <EyeMonitorIcon v-on:click="viewScreen" class="h-6 cursor-pointer" :colour="'#959EAF'"/>
-              </div>
+            <!--Tab name and domain-->
+            <div class="flex flex-row flex-shrink overflow-hidden items-center mt-0.5 pr-6">
+              <span class="flex-shrink overflow-ellipsis whitespace-nowrap overflow-hidden font-medium">
+                {{ orderedItems[0].getCleanTabName() }}
+              </span>
+              <span class="ml-2 text-sm text-gray-500 font-normal">
+                {{orderedItems[0].getDomainFromLink()}}
+              </span>
             </div>
-
-            <Transition name="icon">
-              <div v-if="checkWebsite(orderedItems[0].url) && !selectedTab?.closing" class="has-tooltip">
-                <Tooltip :tip="'Not in task list'" :toolTipMargin="'-ml-1'" :arrow-margin="'ml-1'" />
-                <img
-                    class="w-6 h-6 mr-2 cursor-pointer"
-                    src="/src/assets/img/student-icon-alert.svg"
-                    alt="alert icon"
-                />
-              </div>
-            </Transition>
           </div>
+
+          <!--Monitor Icon-->
+          <div class="flex items-center justify-end">
+            <div class="flex flex-row items-center">
+              <div class="mr-2 text-sm text-gray-500 font-semibold">
+                ACTIVE TAB
+              </div>
+
+              <EyeMonitorIcon v-on:click="viewScreen" class="h-6 cursor-pointer" :colour="'#959EAF'"/>
+            </div>
+          </div>
+
+          <Transition name="icon">
+            <div v-if="checkWebsite(orderedItems[0].url) && !selectedTab?.closing" class="has-tooltip">
+              <Tooltip :tip="'Not in task list'" :toolTipMargin="'-ml-1'" :arrow-margin="'ml-1'" />
+              <img
+                  class="w-6 h-6 mr-2 cursor-pointer"
+                  src="/src/assets/img/student-icon-alert.svg"
+                  alt="alert icon"
+              />
+            </div>
+          </Transition>
         </div>
       </div>
 
@@ -171,8 +177,20 @@ onMounted(() => {
                         }"
                    @click="selectedTabId = tab.id"
               >
-                <img class="flex-shrink-0 w-5 h-5 mr-2 cursor-pointer" :src="tab.getFavicon()" alt=""/>
-                <span class="flex-shrink overflow-ellipsis whitespace-nowrap overflow-hidden mt-0.5">{{ tab.getTabUrlWithoutHttp() }}</span>
+
+                <div class="flex overflow-hidden items-center">
+                  <img class="flex-shrink-0 w-5 h-5 mr-2 cursor-pointer" :src="tab.getFavicon()" alt=""/>
+
+                  <!--Tab name and domain-->
+                  <div class="flex flex-row flex-shrink overflow-hidden items-center mt-0.5 pr-6">
+                    <span class="flex-shrink overflow-ellipsis whitespace-nowrap overflow-hidden font-medium">
+                      {{ tab.getCleanTabName() }}
+                    </span>
+                    <span class="ml-2 text-sm text-gray-500 font-normal">
+                      {{ tab.getDomainFromLink()}}
+                    </span>
+                  </div>
+                </div>
 
                 <!--Action icons-->
                 <div class="flex flex-shrink-0 flex-[1_1_auto] justify-end">
