@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useClassroomStore } from "@/stores/classroomStore";
 import { computed, defineProps, onMounted, PropType, ref} from "vue";
-import { Follower, Tab } from "@/models";
+import { WebFollower, Tab } from "@/models";
 import * as REQUESTS from "@/constants/_requests";
 import Tooltip from "@/components/Buttons/Tooltip.vue";
 import TrashIcon from "@/assets/vue/TrashIcon.vue";
@@ -19,7 +19,7 @@ const classroomPinia = useClassroomStore();
 
 const props = defineProps({
   follower: {
-    type: Object as PropType<Follower>,
+    type: Object as PropType<WebFollower>,
     required: true,
   },
   searchQuery: {
@@ -39,7 +39,7 @@ const filteredTabs = computed(() => {
 });
 
 const orderedItems = computed(() => {
-  return [...filteredTabs.value].sort((a, b) => b.lastActivated - a.lastActivated);
+  return [...filteredTabs.value].sort((a, b) => (b.lastActivated ?? 0) - (a.lastActivated ?? 0));
 });
 
 const viewScreen = () => {

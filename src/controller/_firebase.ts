@@ -353,6 +353,20 @@ class Firebase {
     }
 
     /**
+     * Completely remove the entry from firebase.
+     * @param classCode A string representing the class a user is registered to.
+     * @param UUID A string representing the unique ID of a follower.
+     * @param followerType
+     */
+    removeFollower = (classCode: string, UUID: string, followerType: string) => {
+        const followerTypeRef = followerType === REQUESTS.WEB ? this.webFollowerRef : this.mobileFollowerRef;
+        const followerRef = ref(this.db, `/${followerTypeRef}/${classCode}/${UUID}`);
+        remove(followerRef)
+            .then(function () { console.log("Removed follower succeeded.") })
+            .catch(function (error) { console.log("Remove failed: " + error.message) });
+    }
+
+    /**
      * Sent from a leader, push an action request to all followers. This could be a video_permission, muteTab etc.
      * @param classCode A string representing the class a user is registered to.
      * @param {*} type

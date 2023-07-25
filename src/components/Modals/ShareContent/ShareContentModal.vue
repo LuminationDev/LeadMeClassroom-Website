@@ -18,13 +18,12 @@ import AlertIcon from "@/assets/vue/AlertIcon.vue";
 const classroomPinia = useClassroomStore();
 const actionPinia = useActionStore();
 const panelName = 'shareContent';
-// const viewDescription = ref('');
 const sharePanel = ref('menu');
 const searchQuery = ref("");
 const showFilter = ref(false);
 
 const classCode = computed(() => {
-  return classroomPinia.classCode !== ''
+  return classroomPinia.classCode !== '' && classroomPinia.view === 'classroom'
 })
 
 /**
