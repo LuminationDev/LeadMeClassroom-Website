@@ -8,7 +8,6 @@ const classroomPinia = useClassroomStore();
 const actionPinia = useActionStore();
 const { webFollowers, mobileFollowers } = storeToRefs(classroomPinia)
 
-
 const activeWebFollowers = computed((): number => {
   const active = webFollowers.value.filter(follower => {
     return !follower.disconnected
@@ -55,10 +54,9 @@ const selectAll = () => {
           classroomPinia.user?.displayName
         }}'{{ classroomPinia?.user?.displayName?.endsWith('s') ? '' : 's' }} Class</p>
 
-
       <div class="flex flex-row mr-16">
         <Transition name="fade">
-          <div v-if="actionPinia.selectedFollowers.length > 0 && calcStudent > 1" v-on:click="selectAll" class="flex items-center justify-center w-auto mr-4 text-blue-500 cursor-pointer">
+          <div v-if="actionPinia.selectedFollowers.length > 0 && (activeMobileFollowers + activeWebFollowers) > 1" v-on:click="selectAll" class="flex items-center justify-center w-auto mr-4 text-blue-500 cursor-pointer">
             Select All
           </div>
         </Transition>

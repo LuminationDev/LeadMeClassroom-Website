@@ -122,7 +122,7 @@ onMounted(() => {
       <div class="flex items-center bg-white h-12 pl-5 rounded-2xl mb-4">
         <div class="h-9 px-5 flex flex-row items-center whitespace-nowrap overflow-hidden rounded-2xl">
 
-          <div class="flex overflow-hidden">
+          <div class="flex overflow-hidden items-center">
             <img class="flex-shrink-0 w-5 h-5 mr-2 cursor-pointer" :src="orderedItems[0].getFavicon()" alt=""/>
 
             <!--Tab name and domain-->
@@ -178,7 +178,7 @@ onMounted(() => {
                    @click="selectedTabId = tab.id"
               >
 
-                <div class="flex overflow-hidden">
+                <div class="flex overflow-hidden items-center">
                   <img class="flex-shrink-0 w-5 h-5 mr-2 cursor-pointer" :src="tab.getFavicon()" alt=""/>
 
                   <!--Tab name and domain-->
