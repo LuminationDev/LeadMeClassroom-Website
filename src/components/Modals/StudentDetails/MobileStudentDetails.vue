@@ -143,7 +143,7 @@ const checkMedia = (packageName: string) => {
         <div class="py-4 px-10 text-sm text-gray-500 font-semibold">APPLICATIONS</div>
 
         <transition-group name="list-complete" tag="div">
-          <div v-for="(application, index) in filteredApplications" :key="index" class="py-1" :id="application.id">
+          <div v-for="application in filteredApplications" :key="application.id" class="py-1" :id="application.id">
 
             <!--Individual applications-->
             <div class="flex flex-row w-full px-5 items-center justify-between">
