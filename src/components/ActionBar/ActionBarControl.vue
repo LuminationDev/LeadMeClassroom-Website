@@ -12,6 +12,7 @@ import MuteIcon from "@/assets/vue/MuteIcon.vue";
 import ActionBarItem from "@/components/ActionBar/ActionBarItem.vue";
 import CircleCrossIcon from "@/assets/vue/CircleCrossIcon.vue";
 import ClearIcon from "@/assets/vue/Content/ClearIcon.vue";
+import ActionBarItemReverse from "@/components/ActionBar/ActionBarItemReverse.vue";
 
 const classroomPinia = useClassroomStore();
 const actionPinia = useActionStore();
@@ -111,10 +112,9 @@ const cancel = () => {
     </template>
 
     <template v-slot:right>
-      <ActionBarItem v-on:click="cancel" :text="'Cancel'"
-                     class="bg-gray-400 hover:bg-gray-300">
+      <ActionBarItemReverse v-on:click="cancel" :text="'Cancel'">
         <CircleCrossIcon :colour="'white'"/>
-      </ActionBarItem>
+      </ActionBarItemReverse>
     </template>
   </ActionBarBase>
 </template>

@@ -13,6 +13,7 @@ import UnmuteIcon from "@/assets/vue/UnmuteIcon.vue";
 import EyeIcon from "@/assets/vue/EyeIcon.vue";
 import RemoveIcon from "@/assets/vue/RemoveIcon.vue";
 import ActionBarItem from "@/components/ActionBar/ActionBarItem.vue";
+import ActionBarItemReverse from "@/components/ActionBar/ActionBarItemReverse.vue";
 
 const emit = defineEmits<{
   (e: 'screenMonitor'): void
@@ -133,10 +134,9 @@ const soundText = computed(() => {
 
     <template v-slot:right>
       <div class="flex flex-row items-center">
-        <ActionBarItem v-on:click="removeUser" :text="actionPinia.selectedItems.length > 1 ? 'Remove Users' : 'Remove User'"
-                       class="bg-gray-400 hover:bg-gray-300">
+        <ActionBarItemReverse v-on:click="removeUser" :text="actionPinia.selectedItems.length > 1 ? 'Remove Users' : 'Remove User'">
           <RemoveIcon :colour="'white'"/>
-        </ActionBarItem>
+        </ActionBarItemReverse>
       </div>
     </template>
   </ActionBarBase>
