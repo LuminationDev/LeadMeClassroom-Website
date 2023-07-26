@@ -100,7 +100,7 @@ const hover = ref(false)
       <!--End the active session and logout-->
       <div class="fixed bottom-12 w-48">
         <ClassroomMenuItem class="mb-3"
-            :icon="'/src/assets/img/settings-icon-cog-white.svg'"
+            icon="/src/assets/img/settings-icon-cog-white.svg"
             :enabled="true"
             :panel="'account'"
             v-on:click="classroomPinia.view = 'account'"
