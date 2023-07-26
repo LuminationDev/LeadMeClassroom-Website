@@ -7,7 +7,7 @@ import devicesIconUrl from '/src/assets/img/share-content-devices.svg';
 import selectIconUrl from '/src/assets/img/selection-icon-individual.svg';
 import allIconUrl from '/src/assets/img/selection-icon-all.svg';
 import LinkIcon from "@/assets/vue/Content/LinkIcon.vue";
-import { UpdateFollowerTasksCallback } from "@/constants/_functionTypes";
+import type { UpdateFollowerTasksCallback } from "@/constants/_functionTypes";
 import { useClassroomStore } from "@/stores/classroomStore";
 
 const emit = defineEmits<{

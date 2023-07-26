@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { defineProps } from "vue";
 import type { PropType } from "vue";
 import type { MobileFollower } from "../../../../../models";
 import Tooltip from "../../../../Buttons/Tooltip.vue";

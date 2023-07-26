@@ -3,8 +3,9 @@ import * as REQUESTS from "@/constants/_requests";
 import EyeIcon from "@/assets/vue/EyeIcon.vue";
 import LockIcon from "@/assets/vue/LockIcon.vue";
 import RemoveIcon from "@/assets/vue/RemoveIcon.vue";
-import {computed, defineProps, PropType} from "vue";
-import { Follower } from "@/models";
+import { computed } from "vue";
+import type { PropType } from "vue";
+import type { Follower } from "@/models";
 import { useClassroomStore } from "@/stores/classroomStore";
 import UnlockIcon from "@/assets/vue/UnlockIcon.vue";
 

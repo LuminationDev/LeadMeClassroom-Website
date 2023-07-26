@@ -66,7 +66,7 @@ const closeModal = () => {
             <div class="text-xl font-semibold">
               Are you sure?
             </div>
-            <img v-on:click="closeModal" class="cursor-pointer w-4" src="src/assets/img/cross.svg" alt="exit"/>
+            <img v-on:click="closeModal" class="cursor-pointer w-4" src="/src/assets/img/cross.svg" alt="exit"/>
           </div>
 
           <div class="flex flex-col flex-grow px-9 justify-center items-center">

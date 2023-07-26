@@ -24,7 +24,7 @@ const extractYouTubeVideoID = computed( () => {
   }
 
   // If the link doesn't match the expected format, return null or handle the error accordingly
-  return null;
+  return undefined;
 })
 
 /**

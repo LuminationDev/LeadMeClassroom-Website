@@ -2,7 +2,7 @@
 import "../../styles.css";
 import Modal from "./Modal.vue";
 import * as REQUESTS from "../../constants/_requests";
-import { computed, defineProps, ref } from "vue";
+import { computed, ref } from "vue";
 import type { PropType } from "vue";
 import type MobileFollower from "../../models/Followers/_mobileFollower";
 import HoverButton from "../Buttons/HoverButton.vue";

@@ -14,7 +14,6 @@ class MobileFollower extends Follower {
     currentApplication: string = REQUESTS.MOBILE_PACKAGE;
     applications: Application[];
     videos: Video[];
-    permission: string|null|undefined;
     audible: boolean|null|undefined;
     offTask: boolean|null|undefined;
     classroomPinia: any;
@@ -23,7 +22,6 @@ class MobileFollower extends Follower {
         super(classCode, name, uniqueId, REQUESTS.MOBILE, locked, muted, tasks);
         this.applications = this.followerApplicationsAdded(apps);
         this.videos = this.followerVideosAdded(videos);
-        this.permission = null;
         this.classroomPinia = useClassroomStore() // todo - I don't want this in here
     }
 

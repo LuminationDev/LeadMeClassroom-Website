@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import {defineProps, ref} from "vue";
+import { ref } from "vue";
 import type {PropType} from "vue";
 import Modal from "./Modal.vue";
 import * as REQUESTS from "../../constants/_requests";
 import {useClassroomStore} from "@/stores/classroomStore";
 import { useWebRTCStore } from "@/stores/webRTCStore";
 import Tooltip from "../Buttons/Tooltip.vue";
-import { Follower } from "@/models";
+import type { Follower } from "@/models";
 
 const emit = defineEmits<{
   (e: 'studentDetail'): void

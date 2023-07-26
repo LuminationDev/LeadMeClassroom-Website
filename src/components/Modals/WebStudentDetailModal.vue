@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import "../../styles.css";
 import Modal from "./Modal.vue";
-import { computed, defineProps, ref } from "vue";
+import { computed, ref } from "vue";
 import type { PropType } from "vue";
 import type WebFollower from "../../models/Followers/_webFollower";
 import HoverButton from "../Buttons/HoverButton.vue";

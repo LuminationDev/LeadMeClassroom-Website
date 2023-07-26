@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import {computed, defineProps, ref} from 'vue'
+import { computed, ref } from 'vue'
 import type { PropType } from 'vue'
 import * as REQUESTS from "@/constants/_requests";
 import WebFollowerIcon from "@/assets/vue/WebFollowerIcon.vue";
 import MobileFollowerIcon from "@/assets/vue/MobileFollowerIcon.vue";
-import { Follower } from "@/models";
+import type { Follower } from "@/models";
 import EllipsisIcon from "@/assets/vue/EllipsisIcon.vue";
 import CheckboxInput from "@/components/InputFields/CheckboxInput.vue";
 import StudentGridItemSettings from "@/components/Classroom/ClassControl/GridItem/StudentGridItemSettings.vue";

@@ -9,6 +9,10 @@ export default abstract class Follower {
     locked: boolean;
     disconnected: boolean = false;
     muted: boolean|null|undefined;
+    monitoring: boolean|null|undefined;
+    permission: string|null|undefined;
+    imageBase64: string|null|undefined;
+    collectingScreenshotFailed: boolean|null|undefined;
 
     protected constructor(classCode: string, name: string, uniqueId: string, type: string, locked: boolean = false, muted: boolean = false, tasks: Task[] = []) {
         this.classCode = classCode;
@@ -19,6 +23,8 @@ export default abstract class Follower {
         this.locked = locked;
         this.muted = muted;
         this.tasks = tasks;
+        this.permission = null;
+        this.monitoring = null;
     }
 
     abstract get activeTaskIconUrl(): string | null

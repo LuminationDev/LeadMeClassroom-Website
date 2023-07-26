@@ -5,7 +5,7 @@ import allIconUrl from '/src/assets/img/selection-icon-all.svg';
 import { useClassroomStore } from "@/stores/classroomStore";
 import { useActionStore } from "@/stores/actionStore";
 import { computed } from "vue";
-import { UpdateFollowerTasksCallback } from "@/constants/_functionTypes";
+import type { UpdateFollowerTasksCallback } from "@/constants/_functionTypes";
 
 const props = defineProps({
   shareType: {

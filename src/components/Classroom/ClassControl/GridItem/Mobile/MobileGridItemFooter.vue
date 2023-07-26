@@ -2,7 +2,7 @@
 import MobileStudentDetailModal from "../../../../Modals/MobileStudentDetailModal.vue";
 import MobileStudentTaskModal from "../../../../Modals/MobileStudentTaskModal.vue";
 import * as REQUESTS from "../../../../../constants/_requests";
-import { defineProps, ref } from "vue";
+import { ref } from "vue";
 import type { PropType } from "vue";
 import type { MobileFollower } from "../../../../../models";
 import { useClassroomStore } from "@/stores/classroomStore";

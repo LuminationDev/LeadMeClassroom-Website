@@ -11,17 +11,12 @@ import type { Task } from "../index";
 class WebFollower extends Follower {
     tabs: Tab[];
     webRTC: any;
-    imageBase64: string|null|undefined;
-    collectingScreenshotFailed: boolean|null|undefined;
-    monitoring: boolean|null|undefined;
-    permission: string|null|undefined;
     muteAll: boolean|null|undefined;
     offTask: boolean|null|undefined;
 
     constructor(classCode = "", name = "", locked: boolean = false, muted: boolean = false, tasks: Task[] = [], uniqueId = uuidv4()) {
         super(classCode, name, uniqueId, REQUESTS.WEB, locked, muted, tasks)
         this.tabs = [];
-        this.permission = null;
     }
 
     updateIndividualTab(id: string, newTab: Tab)

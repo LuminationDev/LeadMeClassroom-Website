@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
-import { CuratedContentItem } from "@/models";
+import type { CuratedContentItem } from "@/models";
 import { useClassroomStore } from "@/stores/classroomStore";
 import { useActionStore } from "@/stores/actionStore";
 import ContentFilter from "@/components/CuratedContent/ContentFilter.vue";
@@ -164,5 +164,5 @@ const viewItem = (data: string) => {
   </div>
 
   <!--Individual curated content item-->
-  <CuratedContentDescription v-else :contentItem="selectedItemDescription" />
+  <CuratedContentDescription v-else-if="selectedItemDescription" :contentItem="selectedItemDescription" />
 </template>

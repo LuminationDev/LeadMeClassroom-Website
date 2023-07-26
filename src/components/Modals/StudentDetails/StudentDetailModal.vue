@@ -4,16 +4,14 @@ import "../../../styles.css";
 import Modal from "../Modal.vue";
 import WebStudentDetails from "@/components/Modals/StudentDetails/WebStudentDetails.vue";
 import MobileStudentDetails from "@/components/Modals/StudentDetails/MobileStudentDetails.vue";
-import WebFollowerIcon from "@/assets/vue/WebFollowerIcon.vue";
-import MobileFollowerIcon from "@/assets/vue/MobileFollowerIcon.vue";
 import EditIcon from "@/assets/vue/EditIcon.vue";
 import ActionBarModal from "@/components/ActionBar/ActionBarModal.vue";
 import TickIcon from "@/assets/vue/TickIcon.vue";
 import CrossIcon from "@/assets/vue/CrossIcon.vue";
 import SearchFilter from "@/components/Modals/ShareContent/SearchFilter.vue";
-import { computed, defineProps, nextTick, ref, watch } from "vue";
+import { computed, nextTick, ref, watch } from "vue";
 import type { PropType } from "vue";
-import type { Follower } from "@/models";
+import type { Follower, MobileFollower, WebFollower } from "@/models";
 import { useClassroomStore } from "@/stores/classroomStore";
 import { useActionStore } from "@/stores/actionStore";
 
@@ -88,6 +86,14 @@ const changeName = () => {
   editName.value = false;
 }
 
+// todo - I don't like this casting here, there must be a better way to do it
+const mFollower = computed((): MobileFollower => {
+    return props.follower as MobileFollower
+})
+const wFollower = computed((): WebFollower => {
+  return props.follower as WebFollower
+})
+
 defineExpose({
   openModal
 });
@@ -138,12 +144,12 @@ defineExpose({
       <template v-slot:content>
         <div class="bg-zinc-200 h-[32rem]">
           <WebStudentDetails v-if="follower.type === REQUESTS.WEB"
-             :follower="follower"
+             :follower="wFollower"
              :search-query="searchQuery"
              @screenMonitor="$emit('screenMonitor')"
              @close="closeModal"/>
 
-          <MobileStudentDetails v-else :follower="follower" :search-query="searchQuery"/>
+          <MobileStudentDetails v-else :follower="mFollower" :search-query="searchQuery"/>
         </div>
       </template>
 

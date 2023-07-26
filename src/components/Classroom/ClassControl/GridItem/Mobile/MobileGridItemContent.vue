@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import "../../../../../styles.css";
-import { computed, defineProps, ref } from "vue";
+import { computed, ref } from "vue";
 import type { PropType } from "vue";
 import type { Application, MobileFollower } from "@/models";
 import { useClassroomStore } from "@/stores/classroomStore";

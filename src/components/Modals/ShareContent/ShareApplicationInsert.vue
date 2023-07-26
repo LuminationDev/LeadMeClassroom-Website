@@ -3,7 +3,7 @@ import { useClassroomStore } from "@/stores/classroomStore";
 import { useActionStore } from "@/stores/actionStore";
 import { computed } from "vue";
 import ActionBarSelect from "@/components/ActionBar/ActionBarSelect.vue";
-import {Application} from "@/models";
+import type { Application } from "@/models";
 
 const classroomPinia = useClassroomStore();
 const actionPinia = useActionStore();
@@ -76,7 +76,7 @@ const filteredApplications = computed(() => {
             </div>
 
             <div class="text-sm text-gray-500" >
-              <span v-if="missingCounts[application.getPackageName()] > 0">
+              <span v-if="missingCounts && missingCounts[application.getPackageName()] > 0">
                 missing on {{ missingCounts[application.getPackageName()] }} device<span v-if="missingCounts[application.getPackageName()] > 1">s</span>
               </span>
             </div>

@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import * as REQUESTS from "../../constants/_requests";
 import ActionBarBase from "@/components/ActionBar/ActionBarBase.vue";
-import shareContentIconUrl from '/src/assets/img/sideMenu/menu-icon-sharecontent.svg';
 import { useClassroomStore } from "@/stores/classroomStore";
 import { useActionStore } from "@/stores/actionStore";
-import { computed, defineProps, PropType } from "vue";
-import { Follower } from "@/models";
+import { computed } from "vue";
+import type { PropType } from 'vue'
+import type { Follower } from "@/models";
 import UnlockIcon from "@/assets/vue/UnlockIcon.vue";
 import LockIcon from "@/assets/vue/LockIcon.vue";
 import MuteIcon from "@/assets/vue/MuteIcon.vue";
@@ -118,7 +118,7 @@ const soundText = computed(() => {
         </ActionBarItem>
 
         <ActionBarItem v-if="follower.type === REQUESTS.MOBILE" v-on:click="returnHome" :text="'Return Home'">
-          <img class="h-5" src="src/assets/img/media-application.svg" alt="Icon"/>
+          <img class="h-5" src="/src/assets/img/media-application.svg" alt="Icon"/>
         </ActionBarItem>
 
         <ActionBarItem v-on:click="lockScreens" :text="lockedText">

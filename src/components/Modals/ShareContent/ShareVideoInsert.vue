@@ -3,7 +3,7 @@ import { useClassroomStore } from "@/stores/classroomStore";
 import { useActionStore } from "@/stores/actionStore";
 import { computed } from "vue";
 import ActionBarSelect from "@/components/ActionBar/ActionBarSelect.vue";
-import { Video } from "@/models";
+import type { Video } from "@/models";
 
 const classroomPinia = useClassroomStore();
 const actionPinia = useActionStore();
@@ -78,7 +78,7 @@ const filteredVideos = computed(() => {
             </div>
 
             <div class="text-sm text-gray-500" >
-              <span v-if="missingCounts[video.getName()] > 0">
+              <span v-if="missingCounts && missingCounts[video.getName()] > 0">
                 missing on {{ missingCounts[video.getName()] }} device<span v-if="missingCounts[video.getName()] > 1">s</span>
               </span>
             </div>

@@ -11,7 +11,7 @@ const props = defineProps({
 
 const showModal = ref(false);
 
-const checkPosition = (index: Number): String => {
+const checkPosition = (index: Number): string => {
   const isFirst = index === 0;
   const isLast = index === props.classCode.split('').length - 1;
   return isFirst ? 'start' : isLast ? 'end' : 'middle';

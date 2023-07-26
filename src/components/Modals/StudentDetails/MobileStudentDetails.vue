@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { computed, defineProps, PropType, ref } from "vue";
-import { Application, MobileFollower } from "@/models";
+import { computed, ref } from "vue";
+import type { Application, MobileFollower } from "@/models";
+import type { PropType } from 'vue'
 import Tooltip from "@/components/Buttons/Tooltip.vue";
 import { useClassroomStore } from "@/stores/classroomStore";
 import * as REQUESTS from "@/constants/_requests";

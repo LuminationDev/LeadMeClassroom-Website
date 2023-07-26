@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { useClassroomStore } from "@/stores/classroomStore";
-import { defineProps, PropType, ref } from "vue";
-import { Follower } from "@/models";
+import { ref } from "vue";
+import type { PropType } from "vue";
+import type { Follower } from "@/models";
 import * as REQUESTS from "@/constants/_requests";
 import RemoveIcon from "@/assets/vue/RemoveIcon.vue";
 import WebFollowerIcon from "@/assets/vue/WebFollowerIcon.vue";

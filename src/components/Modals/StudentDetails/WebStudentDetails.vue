@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { useClassroomStore } from "@/stores/classroomStore";
-import { computed, defineProps, onMounted, PropType, ref} from "vue";
-import { WebFollower, Tab } from "@/models";
+import { computed, onMounted, ref} from "vue";
+import type { WebFollower, Tab } from "@/models";
+import type { PropType } from 'vue'
 import * as REQUESTS from "@/constants/_requests";
 import Tooltip from "@/components/Buttons/Tooltip.vue";
 import TrashIcon from "@/assets/vue/TrashIcon.vue";
