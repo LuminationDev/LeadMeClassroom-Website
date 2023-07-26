@@ -7,6 +7,10 @@ import GenericButton from "@/components/Buttons/GenericButton.vue";
 import ClassroomActions from "@/components/Classroom/SideMenu/ClassroomActions.vue";
 import RoomCodeModal from "@/components/Modals/RoomCode/RoomCodeModal.vue";
 import EndClassConfirmation from "@/components/Modals/Confirmation/EndClassConfirmation.vue";
+import logo from '/src/assets/img/icon-logo.svg';
+import wideLogo from '/src/assets/img/icon-dashboard-logo.svg';
+import sidebarClose from '/src/assets/img/sidebar-close.svg';
+import sidebarOpen from '/src/assets/img/sidebar-open.svg';
 
 const classroomPinia = useClassroomStore();
 
@@ -48,18 +52,18 @@ const hover = ref(false)
   <div class="fixed top-0 left-0 xl:block xl:relative bg-navy-side-menu z-20 h-full corner" :class="sidebarShouldBeExpanded ? 'sidebar-expanded' : 'sidebar-closed'" @mouseover="hover = true" @mouseleave="hover = false">
     <div class="xl:hidden absolute top-10 -right-4 cursor-pointer" @click="() => { expanded = !expanded }">
       <img class="w-8 h-8"
-           :src="sidebarShouldBeExpanded ? '/src/assets/img/sidebar-close.svg' : '/src/assets/img/sidebar-open.svg'"
+           :src="sidebarShouldBeExpanded ? sidebarClose : sidebarOpen"
            alt="Menu button"/>
     </div>
     <div v-if="hover || !sidebarShouldBeExpanded" class="absolute top-10 -right-4 cursor-pointer" @click="() => { expanded = !expanded }">
       <img class="w-8 h-8"
-           :src="sidebarShouldBeExpanded ? '/src/assets/img/sidebar-close.svg' : '/src/assets/img/sidebar-open.svg'"
+           :src="sidebarShouldBeExpanded ? sidebarClose : sidebarOpen"
            alt="Menu button"/>
     </div>
     <div class="flex justify-center items-center">
       <img class="mt-10 mb-6"
           :class="sidebarShouldBeExpanded ? 'w-28 h-10' : 'h-10 w-10'"
-           :src="sidebarShouldBeExpanded ? '/src/assets/img/icon-dashboard-logo.svg' : '/src/assets/img/icon-logo.svg'"
+           :src="sidebarShouldBeExpanded ? wideLogo : logo"
            alt="LeadMe Icon"/>
     </div>
     <hr class="mx-5 border border-gray-menu-separator">

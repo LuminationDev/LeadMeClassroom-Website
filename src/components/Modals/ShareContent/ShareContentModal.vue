@@ -14,6 +14,8 @@ import devicesIconUrl from '/src/assets/img/share-content-devices.svg';
 import ShareCustomURL from "@/components/Modals/ShareContent/ShareCustomURL.vue";
 import SearchFilter from "@/components/Modals/ShareContent/SearchFilter.vue";
 import AlertIcon from "@/assets/vue/AlertIcon.vue";
+import modalExit from '/src/assets/img/modal-icon-exit.svg';
+import popupBack from '/src/assets/img/popup-icon-back.svg';
 
 const classroomPinia = useClassroomStore();
 const actionPinia = useActionStore();
@@ -167,7 +169,7 @@ const closeModal = () => {
             <img
                 v-on:click="back"
                 class="w-4 h-4 ml-8 cursor-pointer"
-                :src="sharePanel === 'menu' ? '/src/assets/img/modal-icon-exit.svg': '/src/assets/img/popup-icon-back.svg'"
+                :src="sharePanel === 'menu' ? modalExit : popupBack"
                 alt="Close Icon"/>
           </div>
         </header>
