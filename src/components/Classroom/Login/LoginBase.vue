@@ -28,7 +28,7 @@ function setJustRegistered(value: boolean) {
 </script>
 
 <template>
-  <div class="w-full bg-navy-side-menu h-screen flex justify-center items-center">
+  <div class="w-full bg-navy-side-menu h-full flex justify-center items-center">
     <div class="p-16 rounded-xl">
       <LoginInitial v-if="currentView === 'welcome'" @change-view="setView" />
 

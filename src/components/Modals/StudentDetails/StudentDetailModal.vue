@@ -104,33 +104,31 @@ defineExpose({
   <Teleport to="body">
     <Modal :show="showModal" @close="closeModal">
       <template v-slot:header>
-        <header class="h-20 px-8 bg-zinc-200 flex justify-between items-center rounded-t-lg">
+        <header class="h-20 px-8 bg-zinc-200 flex justify-between items-center rounded-t-lg w-full">
           <div class="flex flex-row items-center">
-            <div v-if="!editName" class="flex flex-row items-center">
+            <div v-if="!editName" class="flex flex-row items-center w-full mr-3">
               <span class="text-3xl font-medium text-black mr-3">{{ follower.name }}</span>
               <EditIcon v-on:click="showEditInput" class="cursor-pointer" :colour="'#667081'"/>
             </div>
 
-            <div v-else class="flex flex-row items-center">
-              <input ref="editInput" class="text-3xl bg-zinc-200 border-2 border-b-black outline-0" :placeholder="follower.name" v-model="name"/>
+            <div v-else class="flex flex-row items-center w-full">
+              <input ref="editInput" class="text-3xl w-full bg-zinc-200 border-2 border-b-black outline-0" :placeholder="follower.name" v-model="name"/>
 
               <TickIcon v-on:click="changeName" class="cursor-pointer ml-2" :colour="'green'"/>
               <CrossIcon v-on:click="editName = false; name = ''" class="cursor-pointer w-4 h-4 ml-2" :colour="'gray'"/>
             </div>
           </div>
 
-          <div class="flex flex-row items-center">
+          <div v-if="!editName" class="flex flex-row justify-between">
             <SearchFilter
                 :show-filter="false"
                 :enable-filter="false"
                 v-model="searchQuery"
                 :placeholder="follower.type === REQUESTS.WEB ? 'Search tabs' : 'Search applications'"/>
-            <WebFollowerIcon v-if="follower.type === REQUESTS.WEB" :colour="'#BDC3D6'"/>
-            <MobileFollowerIcon v-else :colour="'#BDC3D6'"/>
 
             <img
                 v-on:click="closeModal"
-                class="w-4 h-4 ml-4 cursor-pointer"
+                class="cursor-pointer"
                 src="/src/assets/img/modal-icon-exit.svg"
                 alt="Close Icon"/>
           </div>
