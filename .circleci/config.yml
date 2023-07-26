@@ -24,7 +24,7 @@ commands:
             - project/dist
       - run:
           name: Deploy Main to Firebase
-          command: ./node_modules/.bin/firebase deploy --token=$FIREBASE_DEPLOY_TOKEN
+          command: ./node_modules/.bin/@firebase deploy --token=$FIREBASE_DEPLOY_TOKEN
 
 jobs:
   run-tests:
