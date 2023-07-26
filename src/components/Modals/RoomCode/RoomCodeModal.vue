@@ -20,6 +20,7 @@ const checkPosition = (index: Number): String => {
 
 <template>
   <button
+      id="generate_class"
       class="menu-item menu-item--room-code bg-blue-500 flex
         text-sm text-white font-poppins font-semibold
         rounded-md hover:bg-blue-300"

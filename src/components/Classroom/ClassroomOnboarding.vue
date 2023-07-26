@@ -19,7 +19,7 @@ const steps = ref([
     },
     options: {
       popper: {
-        placement: 'left-start'
+        placement: 'right-start'
       },
       overlay: {
         padding: {
@@ -106,36 +106,7 @@ const steps = ref([
     },
     options: {
       popper: {
-        placement: 'right-start'
-      },
-      overlay: {
-        padding: {
-          top: 5,
-          right: 5,
-          bottom: 5,
-          left: 5
-        },
-        borderRadius: {
-          leftTop: 10,
-          rightTop: 10,
-          rightBottom: 10,
-          leftBottom: 10
-        }
-      }
-    }
-  },
-  {
-    attachTo: {
-      element: '#student_placeholder_view_button'
-    },
-    content: {
-      title: 'View their screen in real time',
-      description: 'Request to view a student\'s screen to stay on top',
-      image: onboardingOnTask
-    },
-    options: {
-      popper: {
-        placement: 'right-start'
+        placement: 'bottom-start'
       },
       overlay: {
         padding: {
@@ -171,7 +142,7 @@ defineExpose({
 </script>
 
 <template>
-  <VOnboardingWrapper ref="wrapper" :steps="steps">
+  <VOnboardingWrapper ref="wrapper" :steps="steps" class="z-30">
     <template #default="{ previous, next, step, isFirst, isLast, index }">
       <VOnboardingStep>
         <div class="bg-white shadow sm:rounded-lg m-2 h-96 w-onboarding-width">

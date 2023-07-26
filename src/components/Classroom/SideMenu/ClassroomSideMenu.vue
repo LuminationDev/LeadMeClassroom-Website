@@ -58,9 +58,9 @@ const hover = ref(false)
 
 <template>
   <Transition name="fade">
-    <div v-if="sidebarShouldBeExpanded" class="xl:hidden absolute w-screen h-screen opacity-80 bg-gray-200 z-20 cursor-pointer" @click="() => { expanded = !expanded }"></div>
+    <div v-if="sidebarShouldBeExpanded" class="xl:hidden absolute w-screen h-full opacity-80 bg-gray-200 z-20 cursor-pointer" @click="() => { expanded = !expanded }"></div>
   </Transition>
-  <div class="fixed top-0 left-0 xl:block xl:relative bg-navy-side-menu z-20 h-screen corner" :class="sidebarShouldBeExpanded ? 'sidebar-expanded' : 'sidebar-closed'" @mouseover="hover = true" @mouseleave="hover = false">
+  <div class="fixed top-0 left-0 xl:block xl:relative bg-navy-side-menu z-20 h-full corner" :class="sidebarShouldBeExpanded ? 'sidebar-expanded' : 'sidebar-closed'" @mouseover="hover = true" @mouseleave="hover = false">
     <div class="xl:hidden absolute top-10 -right-4 cursor-pointer" @click="() => { expanded = !expanded }">
       <img class="w-8 h-8"
            :src="sidebarShouldBeExpanded ? '/src/assets/img/sidebar-close.svg' : '/src/assets/img/sidebar-open.svg'"
@@ -129,7 +129,7 @@ const hover = ref(false)
     </div>
   </div>
 
-  <div class="xl:hidden w-24 h-screen z-10"></div>
+  <div class="xl:hidden w-24 h-full z-10"></div>
 </template>
 
 <style lang="scss">
