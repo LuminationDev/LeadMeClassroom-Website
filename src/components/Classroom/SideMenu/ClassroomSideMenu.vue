@@ -11,6 +11,7 @@ import logo from '/src/assets/img/icon-logo.svg';
 import wideLogo from '/src/assets/img/icon-dashboard-logo.svg';
 import sidebarClose from '/src/assets/img/sidebar-close.svg';
 import sidebarOpen from '/src/assets/img/sidebar-open.svg';
+import settingsCog from '/src/assets/img/settings-icon-cog-white.svg';
 
 const classroomPinia = useClassroomStore();
 
@@ -100,7 +101,7 @@ const hover = ref(false)
       <!--End the active session and logout-->
       <div class="fixed bottom-12 w-48">
         <ClassroomMenuItem class="mb-3"
-            icon="/src/assets/img/settings-icon-cog-white.svg"
+            :icon="settingsCog"
             :enabled="true"
             :panel="'account'"
             v-on:click="classroomPinia.view = 'account'"
