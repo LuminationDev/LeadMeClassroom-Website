@@ -36,6 +36,14 @@ const webStudents = computed(()  => {
   return actionPinia.selectedFollowers.filter(follower => follower.type === REQUESTS.WEB).length > 0;
 });
 
+const hasMobileStudents = computed(()  => {
+  return classroomPinia.mobileFollowers.length > 0;
+});
+
+const disableMobileInteractions = computed(() => {
+  return !hasMobileStudents.value || (hasMobileStudents.value && webStudents.value)
+})
+
 const openModal = () => {
   if(classCode.value) {
     classroomPinia.view = panelName
@@ -49,7 +57,7 @@ const openModal = () => {
  * @param panel A string representing the type of content to be shared.
  */
 const changePanel = (panel: string) => {
-  if(webStudents.value && (panel === "video" || panel === "app")) {
+  if(disableMobileInteractions.value && (panel === "video" || panel === "app")) {
     return;
   }
 
@@ -200,14 +208,14 @@ const closeModal = () => {
               <div
                 :class="{
                   'h-1/2 flex flex-col justify-center items-center bg-white text-center rounded-2xl': true,
-                  'cursor-pointer hover:bg-slate-100': !webStudents,
-                  'bg-opacity-50': webStudents
+                  'cursor-pointer hover:bg-slate-100': !disableMobileInteractions,
+                  'bg-opacity-50': disableMobileInteractions
                 }"
                 v-on:click="changePanel('video')"
               >
                 <div :class="{
                     'text-lg text-black flex flex-row items-center mb-3 font-semibold': true,
-                    'text-opacity-40': webStudents
+                    'text-opacity-40': disableMobileInteractions
                   }"
                 >
                   Videos
@@ -216,7 +224,7 @@ const closeModal = () => {
 
                 <div :class="{
                     'text-sm text-gray-400': true,
-                    'text-opacity-50': webStudents
+                    'text-opacity-50': disableMobileInteractions
                   }"
                 >Local videos on mobile.</div>
               </div>
@@ -225,14 +233,14 @@ const closeModal = () => {
               <div
                 :class="{
                   'h-1/2 flex flex-col justify-center items-center mt-2 bg-white text-center rounded-2xl': true,
-                  'cursor-pointer hover:bg-slate-100': !webStudents,
-                  'bg-opacity-50': webStudents
+                  'cursor-pointer hover:bg-slate-100': !disableMobileInteractions,
+                  'bg-opacity-50': disableMobileInteractions
                 }"
                 v-on:click="changePanel('app')"
               >
                 <div :class="{
                     'text-lg text-black flex flex-row items-center mb-3 font-semibold': true,
-                    'text-opacity-40': webStudents
+                    'text-opacity-40': disableMobileInteractions
                   }"
                 >
                   Apps
@@ -241,7 +249,7 @@ const closeModal = () => {
 
                 <div :class="{
                     'text-sm text-gray-400': true,
-                    'text-opacity-50': webStudents
+                    'text-opacity-50': disableMobileInteractions
                   }"
                 >Immersive learning apps.</div>
               </div>
