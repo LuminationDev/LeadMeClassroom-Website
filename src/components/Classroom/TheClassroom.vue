@@ -56,7 +56,7 @@ function checkOnboarding() {
 
     <div class="flex flex-grow flex-col h-full">
       <!--MainArea-->
-      <div class="bg-navy-side-menu h-6 w-full z-30"></div>
+      <div class="bg-navy-side-menu h-6 w-full z-30 flex-shrink-0"></div>
       <div class="flex flex-col flex-grow bg-panel-background font-poppins overflow-hidden">
         <router-view />
       </div>

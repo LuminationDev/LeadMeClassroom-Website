@@ -113,12 +113,13 @@ const hover = ref(false)
     </div>
   </div>
 
-  <div class="xl:hidden w-24 h-full z-10"></div>
+  <div class="xl:hidden w-24 h-full z-10 flex-shrink-0"></div>
 </template>
 
 <style lang="scss">
 .sidebar-expanded {
   transition: 0.2s ease-in-out;
+  flex-shrink: 0;
   &::before {
     left:13.96rem;
     transition: all 0.2s ease-in-out;
@@ -148,6 +149,7 @@ const hover = ref(false)
 }
 .sidebar-closed {
   transition: 0.2s ease-in-out;
+  flex-shrink: 0;
   &::before {
     left:5.96rem;
     transition: all 0.2s ease-in-out;
@@ -171,11 +173,11 @@ const hover = ref(false)
   content: "";
   position: absolute;
   background-color: transparent;
-  height: 25px;
-  width: 15px;
+  height: 40px;
+  width: 40px;
   top: 1.5rem;
-  border-top-left-radius: 15px;
-  box-shadow: 0 -15px 0 0 #182B50;
+  border-top-left-radius: 50%;
+  box-shadow: 0 -20px 0 0 #182B50;
 }
 @keyframes animate {
   0% {
