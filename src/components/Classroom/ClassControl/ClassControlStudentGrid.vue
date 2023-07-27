@@ -34,9 +34,9 @@ const sortedMobileFollowers = computed((): Array<MobileFollower> => {
 
     <!--Active students-->
     <div v-if="webFollowers.length !== 0 || mobileFollowers.length !== 0">
-      <div id="studentGrid" class="flex flex-row flex-wrap">
+      <div id="studentGrid" class="flex flex-row flex-wrap w-full">
         <ClassControlStudentGridItem
-            class="mr-0 md:mr-4 mt-4"
+            class="mr-0 sm:mr-4 mt-4"
             v-for="follower in sortedWebFollowers"
             :key="follower.getUniqueId()"
             :selected="actionPinia.selectedFollowers.includes(follower)"
