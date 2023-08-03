@@ -21,6 +21,10 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  theme: {
+    type: String,
+    default: ""
+  }
 });
 const emit = defineEmits<{
   (e: 'onChange', value: String): void
@@ -49,7 +53,8 @@ const handleClick = () => {
   >
     <span :class="iconClass">
       <img v-if="checked" class="w-6 h-6" src="/src/assets/checkbox-checked.svg" alt="checked checkbox"/>
-      <img v-else class="w-6 h-6" src="/src/assets/checkbox-unchecked.svg" alt="unchecked checkbox"/>
+      <img v-else-if="theme !== 'dark'" class="w-6 h-6" src="/src/assets/checkbox-unchecked.svg" alt="unchecked checkbox"/>
+      <img v-else-if="theme === 'dark'" class="w-6 h-6" src="/src/assets/checkbox-unchecked-grey.svg" alt="unchecked checkbox"/>
     </span>
     <span
         :id="`label-${props.id}`"
