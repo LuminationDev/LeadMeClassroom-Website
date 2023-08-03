@@ -82,7 +82,7 @@ export const useActionStore = defineStore("action", {
             if (index > -1) {
                 this.selectedItems.splice(index, 1);
             } else {
-                const task = new Task(video.name, video.getName(), "Video_local")
+                const task = new Task(video.getName(), video.getName(), "Video_local")
                 this.selectedItems.push(task);
             }
         },

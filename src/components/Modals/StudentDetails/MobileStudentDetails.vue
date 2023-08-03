@@ -175,14 +175,6 @@ const checkMedia = (packageName: string) => {
                 <!--Audible icons-->
                 <div class="flex flex-shrink-0 flex-[1_1_auto] justify-end">
                   <div class="h-4 flex flex-row justify-center items-center">
-                    <Transition name="icon">
-                      <div v-if="application.audible" class="pulse-icon">
-                        <div v-if="application.muting" class="lds-dual-ring" />
-                        <img v-else-if="application.muted" src="/src/assets/img/studentDetails/student-icon-sound-disabled.svg"  alt=""/>
-                        <img v-else src="/src/assets/img/studentDetails/student-icon-sound.svg"  alt=""/>
-                      </div>
-                    </Transition>
-
                     <PromoteIcon v-if="selectedApplicationId === application.id && (!activeApplication || activeApplication.id !== application.id)"
                                  v-on:click="changeActiveApplication(application)"
                                  class="ml-1"
@@ -191,16 +183,14 @@ const checkMedia = (packageName: string) => {
                 </div>
 
                 <!--Alert for off task-->
-                <Transition name="icon">
-                  <div v-if="checkMedia(application.id)" class="has-tooltip">
-                    <Tooltip :tip="'Not in task list'" :toolTipMargin="'-ml-1'" :arrow-margin="'ml-1'" />
-                    <img
-                        class="w-6 h-6 mr-2 cursor-pointer"
-                        src="/src/assets/img/student-icon-alert.svg"
-                        alt="alert icon"
-                    />
-                  </div>
-                </Transition>
+                <div v-if="checkMedia(application.id)" class="has-tooltip">
+                  <Tooltip :tip="'Not in task list'" :toolTipMargin="'-ml-1'" :arrow-margin="'ml-1'" />
+                  <img
+                      class="w-6 h-6 mr-2 cursor-pointer"
+                      src="/src/assets/img/student-icon-alert.svg"
+                      alt="alert icon"
+                  />
+                </div>
               </div>
             </div>
           </div>

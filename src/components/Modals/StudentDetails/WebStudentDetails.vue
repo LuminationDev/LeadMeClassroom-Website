@@ -111,7 +111,7 @@ onMounted(() => {
 <template>
   <div class="mx-4 flex flex-col">
     <!--The assistant page is present but not counted (No Tabs)-->
-    <div v-if="follower.tabs.length === 0" class="py-1 flex flex-row w-full px-5 items-center justify-between">
+    <div v-if="follower?.tabs?.length === 0" class="py-1 flex flex-row w-full px-5 items-center justify-between">
       <div class="w-full h-9 px-5 flex flex-row items-center overflow-ellipsis whitespace-nowrap">
         <img class="flex-shrink-0 w-5 h-5 mr-2" src="/src/assets/img/icon-128.png" alt=""/>
         <span class="flex-shrink overflow-ellipsis whitespace-nowrap overflow-hidden pr-10 mt-0.5">No open tabs...</span>
@@ -120,8 +120,8 @@ onMounted(() => {
 
     <!--Active Tab-->
     <div v-else>
-      <div class="flex items-center bg-white h-12 pl-5 rounded-2xl mb-4">
-        <div class="h-9 px-5 flex flex-row items-center whitespace-nowrap overflow-hidden rounded-2xl">
+      <div class="flex items-center bg-white h-12 px-5 rounded-2xl mb-4">
+        <div class="h-9 px-5 flex flex-row items-center justify-between w-full whitespace-nowrap overflow-hidden rounded-2xl">
 
           <div class="flex overflow-hidden items-center">
             <img class="flex-shrink-0 w-5 h-5 mr-2 cursor-pointer" :src="orderedItems[0].getFavicon()" alt=""/>
@@ -137,15 +137,12 @@ onMounted(() => {
             </div>
           </div>
 
-          <!--Monitor Icon-->
-          <div class="flex items-center justify-end">
-            <div class="flex flex-row items-center">
-              <div class="mr-2 text-sm text-gray-500 font-semibold">
-                ACTIVE TAB
-              </div>
-
-              <EyeMonitorIcon v-on:click="viewScreen" class="h-6 cursor-pointer" :colour="'#959EAF'"/>
+          <div class="flex flex-row items-center">
+            <div class="mr-2 text-sm text-gray-500 font-semibold">
+              ACTIVE TAB
             </div>
+
+            <EyeMonitorIcon v-on:click="viewScreen" class="h-6 cursor-pointer" :colour="'#959EAF'"/>
           </div>
 
           <Transition name="icon">

@@ -54,6 +54,7 @@ watch(() => actionPinia.showModal, (newValue) => {
  */
 const openModal = () => {
   showModal.value = true
+  console.log('showeeeddede')
 }
 
 const closeModal = () => {
@@ -103,7 +104,7 @@ defineExpose({
   <!--Anchor button used to control the modal-->
   <div v-on:click="openModal" class="flex flex-row items-center py-2 px-4 font-medium cursor-pointer">
     <img v-if="iconUrl" class="flex-shrink-0 w-4 h-4 mr-2" :src="iconUrl"  alt=""/>
-    <span class="overflow-ellipsis whitespace-nowrap overflow-hidden">{{ taskName }}</span>
+    <span class="overflow-ellipsis whitespace-nowrap overflow-hidden">{{ follower.locked ? '&nbsp;' : taskName }}</span>
   </div>
 
   <!--Modal body using the Modal template, teleports the html to the bottom of the body tag-->

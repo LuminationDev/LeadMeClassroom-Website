@@ -74,7 +74,7 @@ const filteredVideos = computed(() => {
                     'flex-shrink overflow-ellipsis whitespace-nowrap overflow-hidden pr-10 mt-0.5 font-semibold': true,
                     'text-blue-500': actionPinia.selectedItems.findIndex(app => app.getPackageName() === video.id) !== -1
                   }"
-              >{{ video.getName() }}</span>
+              >{{ video.getName().replace(/\.[^/.]+$/, "") }}</span>
             </div>
 
             <div class="text-sm text-gray-500" >

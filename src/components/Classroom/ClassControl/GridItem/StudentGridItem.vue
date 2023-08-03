@@ -69,7 +69,7 @@ function openModal() {
 </script>
 
 <template>
-  <div class="w-64 transition-all duration-500 ease-in-out relative">
+  <div class="w-64 transition-all duration-500 ease-in-out relative cursor-pointer" @click="openModal">
     <div class="h-36 flex flex-col rounded-lg pt-4 pl-4 pr-4 pb-2"
       :class="{
         'bg-zinc-200 border-2 border-solid border-zinc-200 hover:bg-gray-200': !selected && !follower.locked,
@@ -84,27 +84,28 @@ function openModal() {
 
       <!--Front of card-->
       <div v-else-if="studentPanel === 'main'">
-        <div class="flex flex-row justify-between" @click="openModal">
+        <div class="flex flex-row justify-between">
           <span class="text-lg font-medium" :class="{
           'text-blue-500': selected
         }">{{ follower.name }}</span>
           <div class="flex flex-row">
             <WebFollowerIcon v-if="follower.type === REQUESTS.WEB" class="h-6 w-6 mr-2" :colour="colourState" />
             <MobileFollowerIcon v-else-if="follower.type === REQUESTS.MOBILE" class="h-6 w-6 mr-2" :colour="colourState" />
-            <CheckboxInput :checked="selected" @on-change="selectionToggled" @click.stop />
+            <CheckboxInput :checked="selected" @on-change="selectionToggled" @click.stop :theme="follower.locked ? 'dark' : ''" />
           </div>
         </div>
 
         <!--Open student details-->
-        <div class="rounded-full text-gray-500 mt-4 mb-3 relative" :class="{
+        <div class="relative mb-3 mt-4">
+          <div class="rounded-full text-gray-500" :class="{
           'bg-blue-100': selected,
           'bg-white': !selected && !follower.locked,
           'bg-neutral-400 opacity-40': follower.locked
         }">
-          <StudentDetailModal ref="studentDetailModal" :follower="follower" @screenMonitor="openMonitorModal"/>
-
-          <!--Display locked icon-->
-          <EyeSlashIcon v-if="follower.locked" class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-16 h-16" :colour="'black'"/>
+            <StudentDetailModal ref="studentDetailModal" :follower="follower" @screenMonitor="openMonitorModal"/>
+          </div>
+          <EyeSlashIcon
+              v-if="follower.locked" class="top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 absolute w-16 h-16" :colour="selected ? '#3B82F6' : '#374151'"/>
         </div>
 
         <div class="flex flex-row justify-end">

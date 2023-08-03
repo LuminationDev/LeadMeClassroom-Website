@@ -95,7 +95,7 @@ const shareText = computed(() => {
 <template>
   <ActionBarBase class="h-12">
     <template v-slot:right>
-      <div class="flex flex-row mr-8 items-center">
+      <div class="flex flex-row mr-8 items-center justify-end w-full">
         <div class="text-white mr-2">
           {{shareText}}
         </div>
