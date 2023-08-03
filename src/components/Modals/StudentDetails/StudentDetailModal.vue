@@ -54,7 +54,6 @@ watch(() => actionPinia.showModal, (newValue) => {
  */
 const openModal = () => {
   showModal.value = true
-  console.log('showeeeddede')
 }
 
 const closeModal = () => {
