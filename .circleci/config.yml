@@ -1,0 +1,64 @@
+version: 2.1
+
+commands:
+  build-and-deploy:
+    steps:
+      - checkout
+      - run:
+          name: Create .env
+          command: touch .env
+      - run:
+          name: Initialise .env
+          command: printf 'VITE_SHEETS_API_KEY=%s\VITE_SHEETS_ID=%s' \ $VITE_SHEETS_API_KEY $VITE_SHEETS_ID > .env
+      - run:
+          name: "npm ci"
+          command: "npm ci"
+      - run:
+          name: "build"
+          command: "npm run build"
+      - store_artifacts:
+          path: ~/project/dist
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - project/dist
+      - run:
+          name: Install firebase tools globally
+          command: npm install --prefix=$HOME/.local --global firebase-tools
+      - run:
+          name: Deploy Main to Firebase
+          command: firebase deploy --token=$FIREBASE_DEPLOY_TOKEN
+
+jobs:
+  run-tests:
+    docker:
+      - image: cimg/node:current
+    steps:
+      - checkout
+      - run:
+          name: Install dependencies
+          command: |
+            npm ci
+      - run:
+          name: Run tests
+          command: |
+            npm test
+  build-job:
+    docker:
+      - image: cimg/node:current
+    steps:
+      - build-and-deploy
+
+workflows:
+  build-workflow:
+    jobs:
+      - hold:
+          context: LeadMeDeployers
+          type: approval
+          filters:
+            branches:
+              only:
+                - main
+      - build-job:
+          requires:
+            - hold

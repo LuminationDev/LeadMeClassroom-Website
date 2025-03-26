@@ -1,0 +1,17 @@
+{
+  "extends": "@vue/tsconfig/tsconfig.node.json",
+  "include": ["vite.config.*", "vitest.config.*", "cypress.config.*", "playwright.config.*",
+    "src/**/*.ts",
+    "src/**/*.d.ts",
+    "src/**/*.tsx",
+    "src/**/*.vue",
+    "src/**/*.js"],
+  "compilerOptions": {
+    "lib": [
+      "ES2021.String",
+      "dom"
+    ],
+    "composite": true,
+    "types": ["node"]
+  }
+}
